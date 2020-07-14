@@ -10,6 +10,7 @@
 #' @param save_files triggers if RDS will be saved
 #' @return data frame with RDS files' details
 #' @importFrom pbapply pblapply
+#' @importFrom utils write.csv
 #' @export
 #' @examples
 #' alph <- 1L:4
