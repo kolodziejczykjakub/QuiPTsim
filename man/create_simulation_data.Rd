@@ -8,7 +8,7 @@ create_simulation_data(
   replications,
   seq_nums,
   seq_lengths,
-  n_motifs,
+  num_motifs,
   alphabet,
   path,
   title,
@@ -22,7 +22,7 @@ create_simulation_data(
 
 \item{seq_lengths}{vector of sequences' lengths}
 
-\item{n_motifs}{vector of number of motifs to be injected}
+\item{num_motifs}{vector of number of motifs to be injected}
 
 \item{alphabet}{elements used to build both sequence and motif}
 
@@ -40,7 +40,7 @@ function generates set of RDS files containing n-gram matrices
 }
 \examples{
 alph <- 1L:4
-reps <- 1
+reps <- 10
 n_seq <- c(25)
 l_seq <- c(8)
 n_motifs <- c(1, 2)
