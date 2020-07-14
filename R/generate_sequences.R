@@ -108,3 +108,82 @@ add_motifs <- function(motifs, sequence) {
   stop("Given motifs cannot be injected to a sequence!")
 }
 
+#' function generates sequences (both positive & negative)
+#' TODO: fraction is not used in `test_quipt`
+#' @param n_seq number of sequences to be generated
+#' @param len sequence length
+#' @param alphabet elements used to build sequence
+#' @param motifs_list list of injected motifs
+#' @param n_motifs number of motifs injected to each positive sequence
+#' @param fraction of positive sequences
+#' @return generated sequences
+#' @export
+#' @examples
+#' n_seq <- 20
+#' len <- 10
+#' alph <- 1L:4
+#' motifs <- generate_motifs(alph, 3)
+#' simulate_sequences(n_seq, len, alph, motifs, 1)
+
+
+simulate_sequences <- function(n_seq, len, alphabet, motifs_list, n_motifs, fraction = 0.5) {
+  n_pos <- round(fraction*n_seq, 0)
+
+  list_of_motifs <- list()
+  list_of_masks <- list()
+
+  target <- logical(n_seq)
+  target[1:n_pos] <- TRUE
+  sequences <- matrix(nrow = n_seq, ncol = len)
+
+  for (i in 1:n_pos) {
+    motifs <- motifs_list[sample(1:length(motifs_list), n_motifs)]
+    new_seq <- add_motifs(motifs, simulate_single_sequence(len, alphabet))
+    list_of_motifs[[i]] <- attr(new_seq, "motifs")
+    list_of_masks[[i]] <- attr(new_seq, "masks")
+    sequences[i, ] <- new_seq
+  }
+  for (i in 1:(n_seq - n_pos)) {
+    sequences[n_pos + i, ] <- simulate_single_sequence(len, alphabet)
+  }
+  attr(sequences, "motifs") <- list_of_motifs
+  attr(sequences, "masks") <- list_of_masks
+  attr(sequences, "target") <- target
+  sequences
+}
+
+#' function counts n-grams in given sequences
+#' @param n_seq number of sequences to be generated
+#' @param l_seq sequence length
+#' @param alphabet elements used to build sequence
+#' @param motifs_list list of injected motifs
+#' @param n_motifs number of motifs injected to each positive sequence
+#' @param fraction TODO: add fraction: of positive sequences / change approach
+#' @return generated sequences
+#' @export
+#' @importFrom biogram count_multigrams
+#' @importFrom biogram binarize
+#' @examples
+#' n_seq <- 20
+#' len <- 10
+#' alph <- 1L:4
+#' motifs <- generate_motifs(alph, 3)
+#' generate_sequences(n_seq, len, alph, motifs, 1)
+
+generate_sequences <- function(n_seq, l_seq, alphabet, motifs_list, n_motifs) {
+  # generate sequence data
+  test_dat <- simulate_sequences(n_seq*2, l_seq, alphabet, motifs_list, 1)
+
+  # perform QuiPT
+  test_res <- binarize(count_multigrams(test_dat,
+                               ns = c(1, rep(2, 6), rep(3, 9)),
+                               ds = c(0, as.list(0L:5),
+                                      split(expand.grid(0L:2, 0L:2),
+                                            1L:nrow(expand.grid(0L:2, 0L:2)))),
+                               u = alphabet))
+
+  attr(test_res, "motifs") <- attr(test_dat, "motifs")
+  attr(test_res, "masks") <- attr(test_dat, "masks")
+  attr(test_res, "target") <- attr(test_dat, "target")
+  test_res
+}
