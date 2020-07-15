@@ -31,22 +31,27 @@ test_that("Correct motif injection", {
   set.seed(1)
 
   injected1 <- add_motifs(list(c(1, "_", 1), c(1, 1)), c(2, 2, 3, 4))
-
-  # TODO: this one should be passed
-  # expect_equal(as.character(c(1, 1, 1, 4)),
-  #              injected1)
   expect_true(all(as.character(c(1, 1, 1, 4)) == injected1))
 
 
-  # alph <- 1:4
-  # motifs <- generate_motifs(alph, 2)
-  # injected2 <- add_motifs(motifs, simulate_single_sequence(10, alph))
-  #
-  # injected2_true <- c(4, 3, 2, 3, 1, 2, 3, 2, 4, 4)
-  # attr(injected2_true, "motifs") <- list(c(2, "_", 2), c(4, "_", "_", 3, 1))
-  # attr(injected2_true, "masks") <- list(c(rep(FALSE, 5), T, F, T, F, F),
-  #                                       c(T, F, F, T, T, rep(FALSE, 5)))
-  #
-  # expect_identical(injected2_true, injected2)
+  set.seed(1)
 
+  alph <- 1:4
+  motifs <- generate_motifs(alph, 2)
+  injected2 <- add_motifs(motifs, simulate_single_sequence(10, alph))
+
+  injected2_true <- c(3, 2, 2, 4, 3, 1, 3, 1, 2, 3)
+  attr(injected2_true, "motifs") <- list(c(4, "_", "_", 3, 1), c(1, "_", 3))
+  attr(injected2_true, "masks") <- list(c(FALSE, FALSE, FALSE, TRUE, FALSE,
+                                          FALSE, TRUE, TRUE, FALSE, FALSE),
+                                        c(FALSE, FALSE, FALSE, FALSE, FALSE,
+                                          FALSE, FALSE, TRUE, FALSE, TRUE))
+
+  expect_true(all(injected2 == injected2_true))
+
+  expect_true(all(attr(injected2, "motifs")[[1]] == attr(injected2_true, "motifs")[[1]]))
+  expect_true(all(attr(injected2, "motifs")[[2]] == attr(injected2_true, "motifs")[[2]]))
+
+  expect_true(all(attr(injected2, "masks")[[1]] == attr(injected2_true, "masks")[[1]]))
+  expect_true(all(attr(injected2, "masks")[[2]] == attr(injected2_true, "masks")[[2]]))
 })

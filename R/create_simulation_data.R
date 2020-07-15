@@ -1,4 +1,3 @@
-
 #' function generates set of RDS files containing n-gram matrices
 #' @param replications number of matrices' generation for each set of parameters
 #' @param seq_nums vector of sequences' numbers
@@ -82,4 +81,3 @@ create_simulation_data <- function(replications,
 
   df
 }
-
