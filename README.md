@@ -10,7 +10,7 @@
 
 - [ ] add probabilities' vectors for both motifs and sequences
 - [ ] add seqR counter
-- [ ] longer motifs: ds <= 6 ns <= 4
+- [X] longer motifs: ds <= 6 ns <= 4
 - [ ] add sequences to attributes(dat)
 - [ ] motifs' generation in each replication 
 - [ ] add function validate_motifs() 
