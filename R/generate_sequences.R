@@ -172,7 +172,7 @@ simulate_sequences <- function(n_seq, len, alphabet, motifs_list, n_motifs, frac
 
 generate_sequences <- function(n_seq, l_seq, alphabet, motifs_list, n_motifs) {
   # generate sequence data
-  test_dat <- simulate_sequences(n_seq*2, l_seq, alphabet, motifs_list, 1)
+  test_dat <- simulate_sequences(n_seq*2, l_seq, alphabet, motifs_list, n_motifs)
 
   # perform QuiPT
   test_res <- binarize(count_multigrams(test_dat,
