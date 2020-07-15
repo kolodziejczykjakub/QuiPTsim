@@ -50,7 +50,7 @@ create_simulation_data <- function(replications,
 
           pb$tick(1)
           set.seed(replication)
-          motifs <- generate_motifs(alphabet, n_motifs)
+
           dat <- generate_sequences(n_seq, l_seq, alphabet, motifs, n_motifs)
 
           filePath = paste0(path, title,
@@ -81,3 +81,12 @@ create_simulation_data <- function(replications,
 
   df
 }
+
+
+alph <- 1L:4
+reps <- 10
+n_seq <- c(25)
+l_seq <- c(8)
+n_motifs <- c(1, 2)
+path = "./results/"
+create_simulation_data(reps, n_seq, l_seq, n_motifs, alph, path, "SEQ",TRUE)
