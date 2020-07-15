@@ -6,21 +6,21 @@
 # QuiPTsim
 ## Quick Permutation Test simulation
 
-### TODO:
-* add probabilities' vectors for both motifs and sequences
-* add seqR counter
-* longer motifs: suma przerw <= 6 liczba aa <= 4
-* add sequences to attributes(dat)
+### TODO
 
-* generowanie motywów po replikacji 
-* add function validate_motifs() 
+- [ ] add probabilities' vectors for both motifs and sequences
+- [ ] add seqR counter
+- [ ] longer motifs: ds <= 6 ns <= 4
+- [ ] add sequences to attributes(dat)
+- [ ] motifs' generation in each replication 
+- [ ] add function validate_motifs() 
 
-* przejsc na 20 liter
+### Simulation details
 
-* liczba sekwencji 3k pos / 3k neg
-* replikacje : 50 - 100
-* liczba motywów : 1 - 3 
-* długość sekwencji: 10, 20, 40, 80
-* alfabet : 20 liter (4, 6, 8, 20)
-* ! rozne wektory prawdopodobienstw
+* number of sequences: 3k positive / 3k negative
+* replications: 50-100
+* number of motifs: 1 - 3
+* sequences' lengths: 10, 20, 40, 80
+* alphabet: 20 elements: 4, 6, 8, 20
+* various probability vectors
 

@@ -5,7 +5,7 @@
 \title{function generates motif from an alphabet
 TODO: motif length control}
 \usage{
-generate_single_motif(alphabet)
+generate_single_motif(alphabet, n = 4, d = 6)
 }
 \arguments{
 \item{alphabet}{elements used to build motif}

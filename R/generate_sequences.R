@@ -1,24 +1,27 @@
 #' function generates motif from an alphabet
 #' TODO: motif length control
 #' @param alphabet elements used to build motif
+#' @param n number of elements from alphabet
+#' @param d total sum of gaps
 #' @return motif based on given alphabet
 #' @export
 #' @examples
 #' generate_single_motif(1:4)
 
-generate_single_motif <- function(alphabet) {
-  ns <- c(rep(2, 6), rep(3, 9))
-  ds <- c(as.list(0L:5),
-          split(expand.grid(0L:2, 0L:2), 1L:nrow(expand.grid(0L:2, 0L:2))))
+generate_single_motif <- function(alphabet, n = 4, d = 6) {
 
-  ngram_id <- sample(1L:length(ns), 1)
+  motif <- sample(alphabet, sample(2:n, 1), replace = TRUE)
+  gaps <- expand.grid(list(0:d)[rep(1, length(motif) - 1)])
+  possibleGaps <- gaps[apply(gaps, 1, sum) <= d, , drop = FALSE]
+  gap <- possibleGaps[sample(1:nrow(possibleGaps), 1), , drop = FALSE]
 
-  n <- ns[ngram_id]
-  d <- ds[[ngram_id]]
+  newSeq <- vector()
+  for (i in 1:(length(motif) -1)) {
+    newSeq <- c(newSeq, motif[i], rep("_", gap[1, i]))
+  }
+  newSeq <- c(newSeq, motif[length(motif)])
 
-  c(unlist(lapply(1L:length(d), function(d_id) {
-    c(sample(alphabet, 1), rep("_", d[d_id]))
-  })), sample(alphabet, 1))
+  newSeq
 }
 
 #' generate multiple motifs from alphabet
