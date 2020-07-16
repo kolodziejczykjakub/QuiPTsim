@@ -13,7 +13,7 @@
 - [X] longer motifs: ds <= 6 ns <= 4
 - [ ] add sequences to attributes(dat)
 - [X] motifs' generation in each replication 
-- [ ] add function validate_motifs() 
+- [X] add function validate_motifs() 
 - [ ] tests
 
 ### Simulation details

@@ -202,3 +202,19 @@ generate_sequences <- function(n_seq,
   attr(test_res, "target") <- attr(test_dat, "target")
   test_res
 }
+
+#' function validates if given motifs can be injected to a sequence of given length
+#' @param motifs list of motifs we are checking
+#' @param sequence_length length of sequence we want to inject
+#' @return logical value if such injection is possible
+#' @export
+#' @examples
+#' set.seed(42)
+#' motifs <- generate_motifs(1:4, 3, d = 3)
+#' validate_motifs(motifs, 7)
+#' validate_motifs(motifs, 9)
+validate_motifs <- function(motifs, sequence_length) {
+  result <- tryCatch(add_motifs(motifs, rep("*", sequence_length)),
+                     error = function(dummy) FALSE)
+  ifelse(class(result) == "character", TRUE, FALSE)
+}
