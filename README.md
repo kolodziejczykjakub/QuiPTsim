@@ -14,9 +14,9 @@
 - [X] add function validate_motifs()
 - [X] count multigrams for longer motifs
 - [X] add sequences to attributes(dat)
+- [X] tests
 
 - [ ] add seqR counter
-- [ ] tests
 
 ### Simulation details
 
