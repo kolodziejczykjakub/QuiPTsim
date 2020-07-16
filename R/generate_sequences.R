@@ -185,17 +185,27 @@ generate_sequences <- function(n_seq,
                                motifs_list,
                                n_motifs,
                                fraction = 0.5,
-                               seqProbs = NULL) {
+                               seqProbs = NULL,
+                               n = 4,
+                               d = 6) {
   # generate sequence data
   test_dat <- simulate_sequences(n_seq*2, l_seq, alphabet, motifs_list, n_motifs, fraction, seqProbs)
 
+  # element & gaps' positions for count_multigrams
+  ns <- 1
+  ds <- 0
+  for (i in 1:(n-1)) {
+    ds_ <- expand.grid(list(0:d)[rep(1, i)])
+    ds_ <- ds_[apply(ds_, 1, sum) <= d, , drop = FALSE]
+    ns <- c(ns, rep(i+1, nrow(ds_)))
+    ds <- c(ds, split(ds_, 1:nrow(ds_)))
+  }
+
   # perform QuiPT
   test_res <- binarize(count_multigrams(test_dat,
-                               ns = c(1, rep(2, 6), rep(3, 9)),
-                               ds = c(0, as.list(0L:5),
-                                      split(expand.grid(0L:2, 0L:2),
-                                            1L:nrow(expand.grid(0L:2, 0L:2)))),
-                               u = alphabet))
+                                        ns = ns,
+                                        ds = ds,
+                                        u = alphabet))
 
   attr(test_res, "motifs") <- attr(test_dat, "motifs")
   attr(test_res, "masks") <- attr(test_dat, "masks")

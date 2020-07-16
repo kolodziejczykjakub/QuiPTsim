@@ -11,7 +11,9 @@ generate_sequences(
   motifs_list,
   n_motifs,
   fraction = 0.5,
-  seqProbs = NULL
+  seqProbs = NULL,
+  n = 4,
+  d = 6
 )
 }
 \arguments{
