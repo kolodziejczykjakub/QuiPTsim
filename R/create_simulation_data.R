@@ -14,11 +14,11 @@
 #' @examples
 #' alph <- 1L:4
 #' reps <- 10
-#' n_seq <- c(25)
-#' l_seq <- c(8)
+#' n_seq <- c(10)
+#' l_seq <- c(10)
 #' n_motifs <- c(1, 2)
 #' path = "./"
-#' create_simulation_data(reps, n_seq, l_seq, n_motifs, alph, path, "SEQ",FALSE)
+#' results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph, path, "SEQ",FALSE)
 
 create_simulation_data <- function(replications,
                                    seq_nums,
@@ -27,7 +27,12 @@ create_simulation_data <- function(replications,
                                    alphabet,
                                    path,
                                    title,
-                                   save_files = FALSE) {
+                                   save_files = FALSE,
+                                   motifProbs = NULL,
+                                   seqProbs = NULL,
+                                   fraction = 0.5,
+                                   n = 4,
+                                   d = 6) {
 
   if (!file.exists(path))
     stop("Output directory does not exist.")
@@ -49,7 +54,11 @@ create_simulation_data <- function(replications,
       # check if generated motifs can be injected to sequence of length 10
       validated <- FALSE
       while (!validated) {
-        motifs <- generate_motifs(alphabet, n_motifs, n = 4, d = 6)
+        motifs <- generate_motifs(alphabet,
+                                  n_motifs,
+                                  n = n,
+                                  d = d,
+                                  motifProbs = motifProbs)
         validated <- validate_motifs(motifs, 10)
       }
 
@@ -59,7 +68,15 @@ create_simulation_data <- function(replications,
           pb$tick(1)
           set.seed(replication)
 
-          dat <- generate_sequences(n_seq, l_seq, alphabet, motifs, n_motifs)
+          dat <- generate_sequences(n_seq,
+                                    l_seq,
+                                    alphabet,
+                                    motifs,
+                                    n_motifs,
+                                    fraction = fraction,
+                                    seqProbs = seqProbs,
+                                    n = n,
+                                    d = d)
 
           filePath = paste0(path, title,
                             "_rep_", replication,
@@ -75,6 +92,10 @@ create_simulation_data <- function(replications,
                      n_seq = n_seq,
                      l_seq = l_seq,
                      n_motifs = n_motifs,
+                     n = n,
+                     d = d,
+                     seqProbs = paste(motifProbs, collapse = ";"),
+                     motifProbs = paste(motifProbs, collapse = ";"),
                      path = filePath)
 
           df <- rbind(df, newdf)

@@ -12,7 +12,12 @@ create_simulation_data(
   alphabet,
   path,
   title,
-  save_files = FALSE
+  save_files = FALSE,
+  motifProbs = NULL,
+  seqProbs = NULL,
+  fraction = 0.5,
+  n = 4,
+  d = 6
 )
 }
 \arguments{
@@ -41,9 +46,9 @@ function generates set of RDS files containing n-gram matrices
 \examples{
 alph <- 1L:4
 reps <- 10
-n_seq <- c(25)
-l_seq <- c(8)
+n_seq <- c(10)
+l_seq <- c(10)
 n_motifs <- c(1, 2)
 path = "./"
-create_simulation_data(reps, n_seq, l_seq, n_motifs, alph, path, "SEQ",FALSE)
+results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph, path, "SEQ",FALSE)
 }
