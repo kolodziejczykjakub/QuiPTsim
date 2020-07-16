@@ -3,10 +3,13 @@
 #' @param alphabet elements used to build motif
 #' @param n number of elements from alphabet
 #' @param d total sum of gaps
+#' @param motifProbs alphabet probabilites for motifs
 #' @return motif based on given alphabet
 #' @export
 #' @examples
 #' generate_single_motif(1:4)
+#' generate_single_motif(c("a", "b", "c"))
+#' generate_single_motif(1:4, n = 6, d = 2, motifProbs = c(0.7, 0.1, 0.1, 0.1))
 
 generate_single_motif <- function(alphabet, n = 4, d = 6, motifProbs = NULL) {
 
@@ -27,10 +30,14 @@ generate_single_motif <- function(alphabet, n = 4, d = 6, motifProbs = NULL) {
 #' generate multiple motifs from alphabet
 #' @param alphabet elements used to build motif
 #' @param n_motif number of motifs to be generated
+#' @param motifProbs alphabet probabilites for motifs
+#' @param n maximum number of alphabet elements in motif
+#' @param d maximum number of gaps in motif
 #' @return list of generated motifs
 #' @export
 #' @examples
 #' generate_motifs(1:4, 5)
+#' generate_motifs(1:4, 5, n = 6, d = 2, motifProbs = c(0.7, 0.1, 0.1, 0.1))
 generate_motifs <- function(alphabet, n_motif, n = 4, d = 6, motifProbs = NULL) {
   lapply(1L:n_motif, function(dummy) generate_single_motif(alphabet, n, d, motifProbs))
 }
@@ -38,11 +45,13 @@ generate_motifs <- function(alphabet, n_motif, n = 4, d = 6, motifProbs = NULL) 
 #' generates sequence of elements from alphabet with replacement
 #' @param alphabet elements used to build sequence
 #' @param len length of generated sample sequence
+#' @param seqProbs alphabet probabilites for sequences
 #' @return randomly generated sequence
 #' @export
 #' @examples
 #' simulate_single_sequence(5, 1L:4)
 #' simulate_single_sequence(10, c("a", "b", "c"))
+#' simulate_single_sequence(10, c("a", "b", "c"), c(0.6, 0.2, 0.2))
 
 simulate_single_sequence <- function(len, alphabet, seqProbs = NULL){
   sample(alphabet, size = len, replace = TRUE, prob = seqProbs)
@@ -60,7 +69,7 @@ simulate_single_sequence <- function(len, alphabet, seqProbs = NULL){
 #' # little bit more interesting
 #' alph <- as.character(1L:4)
 #' motifs <- generate_motifs(alph, 2)
-#' example_sequence <- simulate_single_sequence(10, alph)
+#' example_sequence <- simulate_single_sequence(12, alph)
 #' add_motifs(motifs, example_sequence)
 
 add_motifs <- function(motifs, sequence) {
@@ -119,6 +128,7 @@ add_motifs <- function(motifs, sequence) {
 #' @param motifs_list list of injected motifs
 #' @param n_motifs number of motifs injected to each positive sequence
 #' @param fraction of positive sequences
+#' @param seqProbs alphabet probabilites for sequences
 #' @return generated sequences
 #' @export
 #' @examples
@@ -127,7 +137,8 @@ add_motifs <- function(motifs, sequence) {
 #' alph <- 1L:4
 #' motifs <- generate_motifs(alph, 3)
 #' simulate_sequences(n_seq, len, alph, motifs, 1)
-
+#' simulate_sequences(n_seq, len, alph, motifs, 1, fraction = 0.8)
+#' simulate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))
 
 simulate_sequences <- function(n_seq,
                                len,
@@ -168,6 +179,9 @@ simulate_sequences <- function(n_seq,
 #' @param motifs_list list of injected motifs
 #' @param n_motifs number of motifs injected to each positive sequence
 #' @param fraction TODO: add fraction: of positive sequences / change approach
+#' @param seqProbs alphabet probabilites for sequences
+#' @param n maximum number of alphabet elements in n-gram
+#' @param d maximum number of gaps in n-gram
 #' @return generated sequences
 #' @export
 #' @importFrom biogram count_multigrams
@@ -176,9 +190,12 @@ simulate_sequences <- function(n_seq,
 #' n_seq <- 20
 #' len <- 10
 #' alph <- 1L:4
-#' motifs <- generate_motifs(alph, 3)
-#' generate_sequences(n_seq, len, alph, motifs, 1)
-
+#' motifs <- generate_motifs(alph, 2)
+#' results <- generate_sequences(n_seq, len, alph, motifs, 1)
+#' results <- generate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))
+#' results
+#' attributes(results)
+#'
 generate_sequences <- function(n_seq,
                                l_seq,
                                alphabet,
@@ -189,7 +206,7 @@ generate_sequences <- function(n_seq,
                                n = 4,
                                d = 6) {
   # generate sequence data
-  test_dat <- simulate_sequences(n_seq*2, l_seq, alphabet, motifs_list, n_motifs, fraction, seqProbs)
+  test_dat <- simulate_sequences(n_seq, l_seq, alphabet, motifs_list, n_motifs, fraction, seqProbs)
 
   # element & gaps' positions for count_multigrams
   ns <- 1
@@ -229,5 +246,3 @@ validate_motifs <- function(motifs, sequence_length) {
                      error = function(dummy) FALSE)
   ifelse(class(result) == "character", TRUE, FALSE)
 }
-
-validate_motifs(motifs, sequence_length = 10)

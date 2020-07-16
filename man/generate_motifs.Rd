@@ -10,6 +10,12 @@ generate_motifs(alphabet, n_motif, n = 4, d = 6, motifProbs = NULL)
 \item{alphabet}{elements used to build motif}
 
 \item{n_motif}{number of motifs to be generated}
+
+\item{n}{maximum number of alphabet elements in motif}
+
+\item{d}{maximum number of gaps in motif}
+
+\item{motifProbs}{alphabet probabilites for motifs}
 }
 \value{
 list of generated motifs
@@ -19,4 +25,5 @@ generate multiple motifs from alphabet
 }
 \examples{
 generate_motifs(1:4, 5)
+generate_motifs(1:4, 5, n = 6, d = 2, motifProbs = c(0.7, 0.1, 0.1, 0.1))
 }

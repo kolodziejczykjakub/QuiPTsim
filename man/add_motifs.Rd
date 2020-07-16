@@ -25,6 +25,6 @@ add_motifs(list(c(1, "_", 1), c(1, 1)), c(2, 2, 3, 4))
 # little bit more interesting
 alph <- as.character(1L:4)
 motifs <- generate_motifs(alph, 2)
-example_sequence <- simulate_single_sequence(10, alph)
+example_sequence <- simulate_single_sequence(12, alph)
 add_motifs(motifs, example_sequence)
 }

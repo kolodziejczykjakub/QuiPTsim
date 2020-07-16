@@ -27,6 +27,8 @@ simulate_sequences(
 \item{n_motifs}{number of motifs injected to each positive sequence}
 
 \item{fraction}{of positive sequences}
+
+\item{seqProbs}{alphabet probabilites for sequences}
 }
 \value{
 generated sequences
@@ -41,4 +43,6 @@ len <- 10
 alph <- 1L:4
 motifs <- generate_motifs(alph, 3)
 simulate_sequences(n_seq, len, alph, motifs, 1)
+simulate_sequences(n_seq, len, alph, motifs, 1, fraction = 0.8)
+simulate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))
 }

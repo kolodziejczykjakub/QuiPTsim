@@ -28,6 +28,12 @@ generate_sequences(
 \item{n_motifs}{number of motifs injected to each positive sequence}
 
 \item{fraction}{TODO: add fraction: of positive sequences / change approach}
+
+\item{seqProbs}{alphabet probabilites for sequences}
+
+\item{n}{maximum number of alphabet elements in n-gram}
+
+\item{d}{maximum number of gaps in n-gram}
 }
 \value{
 generated sequences
@@ -39,6 +45,10 @@ function counts n-grams in given sequences
 n_seq <- 20
 len <- 10
 alph <- 1L:4
-motifs <- generate_motifs(alph, 3)
-generate_sequences(n_seq, len, alph, motifs, 1)
+motifs <- generate_motifs(alph, 2)
+results <- generate_sequences(n_seq, len, alph, motifs, 1)
+results <- generate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))
+results
+attributes(results)
+
 }

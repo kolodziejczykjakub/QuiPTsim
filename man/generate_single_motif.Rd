@@ -13,6 +13,8 @@ generate_single_motif(alphabet, n = 4, d = 6, motifProbs = NULL)
 \item{n}{number of elements from alphabet}
 
 \item{d}{total sum of gaps}
+
+\item{motifProbs}{alphabet probabilites for motifs}
 }
 \value{
 motif based on given alphabet
@@ -23,4 +25,6 @@ TODO: motif length control
 }
 \examples{
 generate_single_motif(1:4)
+generate_single_motif(c("a", "b", "c"))
+generate_single_motif(1:4, n = 6, d = 2, motifProbs = c(0.7, 0.1, 0.1, 0.1))
 }

@@ -36,6 +36,16 @@ create_simulation_data(
 \item{title}{simulation name}
 
 \item{save_files}{triggers if RDS will be saved}
+
+\item{motifProbs}{alphabet probabilites for motifs}
+
+\item{seqProbs}{alphabet probabilites for sequences}
+
+\item{fraction}{fraction of positive sequences}
+
+\item{n}{maximum number of alphabet elements in motif}
+
+\item{d}{maximum number of gaps in motif}
 }
 \value{
 data frame with RDS files' details
@@ -51,4 +61,16 @@ l_seq <- c(10)
 n_motifs <- c(1, 2)
 path = "./"
 results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph, path, "SEQ",FALSE)
+
+alph <- 1L:4
+reps <- 3
+n_seq <- c(10)
+l_seq <- c(10)
+n_motifs <- 1
+results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph,
+                                 path, "SEQ", FALSE,
+                                 motifProbs = c(0.7, 0.1, 0.1, 0.1),
+                                 seqProbs = c(0.7, 0.1, 0.1, 0.1),
+                                 n = 4, d = 4)
+
 }

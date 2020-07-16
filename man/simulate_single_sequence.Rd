@@ -10,6 +10,8 @@ simulate_single_sequence(len, alphabet, seqProbs = NULL)
 \item{len}{length of generated sample sequence}
 
 \item{alphabet}{elements used to build sequence}
+
+\item{seqProbs}{alphabet probabilites for sequences}
 }
 \value{
 randomly generated sequence
@@ -20,4 +22,5 @@ generates sequence of elements from alphabet with replacement
 \examples{
 simulate_single_sequence(5, 1L:4)
 simulate_single_sequence(10, c("a", "b", "c"))
+simulate_single_sequence(10, c("a", "b", "c"), c(0.6, 0.2, 0.2))
 }
