@@ -12,10 +12,10 @@
 - [X] longer motifs: ds <= 6 ns <= 4
 - [X] motifs' generation in each replication 
 - [X] add function validate_motifs()
+- [X] count multigrams for longer motifs
+- [X] add sequences to attributes(dat)
 
 - [ ] add seqR counter
-- [ ] count multigrams for longer motifs
-- [ ] add sequences to attributes(dat)
 - [ ] tests
 
 ### Simulation details

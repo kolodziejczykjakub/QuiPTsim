@@ -207,6 +207,7 @@ generate_sequences <- function(n_seq,
                                         ds = ds,
                                         u = alphabet))
 
+  attr(test_res, "sequences") <- matrix(test_dat, nrow = nrow(test_dat), ncol = ncol(test_dat))
   attr(test_res, "motifs") <- attr(test_dat, "motifs")
   attr(test_res, "masks") <- attr(test_dat, "masks")
   attr(test_res, "target") <- attr(test_dat, "target")
@@ -228,3 +229,5 @@ validate_motifs <- function(motifs, sequence_length) {
                      error = function(dummy) FALSE)
   ifelse(class(result) == "character", TRUE, FALSE)
 }
+
+validate_motifs(motifs, sequence_length = 10)
