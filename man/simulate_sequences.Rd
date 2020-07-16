@@ -5,7 +5,15 @@
 \title{function generates sequences (both positive & negative)
 TODO: fraction is not used in `test_quipt`}
 \usage{
-simulate_sequences(n_seq, len, alphabet, motifs_list, n_motifs, fraction = 0.5)
+simulate_sequences(
+  n_seq,
+  len,
+  alphabet,
+  motifs_list,
+  n_motifs,
+  fraction = 0.5,
+  seqProbs = NULL
+)
 }
 \arguments{
 \item{n_seq}{number of sequences to be generated}

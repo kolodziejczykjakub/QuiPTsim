@@ -8,9 +8,9 @@
 #' @examples
 #' generate_single_motif(1:4)
 
-generate_single_motif <- function(alphabet, n = 4, d = 6) {
+generate_single_motif <- function(alphabet, n = 4, d = 6, motifProbs = NULL) {
 
-  motif <- sample(alphabet, sample(2:n, 1), replace = TRUE)
+  motif <- sample(alphabet, sample(2:n, 1), replace = TRUE, prob = motifProbs)
   gaps <- expand.grid(list(0:d)[rep(1, length(motif) - 1)])
   possibleGaps <- gaps[apply(gaps, 1, sum) <= d, , drop = FALSE]
   gap <- possibleGaps[sample(1:nrow(possibleGaps), 1), , drop = FALSE]
@@ -31,8 +31,8 @@ generate_single_motif <- function(alphabet, n = 4, d = 6) {
 #' @export
 #' @examples
 #' generate_motifs(1:4, 5)
-generate_motifs <- function(alphabet, n_motif) {
-  lapply(1L:n_motif, function(dummy) generate_single_motif(alphabet))
+generate_motifs <- function(alphabet, n_motif, n = 4, d = 6, motifProbs = NULL) {
+  lapply(1L:n_motif, function(dummy) generate_single_motif(alphabet, n, d, motifProbs))
 }
 
 #' generates sequence of elements from alphabet with replacement
@@ -44,8 +44,8 @@ generate_motifs <- function(alphabet, n_motif) {
 #' simulate_single_sequence(5, 1L:4)
 #' simulate_single_sequence(10, c("a", "b", "c"))
 
-simulate_single_sequence <- function(len, alphabet){
-  sample(alphabet, size = len, replace = TRUE)
+simulate_single_sequence <- function(len, alphabet, seqProbs = NULL){
+  sample(alphabet, size = len, replace = TRUE, prob = seqProbs)
 }
 
 #' injects motifs to a sequence
@@ -129,7 +129,13 @@ add_motifs <- function(motifs, sequence) {
 #' simulate_sequences(n_seq, len, alph, motifs, 1)
 
 
-simulate_sequences <- function(n_seq, len, alphabet, motifs_list, n_motifs, fraction = 0.5) {
+simulate_sequences <- function(n_seq,
+                               len,
+                               alphabet,
+                               motifs_list,
+                               n_motifs,
+                               fraction = 0.5,
+                               seqProbs = NULL) {
   n_pos <- round(fraction*n_seq, 0)
 
   list_of_motifs <- list()
@@ -147,7 +153,7 @@ simulate_sequences <- function(n_seq, len, alphabet, motifs_list, n_motifs, frac
     sequences[i, ] <- new_seq
   }
   for (i in 1:(n_seq - n_pos)) {
-    sequences[n_pos + i, ] <- simulate_single_sequence(len, alphabet)
+    sequences[n_pos + i, ] <- simulate_single_sequence(len, alphabet, seqProbs)
   }
   attr(sequences, "motifs") <- list_of_motifs
   attr(sequences, "masks") <- list_of_masks
@@ -173,9 +179,15 @@ simulate_sequences <- function(n_seq, len, alphabet, motifs_list, n_motifs, frac
 #' motifs <- generate_motifs(alph, 3)
 #' generate_sequences(n_seq, len, alph, motifs, 1)
 
-generate_sequences <- function(n_seq, l_seq, alphabet, motifs_list, n_motifs) {
+generate_sequences <- function(n_seq,
+                               l_seq,
+                               alphabet,
+                               motifs_list,
+                               n_motifs,
+                               fraction = 0.5,
+                               seqProbs = NULL) {
   # generate sequence data
-  test_dat <- simulate_sequences(n_seq*2, l_seq, alphabet, motifs_list, n_motifs)
+  test_dat <- simulate_sequences(n_seq*2, l_seq, alphabet, motifs_list, n_motifs, fraction, seqProbs)
 
   # perform QuiPT
   test_res <- binarize(count_multigrams(test_dat,

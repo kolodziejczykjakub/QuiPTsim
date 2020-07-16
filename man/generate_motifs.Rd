@@ -4,7 +4,7 @@
 \alias{generate_motifs}
 \title{generate multiple motifs from alphabet}
 \usage{
-generate_motifs(alphabet, n_motif)
+generate_motifs(alphabet, n_motif, n = 4, d = 6, motifProbs = NULL)
 }
 \arguments{
 \item{alphabet}{elements used to build motif}

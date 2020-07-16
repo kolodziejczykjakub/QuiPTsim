@@ -44,14 +44,17 @@ create_simulation_data <- function(replications,
   pb$tick(0)
 
   for (replication in 1:replications) {
-    for (n_seq in seq_nums) {
-      for (l_seq in seq_lengths) {
-        for (n_motifs in num_motifs) {
+    for (n_motifs in num_motifs) {
+
+      motifs <- generate_motifs(alphabet, n_motifs, n = 3, d = 3)
+      # TODO: validate_motifs()
+
+      for (n_seq in seq_nums) {
+        for (l_seq in seq_lengths) {
 
           pb$tick(1)
           set.seed(replication)
 
-          motifs <- generate_motifs(alphabet, n_motifs)
           dat <- generate_sequences(n_seq, l_seq, alphabet, motifs, n_motifs)
 
           filePath = paste0(path, title,
@@ -79,7 +82,6 @@ create_simulation_data <- function(replications,
 
   if (save_files)
     write.csv(df, file = paste0(path, title,".csv"))
-
   df
 }
 

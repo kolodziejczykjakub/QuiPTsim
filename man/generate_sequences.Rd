@@ -4,7 +4,15 @@
 \alias{generate_sequences}
 \title{function counts n-grams in given sequences}
 \usage{
-generate_sequences(n_seq, l_seq, alphabet, motifs_list, n_motifs)
+generate_sequences(
+  n_seq,
+  l_seq,
+  alphabet,
+  motifs_list,
+  n_motifs,
+  fraction = 0.5,
+  seqProbs = NULL
+)
 }
 \arguments{
 \item{n_seq}{number of sequences to be generated}

@@ -4,7 +4,7 @@
 \alias{simulate_single_sequence}
 \title{generates sequence of elements from alphabet with replacement}
 \usage{
-simulate_single_sequence(len, alphabet)
+simulate_single_sequence(len, alphabet, seqProbs = NULL)
 }
 \arguments{
 \item{len}{length of generated sample sequence}

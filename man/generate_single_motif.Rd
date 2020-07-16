@@ -5,10 +5,14 @@
 \title{function generates motif from an alphabet
 TODO: motif length control}
 \usage{
-generate_single_motif(alphabet, n = 4, d = 6)
+generate_single_motif(alphabet, n = 4, d = 6, motifProbs = NULL)
 }
 \arguments{
 \item{alphabet}{elements used to build motif}
+
+\item{n}{number of elements from alphabet}
+
+\item{d}{total sum of gaps}
 }
 \value{
 motif based on given alphabet
