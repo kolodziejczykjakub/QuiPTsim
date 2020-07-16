@@ -117,7 +117,15 @@ TODO: fraction is not used in `test_quipt`</h1>
 TODO: fraction is not used in `test_quipt`</p>
     </div>
 
-    <pre class="usage"><span class='fu'>simulate_sequences</span>(<span class='kw'>n_seq</span>, <span class='kw'>len</span>, <span class='kw'>alphabet</span>, <span class='kw'>motifs_list</span>, <span class='kw'>n_motifs</span>, fraction = <span class='fl'>0.5</span>)</pre>
+    <pre class="usage"><span class='fu'>simulate_sequences</span>(
+  <span class='kw'>n_seq</span>,
+  <span class='kw'>len</span>,
+  <span class='kw'>alphabet</span>,
+  <span class='kw'>motifs_list</span>,
+  <span class='kw'>n_motifs</span>,
+  fraction = <span class='fl'>0.5</span>,
+  seqProbs = <span class='kw'>NULL</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,6 +154,10 @@ TODO: fraction is not used in `test_quipt`</p>
       <th>fraction</th>
       <td><p>of positive sequences</p></td>
     </tr>
+    <tr>
+      <th>seqProbs</th>
+      <td><p>alphabet probabilites for sequences</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -158,126 +170,436 @@ TODO: fraction is not used in `test_quipt`</p>
 <span class='kw'>alph</span> <span class='op'>&lt;-</span> <span class='fl'>1L</span><span class='op'>:</span><span class='fl'>4</span>
 <span class='kw'>motifs</span> <span class='op'>&lt;-</span> <span class='fu'>generate_motifs</span>(<span class='kw'>alph</span>, <span class='fl'>3</span>)
 <span class='fu'>simulate_sequences</span>(<span class='kw'>n_seq</span>, <span class='kw'>len</span>, <span class='kw'>alph</span>, <span class='kw'>motifs</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt;       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-#&gt;  [1,] "2"  "4"  "2"  "4"  "1"  "3"  "4"  "4"  "3"  "3"  
-#&gt;  [2,] "4"  "2"  "3"  "2"  "4"  "3"  "4"  "1"  "3"  "4"  
-#&gt;  [3,] "4"  "2"  "3"  "3"  "3"  "3"  "3"  "3"  "1"  "3"  
-#&gt;  [4,] "2"  "3"  "2"  "1"  "2"  "2"  "4"  "2"  "2"  "3"  
-#&gt;  [5,] "1"  "3"  "2"  "1"  "3"  "2"  "2"  "1"  "1"  "3"  
-#&gt;  [6,] "1"  "2"  "3"  "3"  "4"  "3"  "3"  "4"  "4"  "4"  
-#&gt;  [7,] "2"  "4"  "2"  "4"  "3"  "4"  "2"  "1"  "4"  "4"  
-#&gt;  [8,] "2"  "1"  "1"  "1"  "3"  "1"  "1"  "3"  "4"  "3"  
-#&gt;  [9,] "2"  "4"  "3"  "2"  "2"  "4"  "2"  "1"  "1"  "4"  
-#&gt; [10,] "1"  "2"  "4"  "4"  "4"  "2"  "2"  "4"  "4"  "4"  
-#&gt; [11,] "3"  "1"  "2"  "2"  "4"  "2"  "4"  "2"  "1"  "1"  
-#&gt; [12,] "4"  "1"  "3"  "1"  "4"  "4"  "2"  "3"  "1"  "1"  
-#&gt; [13,] "3"  "1"  "2"  "4"  "3"  "4"  "4"  "1"  "2"  "2"  
-#&gt; [14,] "1"  "1"  "4"  "2"  "3"  "2"  "4"  "3"  "4"  "1"  
-#&gt; [15,] "3"  "3"  "3"  "2"  "4"  "4"  "2"  "3"  "3"  "4"  
-#&gt; [16,] "4"  "4"  "2"  "2"  "4"  "2"  "3"  "1"  "2"  "2"  
-#&gt; [17,] "4"  "4"  "4"  "2"  "2"  "4"  "4"  "4"  "3"  "4"  
-#&gt; [18,] "1"  "3"  "3"  "3"  "1"  "2"  "1"  "3"  "1"  "4"  
-#&gt; [19,] "2"  "3"  "3"  "1"  "4"  "1"  "3"  "2"  "4"  "4"  
-#&gt; [20,] "4"  "2"  "2"  "4"  "1"  "1"  "1"  "1"  "4"  "2"  
+#&gt;  [1,] "4"  "3"  "2"  "1"  "1"  "3"  "1"  "1"  "3"  "2"  
+#&gt;  [2,] "1"  "3"  "1"  "3"  "2"  "4"  "2"  "1"  "3"  "2"  
+#&gt;  [3,] "3"  "2"  "3"  "2"  "1"  "4"  "1"  "3"  "2"  "2"  
+#&gt;  [4,] "4"  "3"  "3"  "4"  "3"  "3"  "3"  "1"  "3"  "2"  
+#&gt;  [5,] "1"  "4"  "3"  "2"  "1"  "4"  "2"  "3"  "4"  "2"  
+#&gt;  [6,] "2"  "2"  "3"  "1"  "2"  "4"  "4"  "1"  "1"  "1"  
+#&gt;  [7,] "3"  "4"  "2"  "4"  "2"  "4"  "1"  "3"  "1"  "1"  
+#&gt;  [8,] "3"  "3"  "3"  "1"  "1"  "4"  "2"  "4"  "4"  "4"  
+#&gt;  [9,] "4"  "3"  "1"  "1"  "4"  "4"  "3"  "1"  "4"  "4"  
+#&gt; [10,] "4"  "3"  "3"  "4"  "4"  "2"  "1"  "4"  "4"  "2"  
+#&gt; [11,] "3"  "1"  "1"  "2"  "1"  "3"  "4"  "4"  "3"  "1"  
+#&gt; [12,] "1"  "2"  "4"  "1"  "3"  "3"  "4"  "3"  "1"  "4"  
+#&gt; [13,] "2"  "2"  "4"  "3"  "3"  "4"  "2"  "4"  "3"  "1"  
+#&gt; [14,] "3"  "4"  "2"  "2"  "3"  "4"  "4"  "4"  "3"  "3"  
+#&gt; [15,] "2"  "1"  "1"  "4"  "2"  "3"  "2"  "2"  "1"  "2"  
+#&gt; [16,] "1"  "4"  "1"  "2"  "4"  "4"  "1"  "1"  "2"  "4"  
+#&gt; [17,] "2"  "3"  "2"  "2"  "3"  "1"  "4"  "1"  "2"  "4"  
+#&gt; [18,] "3"  "4"  "1"  "3"  "2"  "2"  "1"  "1"  "2"  "4"  
+#&gt; [19,] "4"  "2"  "2"  "2"  "1"  "1"  "3"  "2"  "3"  "3"  
+#&gt; [20,] "2"  "2"  "3"  "4"  "1"  "2"  "1"  "1"  "2"  "1"  
 #&gt; attr(,"motifs")
 #&gt; attr(,"motifs")[[1]]
 #&gt; attr(,"motifs")[[1]][[1]]
-#&gt; [1] "2" "_" "_" "_" "_" "_" "4"
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[2]]
 #&gt; attr(,"motifs")[[2]][[1]]
-#&gt; [1] "3" "_" "4"
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[3]]
 #&gt; attr(,"motifs")[[3]][[1]]
-#&gt; [1] "1" "3"
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[4]]
 #&gt; attr(,"motifs")[[4]][[1]]
-#&gt; [1] "2" "_" "_" "_" "_" "_" "4"
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[5]]
 #&gt; attr(,"motifs")[[5]][[1]]
-#&gt; [1] "1" "3"
+#&gt; [1] "4" "_" "_" "_" "4"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[6]]
 #&gt; attr(,"motifs")[[6]][[1]]
-#&gt; [1] "3" "_" "4"
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[7]]
 #&gt; attr(,"motifs")[[7]][[1]]
-#&gt; [1] "2" "_" "_" "_" "_" "_" "4"
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[8]]
 #&gt; attr(,"motifs")[[8]][[1]]
-#&gt; [1] "1" "3"
+#&gt; [1] "4" "_" "_" "_" "4"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[9]]
 #&gt; attr(,"motifs")[[9]][[1]]
-#&gt; [1] "2" "_" "_" "_" "_" "_" "4"
+#&gt; [1] "4" "_" "_" "_" "4"
 #&gt; 
 #&gt; 
 #&gt; attr(,"motifs")[[10]]
 #&gt; attr(,"motifs")[[10]][[1]]
-#&gt; [1] "2" "_" "_" "_" "_" "_" "4"
+#&gt; [1] "4" "_" "_" "_" "4"
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")
 #&gt; attr(,"masks")[[1]]
 #&gt; attr(,"masks")[[1]][[1]]
-#&gt;  [1]  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[2]]
 #&gt; attr(,"masks")[[2]][[1]]
-#&gt;  [1] FALSE FALSE  TRUE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[3]]
 #&gt; attr(,"masks")[[3]][[1]]
-#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE
+#&gt;  [1]  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[4]]
 #&gt; attr(,"masks")[[4]][[1]]
-#&gt;  [1]  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[5]]
 #&gt; attr(,"masks")[[5]][[1]]
-#&gt;  [1]  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[6]]
 #&gt; attr(,"masks")[[6]][[1]]
-#&gt;  [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE  TRUE FALSE FALSE
+#&gt;  [1] FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[7]]
 #&gt; attr(,"masks")[[7]][[1]]
-#&gt;  [1] FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE
+#&gt;  [1]  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[8]]
 #&gt; attr(,"masks")[[8]][[1]]
-#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE FALSE FALSE
+#&gt;  [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[9]]
 #&gt; attr(,"masks")[[9]][[1]]
-#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE
+#&gt;  [1]  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
 #&gt; 
 #&gt; 
 #&gt; attr(,"masks")[[10]]
 #&gt; attr(,"masks")[[10]][[1]]
-#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE
+#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"target")
+#&gt;  [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE
+#&gt; [13] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</div><div class='input'><span class='fu'>simulate_sequences</span>(<span class='kw'>n_seq</span>, <span class='kw'>len</span>, <span class='kw'>alph</span>, <span class='kw'>motifs</span>, <span class='fl'>1</span>, fraction = <span class='fl'>0.8</span>)</div><div class='output co'>#&gt;       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#&gt;  [1,] "3"  "3"  "4"  "3"  "1"  "1"  "4"  "2"  "3"  "1"  
+#&gt;  [2,] "2"  "2"  "3"  "4"  "3"  "1"  "1"  "4"  "2"  "1"  
+#&gt;  [3,] "3"  "1"  "1"  "3"  "1"  "4"  "4"  "1"  "1"  "4"  
+#&gt;  [4,] "3"  "2"  "4"  "4"  "3"  "1"  "1"  "2"  "1"  "1"  
+#&gt;  [5,] "3"  "4"  "3"  "2"  "2"  "3"  "1"  "3"  "2"  "2"  
+#&gt;  [6,] "3"  "4"  "3"  "4"  "2"  "2"  "1"  "4"  "3"  "2"  
+#&gt;  [7,] "2"  "3"  "4"  "2"  "1"  "3"  "1"  "1"  "3"  "2"  
+#&gt;  [8,] "4"  "4"  "1"  "3"  "1"  "3"  "4"  "2"  "1"  "1"  
+#&gt;  [9,] "1"  "2"  "1"  "3"  "4"  "4"  "4"  "3"  "4"  "1"  
+#&gt; [10,] "4"  "3"  "3"  "3"  "4"  "2"  "2"  "1"  "1"  "3"  
+#&gt; [11,] "3"  "1"  "4"  "1"  "1"  "2"  "1"  "3"  "2"  "4"  
+#&gt; [12,] "4"  "3"  "4"  "4"  "4"  "1"  "4"  "1"  "4"  "1"  
+#&gt; [13,] "4"  "4"  "4"  "1"  "1"  "4"  "2"  "4"  "4"  "4"  
+#&gt; [14,] "3"  "3"  "4"  "3"  "1"  "2"  "4"  "3"  "1"  "3"  
+#&gt; [15,] "3"  "2"  "3"  "3"  "3"  "2"  "1"  "3"  "2"  "2"  
+#&gt; [16,] "3"  "3"  "2"  "3"  "1"  "2"  "3"  "1"  "3"  "2"  
+#&gt; [17,] "3"  "2"  "1"  "1"  "3"  "4"  "1"  "1"  "4"  "3"  
+#&gt; [18,] "1"  "4"  "3"  "2"  "3"  "2"  "1"  "1"  "1"  "1"  
+#&gt; [19,] "3"  "3"  "2"  "2"  "2"  "3"  "3"  "3"  "1"  "1"  
+#&gt; [20,] "2"  "2"  "2"  "3"  "3"  "2"  "1"  "3"  "3"  "4"  
+#&gt; attr(,"motifs")
+#&gt; attr(,"motifs")[[1]]
+#&gt; attr(,"motifs")[[1]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[2]]
+#&gt; attr(,"motifs")[[2]][[1]]
+#&gt; [1] "4" "_" "_" "_" "4"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[3]]
+#&gt; attr(,"motifs")[[3]][[1]]
+#&gt; [1] "4" "_" "_" "_" "4"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[4]]
+#&gt; attr(,"motifs")[[4]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[5]]
+#&gt; attr(,"motifs")[[5]][[1]]
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[6]]
+#&gt; attr(,"motifs")[[6]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[7]]
+#&gt; attr(,"motifs")[[7]][[1]]
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[8]]
+#&gt; attr(,"motifs")[[8]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[9]]
+#&gt; attr(,"motifs")[[9]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[10]]
+#&gt; attr(,"motifs")[[10]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[11]]
+#&gt; attr(,"motifs")[[11]][[1]]
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[12]]
+#&gt; attr(,"motifs")[[12]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[13]]
+#&gt; attr(,"motifs")[[13]][[1]]
+#&gt; [1] "4" "_" "_" "_" "4"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[14]]
+#&gt; attr(,"motifs")[[14]][[1]]
+#&gt; [1] "4" "_" "_" "_" "4"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[15]]
+#&gt; attr(,"motifs")[[15]][[1]]
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[16]]
+#&gt; attr(,"motifs")[[16]][[1]]
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")
+#&gt; attr(,"masks")[[1]]
+#&gt; attr(,"masks")[[1]][[1]]
+#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[2]]
+#&gt; attr(,"masks")[[2]][[1]]
+#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[3]]
+#&gt; attr(,"masks")[[3]][[1]]
+#&gt;  [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[4]]
+#&gt; attr(,"masks")[[4]][[1]]
+#&gt;  [1]  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[5]]
+#&gt; attr(,"masks")[[5]][[1]]
+#&gt;  [1]  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[6]]
+#&gt; attr(,"masks")[[6]][[1]]
+#&gt;  [1]  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[7]]
+#&gt; attr(,"masks")[[7]][[1]]
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[8]]
+#&gt; attr(,"masks")[[8]][[1]]
+#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[9]]
+#&gt; attr(,"masks")[[9]][[1]]
+#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[10]]
+#&gt; attr(,"masks")[[10]][[1]]
+#&gt;  [1] FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[11]]
+#&gt; attr(,"masks")[[11]][[1]]
+#&gt;  [1]  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[12]]
+#&gt; attr(,"masks")[[12]][[1]]
+#&gt;  [1] FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[13]]
+#&gt; attr(,"masks")[[13]][[1]]
+#&gt;  [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[14]]
+#&gt; attr(,"masks")[[14]][[1]]
+#&gt;  [1] FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[15]]
+#&gt; attr(,"masks")[[15]][[1]]
+#&gt;  [1]  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[16]]
+#&gt; attr(,"masks")[[16]][[1]]
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"target")
+#&gt;  [1]  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+#&gt; [13]  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE</div><div class='input'><span class='fu'>simulate_sequences</span>(<span class='kw'>n_seq</span>, <span class='kw'>len</span>, <span class='kw'>alph</span>, <span class='kw'>motifs</span>, <span class='fl'>1</span>, seqProbs = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.7</span>, <span class='fl'>0.1</span>, <span class='fl'>0.1</span>, <span class='fl'>0.1</span>))</div><div class='output co'>#&gt;       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
+#&gt;  [1,] "2"  "3"  "4"  "1"  "3"  "2"  "1"  "1"  "3"  "2"  
+#&gt;  [2,] "1"  "4"  "2"  "4"  "2"  "3"  "4"  "4"  "1"  "1"  
+#&gt;  [3,] "3"  "4"  "3"  "4"  "1"  "4"  "3"  "1"  "1"  "4"  
+#&gt;  [4,] "4"  "2"  "2"  "3"  "3"  "3"  "4"  "3"  "2"  "1"  
+#&gt;  [5,] "3"  "1"  "4"  "4"  "3"  "1"  "1"  "1"  "1"  "2"  
+#&gt;  [6,] "3"  "3"  "3"  "1"  "2"  "3"  "1"  "3"  "2"  "2"  
+#&gt;  [7,] "4"  "2"  "4"  "1"  "4"  "3"  "1"  "3"  "4"  "4"  
+#&gt;  [8,] "1"  "3"  "1"  "2"  "3"  "3"  "2"  "1"  "3"  "2"  
+#&gt;  [9,] "3"  "3"  "4"  "4"  "4"  "2"  "1"  "1"  "1"  "4"  
+#&gt; [10,] "2"  "4"  "3"  "3"  "4"  "4"  "2"  "1"  "1"  "3"  
+#&gt; [11,] "1"  "4"  "1"  "1"  "3"  "4"  "3"  "2"  "1"  "1"  
+#&gt; [12,] "2"  "3"  "1"  "1"  "1"  "2"  "4"  "1"  "1"  "1"  
+#&gt; [13,] "4"  "1"  "1"  "1"  "3"  "1"  "4"  "1"  "1"  "1"  
+#&gt; [14,] "1"  "1"  "1"  "1"  "1"  "4"  "1"  "1"  "4"  "1"  
+#&gt; [15,] "1"  "1"  "2"  "3"  "1"  "1"  "1"  "1"  "1"  "1"  
+#&gt; [16,] "4"  "1"  "1"  "1"  "2"  "1"  "1"  "1"  "1"  "3"  
+#&gt; [17,] "1"  "1"  "1"  "2"  "3"  "1"  "1"  "1"  "1"  "1"  
+#&gt; [18,] "1"  "1"  "1"  "4"  "2"  "1"  "3"  "1"  "1"  "2"  
+#&gt; [19,] "1"  "1"  "1"  "1"  "1"  "1"  "1"  "1"  "1"  "1"  
+#&gt; [20,] "2"  "2"  "3"  "1"  "1"  "1"  "1"  "1"  "1"  "1"  
+#&gt; attr(,"motifs")
+#&gt; attr(,"motifs")[[1]]
+#&gt; attr(,"motifs")[[1]][[1]]
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[2]]
+#&gt; attr(,"motifs")[[2]][[1]]
+#&gt; [1] "4" "_" "_" "_" "4"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[3]]
+#&gt; attr(,"motifs")[[3]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[4]]
+#&gt; attr(,"motifs")[[4]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[5]]
+#&gt; attr(,"motifs")[[5]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[6]]
+#&gt; attr(,"motifs")[[6]][[1]]
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[7]]
+#&gt; attr(,"motifs")[[7]][[1]]
+#&gt; [1] "4" "_" "_" "_" "4"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[8]]
+#&gt; attr(,"motifs")[[8]][[1]]
+#&gt; [1] "3" "_" "_" "_" "_" "_" "1" "3" "2"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[9]]
+#&gt; attr(,"motifs")[[9]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"motifs")[[10]]
+#&gt; attr(,"motifs")[[10]][[1]]
+#&gt; [1] "3" "_" "_" "4" "_" "_" "1"
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")
+#&gt; attr(,"masks")[[1]]
+#&gt; attr(,"masks")[[1]][[1]]
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[2]]
+#&gt; attr(,"masks")[[2]][[1]]
+#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[3]]
+#&gt; attr(,"masks")[[3]][[1]]
+#&gt;  [1] FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[4]]
+#&gt; attr(,"masks")[[4]][[1]]
+#&gt;  [1] FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[5]]
+#&gt; attr(,"masks")[[5]][[1]]
+#&gt;  [1]  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[6]]
+#&gt; attr(,"masks")[[6]][[1]]
+#&gt;  [1]  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[7]]
+#&gt; attr(,"masks")[[7]][[1]]
+#&gt;  [1]  TRUE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[8]]
+#&gt; attr(,"masks")[[8]][[1]]
+#&gt;  [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[9]]
+#&gt; attr(,"masks")[[9]][[1]]
+#&gt;  [1] FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE
+#&gt; 
+#&gt; 
+#&gt; attr(,"masks")[[10]]
+#&gt; attr(,"masks")[[10]][[1]]
+#&gt;  [1] FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE
 #&gt; 
 #&gt; 
 #&gt; attr(,"target")

@@ -155,21 +155,21 @@ TODO: examples</p>
 #&gt; </div><div class='input'><span class='co'># little bit more interesting</span>
 <span class='kw'>alph</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span>(<span class='fl'>1L</span><span class='op'>:</span><span class='fl'>4</span>)
 <span class='kw'>motifs</span> <span class='op'>&lt;-</span> <span class='fu'>generate_motifs</span>(<span class='kw'>alph</span>, <span class='fl'>2</span>)
-<span class='kw'>example_sequence</span> <span class='op'>&lt;-</span> <span class='fu'>simulate_single_sequence</span>(<span class='fl'>10</span>, <span class='kw'>alph</span>)
-<span class='fu'>add_motifs</span>(<span class='kw'>motifs</span>, <span class='kw'>example_sequence</span>)</div><div class='output co'>#&gt;  [1] "3" "3" "1" "4" "2" "1" "2" "2" "1" "3"
+<span class='kw'>example_sequence</span> <span class='op'>&lt;-</span> <span class='fu'>simulate_single_sequence</span>(<span class='fl'>12</span>, <span class='kw'>alph</span>)
+<span class='fu'>add_motifs</span>(<span class='kw'>motifs</span>, <span class='kw'>example_sequence</span>)</div><div class='output co'>#&gt;  [1] "3" "2" "2" "3" "4" "2" "2" "4" "1" "4" "1" "2"
 #&gt; attr(,"motifs")
 #&gt; attr(,"motifs")[[1]]
-#&gt; [1] "3" "_" "_" "4" "_" "_" "2"
+#&gt; [1] "3" "4" "_" "2" "_" "_" "_" "1"
 #&gt; 
 #&gt; attr(,"motifs")[[2]]
-#&gt; [1] "1" "_" "_" "1" "3"
+#&gt; [1] "3" "_" "_" "_" "_" "_" "_" "4"
 #&gt; 
 #&gt; attr(,"masks")
 #&gt; attr(,"masks")[[1]]
-#&gt;  [1]  TRUE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE FALSE
+#&gt;  [1] FALSE FALSE FALSE  TRUE  TRUE FALSE  TRUE FALSE FALSE FALSE  TRUE FALSE
 #&gt; 
 #&gt; attr(,"masks")[[2]]
-#&gt;  [1] FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE  TRUE
+#&gt;  [1]  TRUE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

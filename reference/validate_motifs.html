@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>function generates motif from an alphabet
-TODO: motif length control — generate_single_motif • QuiPTsim</title>
+<title>function validates if given motifs can be injected to a sequence of given length — validate_motifs • QuiPTsim</title>
 
 
 <!-- jquery -->
@@ -40,10 +39,8 @@ TODO: motif length control — generate_single_motif • QuiPTsim</title>
 
 
 
-<meta property="og:title" content="function generates motif from an alphabet
-TODO: motif length control — generate_single_motif" />
-<meta property="og:description" content="function generates motif from an alphabet
-TODO: motif length control" />
+<meta property="og:title" content="function validates if given motifs can be injected to a sequence of given length — validate_motifs" />
+<meta property="og:description" content="function validates if given motifs can be injected to a sequence of given length" />
 
 
 
@@ -106,46 +103,38 @@ TODO: motif length control" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>function generates motif from an alphabet
-TODO: motif length control</h1>
+    <h1>function validates if given motifs can be injected to a sequence of given length</h1>
     
-    <div class="hidden name"><code>generate_single_motif.Rd</code></div>
+    <div class="hidden name"><code>validate_motifs.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>function generates motif from an alphabet
-TODO: motif length control</p>
+    <p>function validates if given motifs can be injected to a sequence of given length</p>
     </div>
 
-    <pre class="usage"><span class='fu'>generate_single_motif</span>(<span class='kw'>alphabet</span>, n = <span class='fl'>4</span>, d = <span class='fl'>6</span>, motifProbs = <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>validate_motifs</span>(<span class='kw'>motifs</span>, <span class='kw'>sequence_length</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>alphabet</th>
-      <td><p>elements used to build motif</p></td>
+      <th>motifs</th>
+      <td><p>list of motifs we are checking</p></td>
     </tr>
     <tr>
-      <th>n</th>
-      <td><p>number of elements from alphabet</p></td>
-    </tr>
-    <tr>
-      <th>d</th>
-      <td><p>total sum of gaps</p></td>
-    </tr>
-    <tr>
-      <th>motifProbs</th>
-      <td><p>alphabet probabilites for motifs</p></td>
+      <th>sequence_length</th>
+      <td><p>length of sequence we want to inject</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>motif based on given alphabet</p>
+    <p>logical value if such injection is possible</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>generate_single_motif</span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>)</div><div class='output co'>#&gt;  [1] "2" "1" "_" "_" "_" "_" "_" "_" "2" "4"</div><div class='input'><span class='fu'>generate_single_motif</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"c"</span>))</div><div class='output co'>#&gt; [1] "c" "a" "b" "_" "_" "_" "_" "_" "a"</div><div class='input'><span class='fu'>generate_single_motif</span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, n = <span class='fl'>6</span>, d = <span class='fl'>2</span>, motifProbs = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.7</span>, <span class='fl'>0.1</span>, <span class='fl'>0.1</span>, <span class='fl'>0.1</span>))</div><div class='output co'>#&gt; [1] "1" "_" "1" "1" "_" "1" "1"</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>42</span>)
+<span class='kw'>motifs</span> <span class='op'>&lt;-</span> <span class='fu'>generate_motifs</span>(<span class='fl'>1</span><span class='op'>:</span><span class='fl'>4</span>, <span class='fl'>3</span>, d = <span class='fl'>3</span>)
+<span class='fu'>validate_motifs</span>(<span class='kw'>motifs</span>, <span class='fl'>7</span>)</div><div class='output co'>#&gt; [1] FALSE</div><div class='input'><span class='fu'>validate_motifs</span>(<span class='kw'>motifs</span>, <span class='fl'>9</span>)</div><div class='output co'>#&gt; [1] TRUE</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
