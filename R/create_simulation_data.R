@@ -71,16 +71,11 @@ create_simulation_data <- function(replications,
   for (replication in 1:replications) {
     for (n_motifs in num_motifs) {
 
-      # check if generated motifs can be injected to sequence of length 10
-      validated <- FALSE
-      while (!validated) {
-        motifs <- generate_motifs(alphabet,
-                                  n_motifs,
-                                  n = n,
-                                  d = d,
-                                  motifProbs = motifProbs)
-        validated <- validate_motifs(motifs, 10)
-      }
+      motifs <- generate_motifs(alphabet,
+                                n_motifs,
+                                n = n,
+                                d = d,
+                                motifProbs = motifProbs)
 
       for (n_seq in seq_nums) {
         for (l_seq in seq_lengths) {

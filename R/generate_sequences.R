@@ -39,7 +39,13 @@ generate_single_motif <- function(alphabet, n = 4, d = 6, motifProbs = NULL) {
 #' generate_motifs(1:4, 5)
 #' generate_motifs(1:4, 5, n = 6, d = 2, motifProbs = c(0.7, 0.1, 0.1, 0.1))
 generate_motifs <- function(alphabet, n_motif, n = 4, d = 6, motifProbs = NULL) {
-  lapply(1L:n_motif, function(dummy) generate_single_motif(alphabet, n, d, motifProbs))
+  # check if generated motifs can be injected to sequence of length 10
+  validated <- FALSE
+  while (!validated) {
+    motifs <- lapply(1L:n_motif, function(dummy) generate_single_motif(alphabet, n, d, motifProbs))
+    validated <- validate_motifs(motifs, 10)
+  }
+  motifs
 }
 
 #' generates sequence of elements from alphabet with replacement

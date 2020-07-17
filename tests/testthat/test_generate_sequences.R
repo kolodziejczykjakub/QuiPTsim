@@ -12,9 +12,7 @@ test_that("Correct motifs generation", {
                         c(3, "_", "_", 3,"_", "_","_", 1),
                         c(2, "_", "_", "_", "_", "_", 2)),
                    three_motifs)
-  expect_identical(list(c("3", "2", "1"),
-                        c(1, "_", 1),
-                        c(4, "_", 1)),
+  expect_identical(list(c("1", "_", "2", "1"), c("1", "1"), c("1", "_", "1")),
                    weighted_motifs)
 
 })
@@ -41,15 +39,13 @@ test_that("Multiple sequence generation", {
   motifs <- generate_motifs(alph, 2)
   sequences <- simulate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))
 
-  expect_true(
-    all(rbind(c(3, 4, 4, 4, 1, 1, 2, 4, 2, 2),
-              c(2, 1, 1, 1, 2, 1, 4, 3, 4, 1)) == sequences))
-  expect_equal(attr(sequences, "motifs")[[1]][[1]],
-               c(4, "_", "_", "_", 2, "_", "_", 2))
-  expect_equal(attr(sequences, "masks")[[1]][[1]],
-               c(F, F, T, F, F, F, T, F, F, T))
-  expect_equal(attr(sequences, "target"),
-               c(TRUE, FALSE))
+  expect_equal(structure(c("2", "1", "4", "1", "4", "1", "4", "1", "2", "1",
+                           "2", "2", "1", "3", "4", "1", "2", "4", "4", "1"), .Dim = c(2L, 10L),
+                         motifs = list(list(c("4", "_", "_", "_", "2", "_", "_","2"))),
+                         masks = list(list(c(FALSE, TRUE, FALSE, FALSE, FALSE,
+                                             TRUE, FALSE, FALSE, TRUE, FALSE))),
+                         target = c(TRUE, FALSE)),
+               sequences)
 
 })
 test_that("Correct motif injection", {
@@ -70,13 +66,13 @@ test_that("Correct motif injection", {
   attr(injected2_true, "masks") <- list(c(F, F, F, F, F, F, T, T, F, F),
                                         c(T, T, F, F, T, F, F, F, F, F))
 
-  expect_true(all(injected2 == injected2_true))
-
-  expect_true(all(attr(injected2, "motifs")[[1]] == attr(injected2_true, "motifs")[[1]]))
-  expect_true(all(attr(injected2, "motifs")[[2]] == attr(injected2_true, "motifs")[[2]]))
-
-  expect_true(all(attr(injected2, "masks")[[1]] == attr(injected2_true, "masks")[[1]]))
-  expect_true(all(attr(injected2, "masks")[[2]] == attr(injected2_true, "masks")[[2]]))
+  expect_equal(structure(c("4", "4", "3", "1", "3", "1", "3", "3", "4", "3"),
+                         motifs = list(c("4", "3"), c("1", "3", "_", "_", "3")),
+                         masks = list(c(FALSE,TRUE, TRUE, FALSE, FALSE,
+                                        FALSE, FALSE, FALSE, FALSE, FALSE),
+                                      c(FALSE, FALSE, FALSE, TRUE, TRUE,
+                                        FALSE, FALSE, TRUE, FALSE,FALSE))),
+               injected2)
 })
 
 test_that("Count n-grams assertion", {
