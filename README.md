@@ -27,7 +27,3 @@
 * alphabet: 20 elements: 4, 6, 8, 20
 * various probability vectors
 
-
-# pliki w inst
-# dput
-# wyciagnac validate_motifs
