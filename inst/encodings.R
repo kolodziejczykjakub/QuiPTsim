@@ -54,4 +54,22 @@ seqs_m <- tolower(t(sapply(seqs_list, function(i)
 
 # biogram::degenerate
 # example
-biogram::degenerate(rep("a", 10), amylogram_model_encoding)
+
+
+# weights
+weights$positive$`[11,19]`
+
+motifProbs <- weights$positive$`[11,19]`
+seqProbs <- weights$negative$`[11,19]`
+
+new_names_motif <-biogram::degenerate(tolower(names(weights$positive$`[11,19]`)), amylogram_model_encoding)
+new_names_seq <-biogram::degenerate(tolower(names(weights$negative$`[11,19]`)), amylogram_model_encoding)
+
+new_motifProbs <- unlist(lapply(1:6, function(x) sum(motifProbs[new_names_motif == x])))
+new_seqProbs <- unlist(lapply(1:6, function(x) sum(seqProbs[new_names_seq == x])))
+
+cosine_similarity(new_motifProbs, new_seqProbs)
+
+
+#
+table(c(seqs_m)) / sum(table(c(seqs_m)))

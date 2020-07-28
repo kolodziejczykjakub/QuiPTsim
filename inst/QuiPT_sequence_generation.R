@@ -13,53 +13,49 @@ n_motifs <- 1:3
 l_seq <- 10 * 2 ^ (0:3)
 
 # alphabets
-alph1 <- letters[1:4]
-alph2 <- letters[1:6]
-alph3 <- letters[1:8]
-alph4 <- letters[1:20]
+alph20 <- letters[1:20]
 
 # probabilities
 weights <- readRDS("./inst/weights.Rds")
-length(weights$positive)
+
+probVectors <- list(list(motifProbs = NULL,
+                         seqProbs = NULL))
+for (n in names(weights$positive)) {
+  probVectors[[n]] <- list(motifProbs = weights[["positive"]][[n]],
+                           seqProbs = weights[["negative"]][[n]])
+}
 
 # titles
-t1 <- "results_alph4elements"
-t2 <- "results_alph6elements"
-t3 <- "results_alph8elements"
-t4 <- "results_alph20elements"
-
+probsNames <- lapply(c("const", names(probVectors[2:6])), function(x) paste0("alph20_prob_", x))
+names(probVectors) <- probsNames
 # paths
-path1 <- paste0("./", t1, "/", collapse="")
-path2 <- paste0("./", t2, "/", collapse="")
-path3 <- paste0("./", t3, "/", collapse="")
-path4 <- paste0("./", t4, "/", collapse="")
+paths <- lapply(probsNames, function(x) paste0("./", x, "/"))
 
-for (p in c(path1, path2, path3, path4)) {
+for (p in paths) {
   if (!file.exists(p)) dir.create(p)
 }
+
 # 4-elements with 6 gaps motifs
 n <- 4
 d <- 6
 
-# probability vectors
-motifProbs <- NULL
-seqProbs <- NULL
+# simulation
 
-paths <- list(path1, path2, path3, path4)
-titles <- list(t1, t2, t3, t4)
-alphs <- list(alph1, alph2, alph3, alph4)
+# weights
+# paths
+# probsNames
+# alphabet = alph20
+# probVectors
 
-for (i in 1:4) {
-  results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alphs[[i]],
-                                    paths[[i]], titles[[i]], TRUE,
-                                    motifProbs = motifProbs,
-                                    seqProbs = seqProbs,
+for (i in 1:6) {
+  results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph20,
+                                    paths[[i]], probsNames[[i]], TRUE,
+                                    motifProbs = probVectors[[i]][["motifProbs"]],
+                                    seqProbs = probVectors[[i]][["seqProbs"]],
                                     n = n,
                                     d = d)
   print(paste0(rep("-", 40), collapse=""))
-  print(titles[[i]])
-  print(paths[[i]])
-  print(alphs[[i]])
+  print(probNames[[i]])
   print(results)
   print(paste0(rep("-", 40), collapse=""))
 }
