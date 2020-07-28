@@ -27,6 +27,7 @@ cosine_similarity <- function(x, y) {
 #' @param cosine_sim cosine similarity of two vectors
 #' @return matrix with probabilites in rows
 #' @export
+#' @importFrom stats runif
 #' @examples
 #' generate_probs(5, 0.9)
 
@@ -55,4 +56,5 @@ generate_probs <- function(size, cosine_sim) {
   } else {
     generate_probs(size, cosine_sim)
   }
+
 }
