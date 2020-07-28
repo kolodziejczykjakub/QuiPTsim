@@ -1,22 +1,26 @@
 library(QuiPTsim)
 
 # Number of sequences
-#n_seq <- c(6000)
-n_seq <- c(2)
+n_seq <- c(6000)
+
 # Replications
-#reps <- 100
-reps <- 1
+reps <- 100
+
 # Number of motifs
 n_motifs <- 1:3
-n_motifs <- 1
+
 # Sequence lengths
 l_seq <- 10 * 2 ^ (0:3)
 
 # alphabets
-alph1 <- c("a", "b", "c", "d")
-alph2 <- c(alph1, "e", "f")
-alph3 <- c(alph2, "g", "h")
-alph4 <- c(alph3, "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u")
+alph1 <- letters[1:4]
+alph2 <- letters[1:6]
+alph3 <- letters[1:8]
+alph4 <- letters[1:20]
+
+# probabilities
+weights <- readRDS("./inst/weights.Rds")
+length(weights$positive)
 
 # titles
 t1 <- "results_alph4elements"
