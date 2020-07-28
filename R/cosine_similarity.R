@@ -33,7 +33,7 @@ cosine_similarity <- function(x, y) {
 generate_probs <- function(size, cosine_sim) {
 
   # generate vector of probs and norm it
-  u <- runif(size)
+  u <- runif(size, min = 0.25, max = 1)
   u <- u / sum(u)
   u_normed <- u / euclidean_norm(u)
 
@@ -48,5 +48,11 @@ generate_probs <- function(size, cosine_sim) {
   w <- cosine_sim * u_normed + sqrt(1 - cosine_sim ** 2) * u_perp_normed
   w <- w / sum(w)
 
-  rbind(u, w)
+  probs <- rbind(u, w)
+
+  if (all(probs > 0)) {
+    return(probs)
+  } else {
+    generate_probs(size, cosine_sim)
+  }
 }
