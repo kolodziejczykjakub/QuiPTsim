@@ -47,7 +47,7 @@ d <- 6
 # alphabet = alph20
 # probVectors
 
-for (i in 1:6) {
+for (i in 1:length(paths)) {
   results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph20,
                                     paths[[i]], probsNames[[i]], TRUE,
                                     motifProbs = probVectors[[i]][["motifProbs"]],
