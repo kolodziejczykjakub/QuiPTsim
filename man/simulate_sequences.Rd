@@ -2,8 +2,7 @@
 % Please edit documentation in R/generate_sequences.R
 \name{simulate_sequences}
 \alias{simulate_sequences}
-\title{function generates sequences (both positive & negative)
-TODO: fraction is not used in `test_quipt`}
+\title{function generates sequences (both positive & negative)}
 \usage{
 simulate_sequences(
   n_seq,
@@ -35,7 +34,6 @@ generated sequences
 }
 \description{
 function generates sequences (both positive & negative)
-TODO: fraction is not used in `test_quipt`
 }
 \examples{
 n_seq <- 20

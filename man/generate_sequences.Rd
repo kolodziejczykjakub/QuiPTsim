@@ -43,8 +43,8 @@ function counts n-grams in given sequences
 }
 \examples{
 n_seq <- 20
-len <- 10
-alph <- 1L:4
+len <- 1200
+alph <- letters[1:4]
 motifs <- generate_motifs(alph, 2)
 results <- generate_sequences(n_seq, len, alph, motifs, 1)
 results <- generate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))

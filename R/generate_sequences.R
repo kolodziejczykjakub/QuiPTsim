@@ -188,12 +188,11 @@ simulate_sequences <- function(n_seq,
 #' @param d maximum number of gaps in n-gram
 #' @return generated sequences
 #' @export
-#' @importFrom biogram count_multigrams
-#' @importFrom biogram binarize
+#' @importFrom seqR count_multimers
 #' @examples
 #' n_seq <- 20
-#' len <- 10
-#' alph <- 1L:4
+#' len <- 1200
+#' alph <- letters[1:4]
 #' motifs <- generate_motifs(alph, 2)
 #' results <- generate_sequences(n_seq, len, alph, motifs, 1)
 #' results <- generate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))
@@ -212,21 +211,24 @@ generate_sequences <- function(n_seq,
   # generate sequence data
   test_dat <- simulate_sequences(n_seq, l_seq, alphabet, motifs_list, n_motifs, fraction, seqProbs)
 
+
   # element & gaps' positions for count_multigrams
-  ns <- 1
-  ds <- 0
+  ns <- c()
+  ds <- c()
   for (i in 1:(n-1)) {
     ds_ <- expand.grid(list(0:d)[rep(1, i)])
     ds_ <- ds_[apply(ds_, 1, sum) <= d, , drop = FALSE]
     ns <- c(ns, rep(i+1, nrow(ds_)))
     ds <- c(ds, split(ds_, 1:nrow(ds_)))
   }
+  ds <- lapply(ds, unlist)
 
-  # perform QuiPT
-  test_res <- binarize(count_multigrams(test_dat,
-                                        ns = ns,
-                                        ds = ds,
-                                        u = alphabet))
+  test_res <- count_multimers(test_dat,
+                              ns,
+                              alphabet,
+                              kmer_gaps_list = ds,
+                              with_kmer_counts = FALSE)
+
 
   attr(test_res, "sequences") <- matrix(test_dat, nrow = nrow(test_dat), ncol = ncol(test_dat))
   attr(test_res, "motifs") <- attr(test_dat, "motifs")

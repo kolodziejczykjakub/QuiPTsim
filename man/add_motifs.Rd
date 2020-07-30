@@ -2,8 +2,7 @@
 % Please edit documentation in R/generate_sequences.R
 \name{add_motifs}
 \alias{add_motifs}
-\title{injects motifs to a sequence
-TODO: examples}
+\title{injects motifs to a sequence}
 \usage{
 add_motifs(motifs, sequence)
 }
@@ -17,7 +16,6 @@ list(sequence, motifs, masks)
 }
 \description{
 injects motifs to a sequence
-TODO: examples
 }
 \examples{
 # simple injection
