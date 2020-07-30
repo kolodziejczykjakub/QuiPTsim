@@ -64,7 +64,6 @@ simulate_single_sequence <- function(len, alphabet, seqProbs = NULL){
 }
 
 #' injects motifs to a sequence
-#' TODO: examples
 #' @param motifs list of motifs to be injected
 #' @param sequence vector of alphabet elements
 #' @return list(sequence, motifs, masks)
@@ -127,7 +126,6 @@ add_motifs <- function(motifs, sequence) {
 }
 
 #' function generates sequences (both positive & negative)
-#' TODO: fraction is not used in `test_quipt`
 #' @param n_seq number of sequences to be generated
 #' @param len sequence length
 #' @param alphabet elements used to build sequence

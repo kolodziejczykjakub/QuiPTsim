@@ -18,9 +18,135 @@ knitr::opts_chunk$set(
 library(QuiPTsim)
 ```
 
+# Introduction
+
+QuiPTsim is a framework generating matrices of n-gram occurences of given sequences, which will be further used to assess feature selection algorithm QuiPT, which allows very fast feature filtering.
+
 # Sequence generation
+
+generate_single_motif 
+ : function generates motif from an alphabet
+ : `n` - number of elements sampled from an alphabet
+ : `d` - total sum of gaps
+ : `motifProbs` - (optional) probabilites of alphabet elements
+ 
+```{r}
+generate_single_motif(1:4)
+generate_single_motif(c("a", "b", "c"))
+generate_single_motif(1:4, n = 6, d = 2, motifProbs = c(0.7, 0.1, 0.1, 0.1))
+```
+
+---
+
+generate_motifs 
+ : function returns list of motifs (results of `generate_single_motif()`)
+ : function asserts if such motifs can be injected to a sequence (sequence length = 10)
+
+---
+
+simulate_single_sequence
+ : generates sequence of elements from alphabet with replacement
+ : (optional) alphabet probabilites can be specified
+ 
+---
+
+add_motifs 
+ : function injects motifs to a sequence
+ : each sequence is returned with attributes: 
+ * list of motifs
+ * list of according masks
+ 
+---
+
+simulate_sequences 
+ : function generates sequences (both positive & negative)
+ : matrix of sequences is returned
+ : motifs are injected to a fraction of sequences
+ : following attributes are added:
+ * list of motifs
+ * list of masks
+ * target variable (flag if motifs have been injected to a sequence)
+ 
+---
+
+generate_sequences 
+ : wrapper for a `simulate_sequences()` and place where n-grams are counted
+
+---
 
 # Simulation data
 
+create_simulation_data
+ : function is a wrapper of functions implemented in sequence generation block.
+ 
+```{r}
+# alphabet elements
+alph <- 1L:4
+
+# number of replication for each set of parameters (sequence length, number of motifs, etc.)
+reps <- 10
+
+# Number of sequences to be generated
+n_seq <- c(10)
+
+# Sequences' length
+l_seq <- c(10)
+
+# Number of motifs that will be injected to a sequence
+n_motifs <- c(1, 2)
+
+# results will be saved in this location
+path <- "./"
+
+# triggers if matrices will be saved (debugging purposes)
+save_files <- FALSE
+
+# title of simulation
+title <- "SEQ"
+
+results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph, path, title, save_files)
+results
+```
+
+On top of above example, `create_simulation_data` allows us to specify probability vectors for both motifs and sequences. Furthermore, MD5 sums are being collected right after object save. 
+
+---
+
 # Cosine similarity
+
+euclidean_norm
+ : returns euclidean norm of a vector
+
+```{r}
+x <- runif(5)
+print(x)
+print(euclidean_norm(x))
+```
+
+---
+ 
+cosine_similarity
+ : return cosine similarity of two vectors
+
+```{r}
+x <- runif(5)
+y <- runif(5)
+print(x)
+print(y)
+print(cosine_similarity(x, y))
+```
+---
+
+generate_probs
+ : return two vectors of probabilites with given cosine similarity
+
+```{r}
+size <- 6
+cs <- 0.8
+
+probabilites <- generate_probs(size, cs)
+print(probabilites)
+
+print(cosine_similarity(probabilites[1, ], probabilites[2, ]))
+```
 
