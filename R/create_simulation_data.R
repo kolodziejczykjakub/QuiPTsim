@@ -15,6 +15,7 @@
 #' @return data frame with RDS files' details
 #' @importFrom utils write.csv
 #' @importFrom progress progress_bar
+#' @importFrom tools md5sum
 #' @export
 #' @examples
 #' alph <- 1L:4
@@ -61,7 +62,8 @@ create_simulation_data <- function(replications,
                    d = integer(),
                    seqProbs = character(),
                    motifProbs = character(),
-                   path = character())
+                   path = character(),
+                   md5sum = character())
 
   totalIterations = replications * length(seq_nums) * length(seq_lengths) *  length(num_motifs)
   pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)",
@@ -103,6 +105,8 @@ create_simulation_data <- function(replications,
           if (save_files)
             saveRDS(dat, file = filePath)
 
+          md5 <- ifelse(save_files, md5sum(filePath), "none")
+
           newdf <- data.frame(replication = replication,
                      n_seq = n_seq,
                      l_seq = l_seq,
@@ -111,7 +115,8 @@ create_simulation_data <- function(replications,
                      d = d,
                      seqProbs = paste(motifProbs, collapse = ";"),
                      motifProbs = paste(motifProbs, collapse = ";"),
-                     path = filePath)
+                     path = filePath,
+                     md5sum = md5)
 
           df <- rbind(df, newdf)
 
