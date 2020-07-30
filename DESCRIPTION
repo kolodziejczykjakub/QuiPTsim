@@ -19,5 +19,8 @@ Imports:
 Suggests: 
     testthat,
     covr,
-    spelling
+    spelling,
+    knitr,
+    rmarkdown
 Language: en-US
+VignetteBuilder: knitr
