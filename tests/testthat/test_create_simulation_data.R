@@ -3,7 +3,7 @@ context("QuiPT simulation")
 test_that("Correct result of create_simulation_data", {
 
   set.seed(1)
-  alph <- 1L:4
+  alph <- letters[1:4]
   reps <- 3
   n_seq <- c(10)
   l_seq <- c(10)

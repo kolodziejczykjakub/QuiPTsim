@@ -81,7 +81,7 @@ create_simulation_data
  
 ```{r}
 # alphabet elements
-alph <- 1L:4
+alph <- letters[1:6]
 
 # number of replication for each set of parameters (sequence length, number of motifs, etc.)
 reps <- 10
