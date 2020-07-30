@@ -15,10 +15,12 @@ l_seq <- 10 * 2 ^ (0:3)
 # alphabets
 alph4 <- letters[1:4]
 alph6 <- letters[1:6]
-alphs <- list(alph6, alph4, alph4)
+alphs <- list(alph6, alph4, alph4, alph6, alph4)
 
 # probabilities
 weights <- readRDS("./inst/encodingProbs.Rds")
+weights[["alph6_const"]] <- list(positive = NULL, negative = NULL)
+weights[["alph4_const"]] <- list(positive = NULL, negative = NULL)
 
 # titles
 titles <- names(weights)
