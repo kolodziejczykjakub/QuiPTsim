@@ -22,6 +22,22 @@ library(QuiPTsim)
 
 QuiPTsim is a framework generating matrices of n-gram occurences of given sequences, which will be further used to assess feature selection algorithm QuiPT, which allows very fast feature filtering.
 
+# Simulation pipeline
+
+Function `create_simulation_data()` is a high-level wrapper of function implemented in this package. The purpose of this package is to automate data generation which will be further used in QuiPT assessment. 
+
+Results of each simulation are placed in previously stated directory. The csv file contains details of every Rds file computed during simulation. There is also a `path` column which allows us to link Rds files with specific csv rows.
+
+Simulation highlights:
+
+* Each simulation has constant number of sequences ($6000$), since this is an upper bound for most of datasets and these can be sampled in case we would need smaller datasets
+* Various alphabet sizes are used:
+  * Full 20-element alphabet with various probability vectors (based on drake repo)
+  * Reduced alphabet (from literature and AmyloGram) with probabilites from AmyloGram analysis
+* Each simulation has been repeated $100$ in order to ensure stability of results
+* Half of the sequences are positive (have motif injected) -- we can manipulate fraction parameter by sampling full dataset
+* Parameters $n=4$ and $d=6$ are fixed in all considerations (this gives maximum sequence length 10)
+
 # Sequence generation
 
 generate_single_motif 
