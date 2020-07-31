@@ -36,11 +36,18 @@ generate_single_motif(c("a", "b", "c"))
 generate_single_motif(1:4, n = 6, d = 2, motifProbs = c(0.7, 0.1, 0.1, 0.1))
 ```
 
+In our simulations, we have decided to use $n=4$ and $d=6$, which gives maximum motif length being 10.
+
+
 ---
 
 generate_motifs 
  : function returns list of motifs (results of `generate_single_motif()`)
  : function asserts if such motifs can be injected to a sequence (sequence length = 10)
+
+```{r}
+print(generate_motifs(alphabet = letters[1:6], n_motif = 3))
+```
 
 ---
 
@@ -48,14 +55,42 @@ simulate_single_sequence
  : generates sequence of elements from alphabet with replacement
  : (optional) alphabet probabilites can be specified
  
+```{r} 
+print(simulate_single_sequence(len = 10,
+                         alphabet = letters[1:6]))
+
+# we can also generate sequence based on sequence elements probabilites
+probs <- runif(6)
+probs <- probs / sum(probs)
+print(probs)
+print(simulate_single_sequence(len = 10,
+                         alphabet = letters[1:6],
+                         seqProbs = probs))
+
+```
 ---
 
 add_motifs 
  : function injects motifs to a sequence
- : each sequence is returned with attributes: 
- * list of motifs
- * list of according masks
+
+each sequence is returned with attributes: 
+- list of motifs
+- list of according masks
  
+Important thing about motif injection is the fact, that multiple motifs can overlap each other. 
+
+```{r}
+alph <- letters[1:6]
+
+example_sequence <- simulate_single_sequence(len = 10, alph)
+motifs_list <- generate_motifs(alph, 2)
+print(example_sequence)
+print(motifs_list)
+injected_sequence <- add_motifs(sequence = example_sequence,
+                                motifs = motifs_list)
+print(injected_sequence)
+```
+
 ---
 
 simulate_sequences 
@@ -67,10 +102,31 @@ simulate_sequences
  * list of masks
  * target variable (flag if motifs have been injected to a sequence)
  
+```{r}
+numberOfSequences <- 10
+sequencesLength <- 10
+alphabet <- letters[1:4]
+motifs <- generate_motifs(alph, 3)
+
+# Although motifs list contain 3 independent motifs
+# only one will be injected
+# Since fraction = 0.2, motifs will be injected only into 2 sequences
+simulate_sequences(numberOfSequences,
+                   sequencesLength, 
+                   alphabet,
+                   motifs,
+                   n_motifs = 1,
+                   fraction = 0.2)
+
+```
+
 ---
 
 generate_sequences 
  : wrapper for a `simulate_sequences()` and place where n-grams are counted
+ : n-grams are counted by `count_multimers()` function from `seqR` package, which allows us to simulate data at terrific speed
+ 
+Utilization of `seqR::count_multimers()` is tricky, as we are supposed to deliver vector of all k-mers' lengths along with vector of gaps for each corresponding k-mer length.
 
 ---
 
