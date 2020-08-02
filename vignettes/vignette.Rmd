@@ -189,6 +189,8 @@ results
 
 On top of above example, `create_simulation_data` allows us to specify probability vectors for both motifs and sequences. Furthermore, MD5 sums are being collected right after object save. 
 
+RDS files saved during simulations contain sparse matrix with n-gram counts along with target (column with 1/0 flag showing if given sequence has been injected) and two lists: motifs and their masks. 
+
 ---
 
 # Cosine similarity
@@ -225,6 +227,7 @@ print(cosine_similarity(x, y))
 generate_probs
  : return two vectors of probabilites with given cosine similarity
  : note: as cosine similarity parameter approaches 0.5, some computational issues may arrive
+ 
 ```{r}
 size <- 6
 cs <- 0.8
