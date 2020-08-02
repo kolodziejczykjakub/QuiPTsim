@@ -22,6 +22,13 @@ library(QuiPTsim)
 
 QuiPTsim is a framework generating matrices of n-gram occurences of given sequences, which will be further used to assess feature selection algorithm QuiPT, which allows very fast feature filtering.
 
+# QuiPT details
+
+```{r, echo=FALSE, out.height="500px"}
+source("../inst/QuiPTdiagramme.R")
+my_graphviz
+```
+
 # Simulation pipeline
 
 Function `create_simulation_data()` is a high-level wrapper of function implemented in this package. The purpose of this package is to automate data generation which will be further used in QuiPT assessment. 
@@ -186,6 +193,8 @@ On top of above example, `create_simulation_data` allows us to specify probabili
 
 # Cosine similarity
 
+The purpose of this part comes from the need for creating vector of probabilites that have exact cosine similarity. Amyloidogenic and non-amyloidogenic sequences have different aa distribution. We would like to mimic this property by generating vector of aa probabilities that have previously observed cosine similarity.
+
 euclidean_norm
  : returns euclidean norm of a vector
 
@@ -199,7 +208,11 @@ print(euclidean_norm(x))
  
 cosine_similarity
  : return cosine similarity of two vectors
-
+ 
+$$
+cosine~similarity(u, v) = \frac{<u, v>}{|u||v|}
+$$
+ 
 ```{r}
 x <- runif(5)
 y <- runif(5)
@@ -211,7 +224,7 @@ print(cosine_similarity(x, y))
 
 generate_probs
  : return two vectors of probabilites with given cosine similarity
-
+ : note: as cosine similarity parameter approaches 0.5, some computational issues may arrive
 ```{r}
 size <- 6
 cs <- 0.8
