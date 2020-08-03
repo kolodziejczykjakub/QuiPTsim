@@ -130,3 +130,18 @@ create_simulation_data <- function(replications,
   df
 }
 
+#' function reads results of `create_simulation_data` function
+#' attribute contains simulation details
+#' @param path directory containing result files
+#' @param title simulation title
+#' @export
+
+read_simulation_data <- function(path, title) {
+
+    results <- read.csv(paste0(path, title, ".csv"))
+
+    attr(results, "details") <- lapply(results[c("replication", "n_seq", "l_seq", "n_motifs",
+                                                 "n", "d","seqProbs", "motifProbs")], unique)
+
+    results
+}
