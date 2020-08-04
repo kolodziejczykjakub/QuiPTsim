@@ -63,7 +63,9 @@ test_quipt <- function(simulated_seqs, n_seq, criterion, motifs, adjustment = "B
     p.value.adj = p.adjust(res_df[["p.value"]], adjustment))
 }
 
-QuiPT_summary <- function(ngram_matrix) {
+QuiPT_summary <- function(ngram_matrix,
+                          adjustments = c("holm", "BH"),
+                          thresholds = c(0.05, 0.01)) {
 
   # create list of unique motifs
   unique_motifs <- unique(unlist(attr(dat, "motifs"), recursive = FALSE))
@@ -74,15 +76,16 @@ QuiPT_summary <- function(ngram_matrix) {
     res_df <- data.frame(biogram::test_features(target = attr(ngram_matrix, "target"),
                                                 features = ngram_matrix))
 
-    # TODO: all adjustments at once?
-    adjustment <- "BH"
 
     data.frame(
       res_df,
       motif = res_df[["ngram"]] %in% biogram::code_ngrams(sapply(motifs,
                                                                  paste0,
-                                                                 collapse = "")),
-      p.value.adj = p.adjust(res_df[["p.value"]], adjustment)) -> res
+                                                                 collapse = ""))) -> res
+
+    res[adjustments] <- lapply(adjustments, function(p.adj) p.adjust(res_df[["p.value"]], p.adj))
+    res[paste0("p.", thresholds)] <- lapply(thresholds, function(th) res_df[["p.value"]] < th)
+
 
     # ngram contains motif
     noi <- grepl(gsub("_", ".", decode_ngrams(single_motif)), decode_ngrams(res[["ngram"]]))
