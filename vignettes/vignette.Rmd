@@ -40,7 +40,7 @@ Simulation highlights:
 * Each simulation has constant number of sequences ($6000$), since this is an upper bound for most of datasets and these can be sampled in case we would need smaller datasets
 * Various alphabet sizes are used:
   * Full 20-element alphabet with various probability vectors (based on drake repo)
-  * Reduced alphabet (from literature and AmyloGram) with probabilites from AmyloGram analysis
+  * Simplified alphabet (from literature and AmyloGram) with probabilites from AmyloGram analysis
 * Each simulation has been repeated $100$ in order to ensure stability of results
 * Half of the sequences are positive (have motif injected) -- we can manipulate fraction parameter by sampling full dataset
 * Parameters $n=4$ and $d=6$ are fixed in all considerations (this gives maximum sequence length 10)
@@ -76,7 +76,7 @@ print(generate_motifs(alphabet = letters[1:6], n_motif = 3))
 
 simulate_single_sequence
  : generates sequence of elements from alphabet with replacement
- : (optional) alphabet probabilites can be specified
+ : (optional) alphabet elements' probabilites can be specified
  
 ```{r} 
 print(simulate_single_sequence(len = 10,
