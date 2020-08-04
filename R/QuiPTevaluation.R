@@ -85,12 +85,12 @@ QuiPT_summary <- function(ngram_matrix) {
       p.value.adj = p.adjust(res_df[["p.value"]], adjustment)) -> res
 
     # ngram contains motif
-    noi <- grepl(decode_ngrams(single_motif), decode_ngrams(res[["ngram"]]))
+    noi <- grepl(gsub("_", ".", decode_ngrams(single_motif)), decode_ngrams(res[["ngram"]]))
     res[["contains.motif"]] <- noi
 
     # ngram is a part of a motif
     sapply(res[["ngram"]], function(single_ngram)
-      grepl(decode_ngrams(single_ngram), decode_ngrams(single_motif))) -> noi2
+      grepl(gsub("_", ".", decode_ngrams(single_ngram)), decode_ngrams(single_motif))) -> noi2
     res[["motif.part"]] <- noi2
 
     res
