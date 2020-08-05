@@ -1,3 +1,19 @@
+#' function reads results of `create_simulation_data` function
+#' attribute contains simulation details
+#' @param path directory containing result files
+#' @param title simulation title
+#' @importFrom utils read.csv
+#' @export
+read_simulation_data <- function(path, title) {
+
+  results <- read.csv(paste0(path, title, ".csv"))
+
+  attr(results, "details") <- lapply(results[c("replication", "n_seq", "l_seq", "n_motifs",
+                                               "n", "d","seqProbs", "motifProbs")], unique)
+
+  results
+}
+
 #' subsets simple triplet matrix
 #' @param filePath path of RDS file
 #' @param n number of sequences to be subsetted
@@ -22,7 +38,13 @@ subset_matrix <- function(filePath, n, fraction) {
   sampled_matrix
 }
 
-# wrapper for subset_matrix
+#' function reads output files of `create_simulation_data`
+#' @seealso [create_simulation_data()] [subset_matrix()]
+#' @param filePath path of RDS file
+#' @param n number of sequences to be subsetted (optional)
+#' @param fraction fraction of positive sequences (optional)
+#' @export
+
 read_ngram_matrix <- function(filePath, n = NULL, fraction = 0.5) {
   if (is.null(n)) {
     matrix <- readRDS(filePath)
@@ -33,38 +55,14 @@ read_ngram_matrix <- function(filePath, n = NULL, fraction = 0.5) {
 }
 
 #' test QuiPT
-#' @param simulated_seqs sequences that will be tested
-#' @param n_seq number of sequences in each category
-#' @param criterion
-#' @param motifs
-#' @param adjustment
-#'
-#'
-#' @param motifs list of injected motifs
+#' @param ngram_matrix matrix of n-gram occurences (computed in [create_simulation_data()])
+#' @param adjustments p-value adjustments for multiple testing
+#' @param thresholds p-value thresholds
 #' @return data frame with results of QuiPT testing
-#' @examples
-#' n_seq <- 20
-#' len <- 10
-#' alphabet <- 1L:4
-#' motifs <- generate_motifs(alphabet, 3)
-#' simulated_sequences <- generate_sequences(n_seq, len, alph, motifs, 1)
-#' test_quipt(simulated_sequences, n_seq, criterion = "ig", motifs = motifs)
-
-test_quipt <- function(simulated_seqs, n_seq, criterion, motifs, adjustment = "BH") {
-
-  res_df <- data.frame(biogram::test_features(target = c(rep(1, n_seq),
-                                              rep(0, n_seq)),
-                                   features = simulated_seqs))
-
-
-  data.frame(#n_seq = n_seq,
-    #l_seq = l_seq,
-    res_df,
-    motif = res_df[["ngram"]] %in% biogram::code_ngrams(sapply(motifs,
-                                                      paste0,
-                                                      collapse = "")),
-    p.value.adj = p.adjust(res_df[["p.value"]], adjustment))
-}
+#' @importFrom stats p.adjust
+#' @importFrom biogram decode_ngrams
+#' @importFrom biogram code_ngrams
+#' @export
 
 QuiPT_summary <- function(ngram_matrix,
                           adjustments = c("holm", "BH"),
@@ -77,13 +75,13 @@ QuiPT_summary <- function(ngram_matrix,
                                               features = ngram_matrix))
 
   res[adjustments] <- lapply(adjustments, function(p.adj) p.adjust(res[["p.value"]], p.adj))
-  res[paste0("p.", thresholds)] <- lapply(thresholds, function(th) res[["p.value"]] < th)
+  res[paste0("pval", thresholds)] <- lapply(thresholds, function(th) res[["p.value"]] < th)
 
   # iterate over motifs to create vector of occurences
   motifOcc <- lapply(unique_motifs, function(motif) {
 
     motifOcc <- list()
-    browser()
+
     # ngram contains motif
     noi <- grepl(gsub("_", ".", paste0(motif, collapse = "")), decode_ngrams(res[["ngram"]]))
     motifOcc[["contains.motif"]] <- noi
@@ -103,9 +101,6 @@ QuiPT_summary <- function(ngram_matrix,
   logicalSumOfOccurences <- motifOcc[[1]]
   if (length(motifOcc) > 1) {
     for (i in 2:length(motifOcc)) {
-      # for (colname in names(logicalSumOfOccurences)){
-      #   logicalSumOfOccurences[[colname]] <- logicalSumOfOccurences[[colname]] | motifOcc[[colname]]
-      # }
       logicalSumOfOccurences <- Map("|", logicalSumOfOccurences, motifOcc[[i]])
     }
   }
