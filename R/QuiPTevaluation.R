@@ -98,6 +98,7 @@ QuiPT_summary <- function(ngram_matrix,
     motifOcc
   })
 
+  #TODO: more sensible implementation
   logicalSumOfOccurences <- motifOcc[[1]]
   if (length(motifOcc) > 1) {
     for (i in 2:length(motifOcc)) {
