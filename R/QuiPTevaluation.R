@@ -73,34 +73,45 @@ QuiPT_summary <- function(ngram_matrix,
   # create list of unique motifs
   unique_motifs <- unique(unlist(attr(ngram_matrix, "motifs"), recursive = FALSE))
 
-  # iterate over motifs
-  lapply(unique_motifs, function(motif) {
+  res <- data.frame(biogram::test_features(target = attr(ngram_matrix, "target"),
+                                              features = ngram_matrix))
 
-    res_df <- data.frame(biogram::test_features(target = attr(ngram_matrix, "target"),
-                                                features = ngram_matrix))
+  res[adjustments] <- lapply(adjustments, function(p.adj) p.adjust(res[["p.value"]], p.adj))
+  res[paste0("p.", thresholds)] <- lapply(thresholds, function(th) res[["p.value"]] < th)
 
+  # iterate over motifs to create vector of occurences
+  motifOcc <- lapply(unique_motifs, function(motif) {
 
-    res <- data.frame(
-      res_df,
-      motif = res_df[["ngram"]] %in% biogram::code_ngrams(sapply(motif,
-                                                                 paste0,
-                                                                 collapse = "")))
+    motifOcc <- list()
 
-    res[adjustments] <- lapply(adjustments, function(p.adj) p.adjust(res_df[["p.value"]], p.adj))
-    res[paste0("p.", thresholds)] <- lapply(thresholds, function(th) res_df[["p.value"]] < th)
-
-    browser()
     # ngram contains motif
-    noi <- grepl(gsub("_", ".", paste0(motif, collapse="")), decode_ngrams(res[["ngram"]]))
-    res[["contains.motif"]] <- noi
+    noi <- grepl(gsub("_", ".", paste0(motif, collapse = "")), decode_ngrams(res[["ngram"]]))
+    motifOcc[["contains.motif"]] <- noi
 
     # ngram is a part of a motif
-    sapply(res[["ngram"]], function(single_ngram)
-      grepl(gsub("_", ".", decode_ngrams(single_ngram)), decode_ngrams(motif))) -> noi2
-    res[["motif.part"]] <- noi2
+    noi2 <- sapply(res[["ngram"]], function(single_ngram)
+      grepl(gsub("_", ".", paste0(single_ngram, collapse = "")), paste0(motif, collapse = "")))
+    motifOcc[["motif.part"]] <- noi2
 
-    res
+    # exact motif
+    noi3 <- res[["ngram"]] %in% biogram::code_ngrams(sapply(motif,
+                                                       paste0,
+                                                       collapse = ""))
+    motifOcc[["motif"]] <- noi3
+
+    motifOcc
   })
+
+  logicalSumOfOccurences <- motifOcc[[1]]
+  if (length(motifOcc) > 1) {
+    for (i in 2:length(motifOcc)) {
+      logicalSumOfOccurences <- Map("|", logicalSumOfOccurences, motifOcc[[i]])
+    }
+  }
+
+  res[names(logicalSumOfOccurences)] <- logicalSumOfOccurences
+
+  res
 }
 
 
