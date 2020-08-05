@@ -24,8 +24,11 @@ subset_matrix <- function(filePath, n, fraction) {
 
 # wrapper for subset_matrix
 read_ngram_matrix <- function(filePath, n = NULL, fraction = 0.5) {
-  if (is.null(n)) matrix <- readRDS(filePath)
-  else matrix <- subset_matrix(filePath, n, fraction)
+  if (is.null(n)) {
+    matrix <- readRDS(filePath)
+  } else {
+    matrix <- subset_matrix(filePath, n, fraction)
+  }
   matrix
 }
 
@@ -68,7 +71,7 @@ QuiPT_summary <- function(ngram_matrix,
                           thresholds = c(0.05, 0.01)) {
 
   # create list of unique motifs
-  unique_motifs <- unique(unlist(attr(dat, "motifs"), recursive = FALSE))
+  unique_motifs <- unique(unlist(attr(ngram_matrix, "motifs"), recursive = FALSE))
 
   # iterate over motifs
   lapply(unique_motifs, function(motif) {
@@ -77,23 +80,23 @@ QuiPT_summary <- function(ngram_matrix,
                                                 features = ngram_matrix))
 
 
-    data.frame(
+    res <- data.frame(
       res_df,
-      motif = res_df[["ngram"]] %in% biogram::code_ngrams(sapply(motifs,
+      motif = res_df[["ngram"]] %in% biogram::code_ngrams(sapply(motif,
                                                                  paste0,
-                                                                 collapse = ""))) -> res
+                                                                 collapse = "")))
 
     res[adjustments] <- lapply(adjustments, function(p.adj) p.adjust(res_df[["p.value"]], p.adj))
     res[paste0("p.", thresholds)] <- lapply(thresholds, function(th) res_df[["p.value"]] < th)
 
-
+    browser()
     # ngram contains motif
-    noi <- grepl(gsub("_", ".", decode_ngrams(single_motif)), decode_ngrams(res[["ngram"]]))
+    noi <- grepl(gsub("_", ".", paste0(motif, collapse="")), decode_ngrams(res[["ngram"]]))
     res[["contains.motif"]] <- noi
 
     # ngram is a part of a motif
     sapply(res[["ngram"]], function(single_ngram)
-      grepl(gsub("_", ".", decode_ngrams(single_ngram)), decode_ngrams(single_motif))) -> noi2
+      grepl(gsub("_", ".", decode_ngrams(single_ngram)), decode_ngrams(motif))) -> noi2
     res[["motif.part"]] <- noi2
 
     res
