@@ -83,20 +83,18 @@ QuiPT_summary <- function(ngram_matrix,
   motifOcc <- lapply(unique_motifs, function(motif) {
 
     motifOcc <- list()
-
+    browser()
     # ngram contains motif
     noi <- grepl(gsub("_", ".", paste0(motif, collapse = "")), decode_ngrams(res[["ngram"]]))
     motifOcc[["contains.motif"]] <- noi
 
     # ngram is a part of a motif
     noi2 <- sapply(res[["ngram"]], function(single_ngram)
-      grepl(gsub("_", ".", paste0(single_ngram, collapse = "")), paste0(motif, collapse = "")))
+      grepl(gsub("_", ".", paste0(decode_ngrams(single_ngram), collapse = "")), paste0(motif, collapse = "")))
     motifOcc[["motif.part"]] <- noi2
 
     # exact motif
-    noi3 <- res[["ngram"]] %in% biogram::code_ngrams(sapply(motif,
-                                                       paste0,
-                                                       collapse = ""))
+    noi3 <- (res[["ngram"]] == code_ngrams(paste0(motif, collapse = "")))
     motifOcc[["motif"]] <- noi3
 
     motifOcc
@@ -105,6 +103,9 @@ QuiPT_summary <- function(ngram_matrix,
   logicalSumOfOccurences <- motifOcc[[1]]
   if (length(motifOcc) > 1) {
     for (i in 2:length(motifOcc)) {
+      # for (colname in names(logicalSumOfOccurences)){
+      #   logicalSumOfOccurences[[colname]] <- logicalSumOfOccurences[[colname]] | motifOcc[[colname]]
+      # }
       logicalSumOfOccurences <- Map("|", logicalSumOfOccurences, motifOcc[[i]])
     }
   }
