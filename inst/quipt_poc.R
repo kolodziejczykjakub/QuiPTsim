@@ -46,8 +46,10 @@ m_3 <- rbind_ngram_matrices(m3_3, m4_3)
 
 matrices_3 <- list(m1_3, m2_3, m3_3, m4_3, m_3)
 results_3 <- lapply(matrices_3, QuiPT_summary)
-lapply(results_3, metrics)
-lapply(results_3, metrics2)
+print("N-grams containg motifs are positve")
+lapply(results_3, metrics) -> tmp
+print("N-grams containg motifs are negative")
+lapply(results_3, metrics2) -> tmp
 
 ##############################
 
@@ -60,6 +62,9 @@ m_1 <- rbind_ngram_matrices(m3_1, m4_1)
 
 matrices_1 <- list(m1_1, m2_1, m3_1, m4_1, m_1)
 results_1 <- lapply(matrices_1, QuiPT_summary)
-lapply(results_1, metrics)
-lapply(results_1, metrics2)
+
+print("N-grams containg motifs are positve")
+lapply(results_1, metrics) -> tmp
+print("N-grams containg motifs are negative")
+lapply(results_1, metrics2) -> tmp
 
