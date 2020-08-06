@@ -111,5 +111,31 @@ QuiPT_summary <- function(ngram_matrix,
   res
 }
 
+#' function combines two ngram matrices
+#' @param m1
+#' @param m2
+#' @return combined ngram matrix
+#' @export
 
+rbind_ngram_matrices <- function(m1, m2) {
+
+  m1_unique_colnames <- setdiff(colnames(m1), colnames(m2))
+  m2_unique_colnames <- setdiff(colnames(m2), colnames(m1))
+
+  m1_extended <- cbind(m1, matrix(0, nrow = nrow(m1), ncol = length(m2_unique_colnames)))
+  m2_extended <- cbind(m2, matrix(0, nrow = nrow(m2), ncol = length(m1_unique_colnames)))
+
+
+  colnames(m1_extended) <- c(colnames(m1), m2_unique_colnames)
+  colnames(m2_extended) <- c(colnames(m2), m1_unique_colnames)
+
+  m_extended <- rbind(m1_extended, m2_extended[, colnames(m1_extended)])
+
+  attr(m_extended, "sequences") <- rbind(attr(m1, "sequences"), attr(m2, "sequences"))
+  attr(m_extended, "motifs") <- c(attr(m1, "motifs"), attr(m2, "motifs"))
+  attr(m_extended, "masks") <- c(attr(m1, "masks"), attr(m2, "masks"))
+  attr(m_extended, "target") <- c(attr(m1, "target"), attr(m2, "target"))
+
+  m_extended
+}
 
