@@ -1,10 +1,14 @@
-
 #' function computes transition matrix
 #' @param sequences matrix of sequences (each row represents single sequence)
 #' @param alphabet elements used to build sequences
 #' @return combined ngram matrix
+#' @importFrom markovchain markovchainFit
 #' @export
-
+#' @examples
+#' alphabet <- letters[1:4]
+#' sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 10)
+#' sequenceTransitionMatrix(sequences, alphabet)
+#'
 sequenceTransitionMatrix <- function(sequences, alphabet) {
   seqList <- split(sequences, rep(1:nrow(sequences), each = ncol(sequences)))
   transitionMatrix <- markovchainFit(seqList, possibleStates = alphabet)
@@ -14,13 +18,27 @@ sequenceTransitionMatrix <- function(sequences, alphabet) {
       name = "Markov Chain object")
 }
 
+#' function computes probability of given n-gram
+#' @param mc markovchain object containing transition matrix
+#' @seq sequence of alphabet elements or gaps("_")
+#' @export
+#' @examples
+#' alphabet <- letters[1:4]
+#' sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 10)
+#' mc <- sequenceTransitionMatrix(sequences, alphabet)
+#' example_ngram <- sample(c(alphabet, "_"), size = 5, replace = TRUE)
+#' print(example_ngram)
+#' calculate_ngram_prob(mc, example_ngram)
+
 calculate_ngram_prob <- function(mc, seq) {
 
-  alphabet <- attr(mc, "states")
-  #browser()
+  if (length(seq) < 2)
+    stop("Error: Sequence is too short!")
 
-  #asserts start and end as letter
-  # assert len > 1
+  if (!(class(mc) == "markovchain"))
+    stop("Error: mc parameter is not a markovchain object instance")
+
+  alphabet <- attr(mc, "states")
 
   seqlist <- as.list(seq)
   seqlist_gaps <- lapply(seq, function(x) {
@@ -35,6 +53,18 @@ calculate_ngram_prob <- function(mc, seq) {
   sum(apply(seqGrid, 1, function(seq) calculate_seq_prob(mc, seq)))
 
 }
+
+#' function computes probability of given sequence
+#' @param mc markovchain object containing transition matrix
+#' @seq sequence of alphabet elements
+#' @export
+#' @examples
+#' alphabet <- letters[1:4]
+#' sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 10)
+#' mc <- sequenceTransitionMatrix(sequences, alphabet)
+#' example_seq <- sample(alphabet, size = 5, replace = TRUE)
+#' print(example_seq)
+#' calculate_ngram_prob(mc, example_seq)
 
 calculate_seq_prob <- function(mc, seq) {
 
