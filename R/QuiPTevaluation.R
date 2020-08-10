@@ -92,7 +92,9 @@ QuiPT_summary <- function(ngram_matrix,
     # ngram contains motif
     noi <- grepl(paste0(motif, collapse = ""), decode_ngrams(res[["ngram"]]))
     motifOcc[["contains.motif"]] <- noi
-
+    ngram_lengths <- unlist(lapply(res[["ngram"]], function(x) nchar(decode_ngrams(x))))
+    maxLen <- (length(motif)+1) %/% 4 + length(motif)
+    motifOcc[["positive.ngram"]] <- ((ngram_lengths < maxLen) & noi)
     # ngram is a part of a motif
     noi2 <- sapply(res[["ngram"]], function(single_ngram)
       grepl(paste0(decode_ngrams(single_ngram), collapse = ""), paste0(motif, collapse = "")))
@@ -102,10 +104,13 @@ QuiPT_summary <- function(ngram_matrix,
     noi3 <- (res[["ngram"]] == code_ngrams(paste0(motif, collapse = "")))
     motifOcc[["motif"]] <- noi3
 
-    positiveMotifs <- positive_motifs(paste0(motif, collapse = ""))
+
+    positiveMotifs <- lapply(positive_motifs(motif), function(x) paste0(x, collapse=""))
     noi4 <- sapply(res[["ngram"]], function(single_ngram)
-      paste0(decode_ngrams(single_ngram), collapse = "") %in% positiveMotifs)
+      decode_ngrams(single_ngram) %in% positiveMotifs)
     motifOcc[["positive"]] <- noi4
+
+    #TODO: define final positive ngram group
 
     motifOcc
   })
@@ -151,10 +156,3 @@ rbind_ngram_matrices <- function(m1, m2) {
   m_extended
 }
 
-positive_motifs <- function(motif) {
-  possibleWildcards <- (length(motif)+1) %/% 4
-  g <- expand.grid(0:possibleWildcards, 0:possibleWildcards)
-  WildcardsGrid <- g[apply(g, 1, sum) <= possibleWildcards, ]
-  possible_motifs <- apply(WildcardsGrid, 1, function(x) c(rep(".", x[1]), motif, rep(".", x[2])))
-  lapply(possible_motifs, function(x) paste0(x, collapse = ""))
-}
