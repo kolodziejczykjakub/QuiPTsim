@@ -57,6 +57,7 @@ calculate_ngram_prob <- function(mc, seq) {
 #' function computes probability of given sequence
 #' @param mc markovchain object containing transition matrix
 #' @seq sequence of alphabet elements
+#' @importFrom markovchain transitionProbability
 #' @export
 #' @examples
 #' alphabet <- letters[1:4]
