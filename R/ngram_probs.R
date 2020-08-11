@@ -19,6 +19,29 @@ sequenceTransitionMatrix <- function(sequences, alphabet) {
       name = "Markov Chain object")
 }
 
+#' function computes probability of given sequence
+#' @param mc markovchain object containing transition matrix
+#' @param seq sequence of alphabet elements
+#' @importFrom markovchain transitionProbability
+#' @export
+#' @examples
+#' alphabet <- letters[1:4]
+#' sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 10)
+#' mc <- sequenceTransitionMatrix(sequences, alphabet)
+#' example_seq <- sample(alphabet, size = 5, replace = TRUE)
+#' print(example_seq)
+#' calculate_seq_prob(mc, example_seq)
+
+calculate_seq_prob <- function(mc, seq) {
+
+  prob <- 1
+  for (i in 2:length(seq)) {
+    prob <- prob * transitionProbability(mc, seq[i-1], seq[i])
+  }
+
+  prob
+}
+
 #' function computes probability of given n-gram
 #' @param mc markovchain object containing transition matrix
 #' @param seq sequence of alphabet elements or gaps("_")
@@ -53,27 +76,4 @@ calculate_ngram_prob <- function(mc, seq) {
   seqGrid <- expand.grid(seqlist_gaps)
   sum(apply(seqGrid, 1, function(seq) calculate_seq_prob(mc, seq)))
 
-}
-
-#' function computes probability of given sequence
-#' @param mc markovchain object containing transition matrix
-#' @param seq sequence of alphabet elements
-#' @importFrom markovchain transitionProbability
-#' @export
-#' @examples
-#' alphabet <- letters[1:4]
-#' sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 10)
-#' mc <- sequenceTransitionMatrix(sequences, alphabet)
-#' example_seq <- sample(alphabet, size = 5, replace = TRUE)
-#' print(example_seq)
-#' calculate_seq_prob(mc, example_seq)
-
-calculate_seq_prob <- function(mc, seq) {
-
-  prob <- 1
-  for (i in 2:length(seq)) {
-    prob <- prob * transitionProbability(mc, seq[i-1], seq[i])
-  }
-
-  prob
 }

@@ -238,3 +238,60 @@ print(probabilites)
 print(cosine_similarity(probabilites[1, ], probabilites[2, ]))
 ```
 
+---
+
+# N-gram probabilites
+
+sequenceTransitionMatrix
+  : function takes two arguments: matrix of sequences (sequences in rows), alphabet(Markov chain states)
+  : returns markovchain class instance
+
+```{r}
+alphabet <- letters[1:4]
+sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 10)
+sequenceTransitionMatrix(sequences, alphabet)
+
+```
+
+---
+
+calculate_seq_prob
+  : function calculates probabiliity of given trajectory
+  : takes two arguments: markovchain class instance and a sequence
+  
+Note: Inital state is not taken into considerations
+  
+```{r}  
+alphabet <- letters[1:4]
+sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 10)
+mc <- sequenceTransitionMatrix(sequences, alphabet)
+print(mc)
+example_seq <- sample(alphabet, size = 5, replace = TRUE)
+print(example_seq)
+calculate_seq_prob(mc, example_seq)
+```
+
+---
+
+calculate_ngram_prob 
+  : function is an extension for `calculate_seq_prob`; we can compute probability of trajectories with gaps
+
+```{r}
+
+alphabet <- letters[1:4]
+sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 10)
+mc <- sequenceTransitionMatrix(sequences, alphabet)
+example_ngram <- sample(c(alphabet, "_"), size = 5, replace = TRUE)
+print(example_ngram)
+calculate_ngram_prob(mc, example_ngram)
+```
+
+
+
+
+
+
+
+
+
+
