@@ -45,13 +45,13 @@ test_that("Correct QuiPT evaluation", {
   QuiPT_results <- QuiPT_summary(results)
 
   expect_equal(colnames(QuiPT_results),
-               c("ngram", "p.value", "pos", "neg", "holm", "BH", "pval0.05",
-                 "pval0.01", "contains.motif", "motif.part", "motif"))
+               c("ngram", "p.value", "pos", "neg", "p.adjust_holm", "p.adjust_BH",
+                 "pval_0.05", "pval_0.01", "positive.ngram", "motif"))
 
   expect_equal(lapply(QuiPT_results[, -1], sum),
                list(p.value = 4569.86805155638, pos = 355.793333333333, neg = 340.656666666667,
-                    holm = 15739.0746213345, BH = 6305.64727377167, pval0.05 = 3591L,
-                    pval0.01 = 2321L, contains.motif = 600L, motif.part = 16L,
+                    p.adjust_holm = 15739.0746213345, p.adjust_BH = 6305.64727377167,
+                    pval_0.05 = 3591L, pval_0.01 = 2321L, positive.ngram = 18L,
                     motif = 3L))
 
 })

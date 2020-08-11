@@ -3,6 +3,7 @@
 #' @param alphabet elements used to build sequences
 #' @return combined ngram matrix
 #' @importFrom markovchain markovchainFit
+#' @importFrom methods new
 #' @export
 #' @examples
 #' alphabet <- letters[1:4]
@@ -20,7 +21,7 @@ sequenceTransitionMatrix <- function(sequences, alphabet) {
 
 #' function computes probability of given n-gram
 #' @param mc markovchain object containing transition matrix
-#' @seq sequence of alphabet elements or gaps("_")
+#' @param seq sequence of alphabet elements or gaps("_")
 #' @export
 #' @examples
 #' alphabet <- letters[1:4]
@@ -56,7 +57,7 @@ calculate_ngram_prob <- function(mc, seq) {
 
 #' function computes probability of given sequence
 #' @param mc markovchain object containing transition matrix
-#' @seq sequence of alphabet elements
+#' @param seq sequence of alphabet elements
 #' @importFrom markovchain transitionProbability
 #' @export
 #' @examples
@@ -65,7 +66,7 @@ calculate_ngram_prob <- function(mc, seq) {
 #' mc <- sequenceTransitionMatrix(sequences, alphabet)
 #' example_seq <- sample(alphabet, size = 5, replace = TRUE)
 #' print(example_seq)
-#' calculate_ngram_prob(mc, example_seq)
+#' calculate_seq_prob(mc, example_seq)
 
 calculate_seq_prob <- function(mc, seq) {
 

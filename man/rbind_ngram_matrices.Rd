@@ -6,6 +6,11 @@
 \usage{
 rbind_ngram_matrices(m1, m2)
 }
+\arguments{
+\item{m1}{upper matrix}
+
+\item{m2}{lower matrix}
+}
 \value{
 combined ngram matrix
 }

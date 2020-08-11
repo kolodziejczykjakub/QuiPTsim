@@ -8,6 +8,8 @@ calculate_seq_prob(mc, seq)
 }
 \arguments{
 \item{mc}{markovchain object containing transition matrix}
+
+\item{seq}{sequence of alphabet elements}
 }
 \description{
 function computes probability of given sequence
@@ -18,5 +20,5 @@ sequences <- matrix(sample(alphabet, size = 50, replace=TRUE), nrow = 5, ncol = 
 mc <- sequenceTransitionMatrix(sequences, alphabet)
 example_seq <- sample(alphabet, size = 5, replace = TRUE)
 print(example_seq)
-calculate_ngram_prob(mc, example_seq)
+calculate_seq_prob(mc, example_seq)
 }

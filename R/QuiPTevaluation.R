@@ -122,9 +122,10 @@ QuiPT_summary <- function(ngram_matrix,
 }
 
 #' function combines two ngram matrices
-#' @param m1
-#' @param m2
+#' @param m1 upper matrix
+#' @param m2 lower matrix
 #' @return combined ngram matrix
+#' @importFrom pbapply  pblapply
 #' @export
 
 rbind_ngram_matrices <- function(m1, m2) {

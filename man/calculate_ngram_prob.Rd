@@ -8,6 +8,8 @@ calculate_ngram_prob(mc, seq)
 }
 \arguments{
 \item{mc}{markovchain object containing transition matrix}
+
+\item{seq}{sequence of alphabet elements or gaps("_")}
 }
 \description{
 function computes probability of given n-gram

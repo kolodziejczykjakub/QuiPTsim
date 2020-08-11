@@ -16,7 +16,9 @@ Imports:
     biogram (>= 1.6.3),
     pbapply (>= 1.4),
     progress (>= 1.2.2),
-    seqR
+    seqR,
+    markovchain (>= 0.8.5),
+    methods
 Suggests: 
     testthat,
     covr,
