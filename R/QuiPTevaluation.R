@@ -76,8 +76,8 @@ QuiPT_summary <- function(ngram_matrix,
   res <- data.frame(biogram::test_features(target = attr(ngram_matrix, "target"),
                                               features = ngram_matrix))
 
-  res[adjustments] <- lapply(adjustments, function(p.adj) p.adjust(res[["p.value"]], p.adj))
-  res[paste0("pval", thresholds)] <- lapply(thresholds, function(th) res[["p.value"]] < th)
+  res[paste0("p.adjust_", adjustments)] <- lapply(adjustments, function(p.adj) p.adjust(res[["p.value"]], p.adj))
+  res[paste0("pval_", thresholds)] <- lapply(thresholds, function(th) res[["p.value"]] < th)
 
   if (!is.null(mc)) {
     res[["prob"]] <- pblapply(strsplit(decode_ngrams(res[["ngram"]]), ""),
@@ -89,28 +89,21 @@ QuiPT_summary <- function(ngram_matrix,
 
     motifOcc <- list()
 
-    # ngram contains motif
+    # ngram contains motif with limited ngram length
     noi <- grepl(paste0(motif, collapse = ""), decode_ngrams(res[["ngram"]]))
-    motifOcc[["contains.motif"]] <- noi
     ngram_lengths <- unlist(lapply(res[["ngram"]], function(x) nchar(decode_ngrams(x))))
     maxLen <- (length(motif)+1) %/% 4 + length(motif)
-    motifOcc[["positive.ngram"]] <- ((ngram_lengths < maxLen) & noi)
+    ngram_containing_motif <- ((ngram_lengths < maxLen) & noi)
+
     # ngram is a part of a motif
-    noi2 <- sapply(res[["ngram"]], function(single_ngram)
+    ngram_motif_part <- sapply(res[["ngram"]], function(single_ngram)
       grepl(paste0(decode_ngrams(single_ngram), collapse = ""), paste0(motif, collapse = "")))
-    motifOcc[["motif.part"]] <- noi2
 
     # exact motif
-    noi3 <- (res[["ngram"]] == code_ngrams(paste0(motif, collapse = "")))
-    motifOcc[["motif"]] <- noi3
+    exact_motif <- (res[["ngram"]] == code_ngrams(paste0(motif, collapse = "")))
 
-
-    positiveMotifs <- lapply(positive_motifs(motif), function(x) paste0(x, collapse=""))
-    noi4 <- sapply(res[["ngram"]], function(single_ngram)
-      decode_ngrams(single_ngram) %in% positiveMotifs)
-    motifOcc[["positive"]] <- noi4
-
-    #TODO: define final positive ngram group
+    motifOcc[["positive.ngram"]] <- (ngram_containing_motif | ngram_motif_part | exact_motif)
+    motifOcc[["motif"]] <- exact_motif
 
     motifOcc
   })
