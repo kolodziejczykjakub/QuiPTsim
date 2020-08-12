@@ -65,18 +65,13 @@ read_ngram_matrix <- function(filePath, n = NULL, fraction = 0.5) {
 #' @importFrom biogram code_ngrams
 #' @export
 
-QuiPT_summary <- function(ngram_matrix,
-                          adjustments = c("holm", "BH"),
-                          thresholds = c(0.05, 0.01)) {
+QuiPT_summary <- function(ngram_matrix) {
 
   # create list of unique motifs
   unique_motifs <- unique(unlist(attr(ngram_matrix, "motifs"), recursive = FALSE))
 
   res <- data.frame(biogram::test_features(target = attr(ngram_matrix, "target"),
                                               features = ngram_matrix))
-
-  res[paste0("p.adjust_", adjustments)] <- lapply(adjustments, function(p.adj) p.adjust(res[["p.value"]], p.adj))
-  res[paste0("pval_", thresholds)] <- lapply(thresholds, function(th) res[["p.value"]] < th)
 
   # iterate over motifs to create vector of occurences
   motifOcc <- lapply(unique_motifs, function(motif) {
