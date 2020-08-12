@@ -66,7 +66,6 @@ read_ngram_matrix <- function(filePath, n = NULL, fraction = 0.5) {
 #' @export
 
 QuiPT_summary <- function(ngram_matrix,
-                          mc = NULL,
                           adjustments = c("holm", "BH"),
                           thresholds = c(0.05, 0.01)) {
 
@@ -78,11 +77,6 @@ QuiPT_summary <- function(ngram_matrix,
 
   res[paste0("p.adjust_", adjustments)] <- lapply(adjustments, function(p.adj) p.adjust(res[["p.value"]], p.adj))
   res[paste0("pval_", thresholds)] <- lapply(thresholds, function(th) res[["p.value"]] < th)
-
-  if (!is.null(mc)) {
-    res[["prob"]] <- pblapply(strsplit(decode_ngrams(res[["ngram"]]), ""),
-                              function(ngram) calculate_ngram_prob(mc, ngram))
-  }
 
   # iterate over motifs to create vector of occurences
   motifOcc <- lapply(unique_motifs, function(motif) {
