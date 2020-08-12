@@ -4,12 +4,7 @@
 \alias{QuiPT_summary}
 \title{test QuiPT}
 \usage{
-QuiPT_summary(
-  ngram_matrix,
-  mc = NULL,
-  adjustments = c("holm", "BH"),
-  thresholds = c(0.05, 0.01)
-)
+QuiPT_summary(ngram_matrix)
 }
 \arguments{
 \item{ngram_matrix}{matrix of n-gram occurences (computed in [create_simulation_data()])}

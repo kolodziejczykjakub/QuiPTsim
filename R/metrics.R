@@ -1,6 +1,7 @@
 #' Sensitivity (true positive rate, recall)
 #' @param y_true boolean vector of target variable
 #' @param y_pred boolean vector of predictions
+#' @export
 
 sensitivity <- function (y_true, y_pred) {
 
@@ -16,6 +17,7 @@ sensitivity <- function (y_true, y_pred) {
 
 #' Specificity (true negative rate)
 #' @inheritParams sensitivity
+#' @export
 
 specificity <- function (y_true, y_pred) {
 
@@ -31,6 +33,7 @@ specificity <- function (y_true, y_pred) {
 
 #' Precision
 #' @inheritParams sensitivity
+#' @export
 
 precision <- function (y_true, y_pred) {
 
@@ -46,6 +49,7 @@ precision <- function (y_true, y_pred) {
 
 #' Recall
 #' @inheritParams sensitivity
+#' @export
 
 recall <- function (y_true, y_pred) {
   sensitivity(y_true, y_pred)
@@ -53,6 +57,8 @@ recall <- function (y_true, y_pred) {
 
 #' F1-score (harmonic mean of precision and recall)
 #' @inheritParams sensitivity
+#' @export
+
 F1score <- function (y_true, y_pred) {
 
   if (!(length(y_true) == length(y_pred))) {
