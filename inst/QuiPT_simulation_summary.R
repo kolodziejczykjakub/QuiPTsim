@@ -1,6 +1,6 @@
 library(QuiPTsim)
 
-paths <- c("./reduced_alph_enc_alph4_const/alph4_const_rep_10_seqNum_600_seqLen_80_nMotifs_3.Rds")
+paths <- c("./reduced_alph_enc_alph4_const/alph4_const_rep_9_seqNum_600_seqLen_80_nMotifs_3.Rds")
 pval_thresholds <- c(0.01, 0.05)
 pval_adjustments <- c("", "BH", "holm")
 
