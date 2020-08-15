@@ -5,8 +5,17 @@
 #' @param ngram_matrix
 #' @export
 
-positive_ngrams <- function(motifs, ngram_matrix) {
+positive_ngrams <- function(ngram_matrix) {
 
+  if (!(class(ngram_matrix) == "simple_triplet_matrix")) {
+    stop("Input is not a simple_triplet_matrix class instance!")
+  }
+
+  if (!("motifs" %in% names(attributes(ngram_matrix)))) {
+    stop("Input does not have motifs attribute!")
+  }
+
+  motifs <- unique(unlist(attr(ngram_matrix, "motifs"), recursive = FALSE))
   ngrams <- colnames(ngram_matrix)
 
   pos <- lapply(motifs, function(motif) {
@@ -43,5 +52,32 @@ positive_ngrams <- function(motifs, ngram_matrix) {
   logicalSumOfOccurences
 
 }
+
+#' Wrapper for variuous feature selection method evaluated in a benchmark
+#' @param ngram_matrix matrix of n-gram occurences
+#' @param feature_selection_method feature selection method name (QuiPT, ...)
+
+filter_ngrams <- function(ngram_matrix, feature_selection_method) {
+
+  if (!(feature_selection_method %in% c("QuiPT"))) {
+    stop("Unkown feature selection method!")
+  }
+
+  if (feature_selection_method == "QuiPT") {
+    out <- data.frame(test_features(target = attr(ngram_matrix, "target"),
+                                             features = ngram_matrix))
+  }
+
+  out
+}
+
+
+
+
+
+
+
+
+
 
 

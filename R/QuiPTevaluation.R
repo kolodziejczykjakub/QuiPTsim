@@ -68,44 +68,10 @@ read_ngram_matrix <- function(filePath, n = NULL, fraction = 0.5) {
 QuiPT_summary <- function(ngram_matrix) {
 
   # create list of unique motifs
-  unique_motifs <- unique(unlist(attr(ngram_matrix, "motifs"), recursive = FALSE))
+  #unique_motifs <- unique(unlist(attr(ngram_matrix, "motifs"), recursive = FALSE))
 
   res <- data.frame(biogram::test_features(target = attr(ngram_matrix, "target"),
                                               features = ngram_matrix))
-
-  # iterate over motifs to create vector of occurences
-  motifOcc <- lapply(unique_motifs, function(motif) {
-
-    motifOcc <- list()
-
-    # ngram contains motif with limited ngram length
-    noi <- grepl(paste0(motif, collapse = ""), decode_ngrams(res[["ngram"]]))
-    ngram_lengths <- unlist(lapply(res[["ngram"]], function(x) nchar(decode_ngrams(x))))
-    maxLen <- (length(motif)+1) %/% 4 + length(motif)
-    ngram_containing_motif <- ((ngram_lengths < maxLen) & noi)
-
-    # ngram is a part of a motif
-    ngram_motif_part <- sapply(res[["ngram"]], function(single_ngram)
-      grepl(paste0(decode_ngrams(single_ngram), collapse = ""), paste0(motif, collapse = "")))
-
-    # exact motif
-    exact_motif <- (res[["ngram"]] == code_ngrams(paste0(motif, collapse = "")))
-
-    motifOcc[["positive.ngram"]] <- (ngram_containing_motif | ngram_motif_part | exact_motif)
-    motifOcc[["motif"]] <- exact_motif
-
-    motifOcc
-  })
-
-  #TODO: more sensible implementation
-  logicalSumOfOccurences <- motifOcc[[1]]
-  if (length(motifOcc) > 1) {
-    for (i in 2:length(motifOcc)) {
-      logicalSumOfOccurences <- Map("|", logicalSumOfOccurences, motifOcc[[i]])
-    }
-  }
-
-  res[names(logicalSumOfOccurences)] <- logicalSumOfOccurences
 
   res
 }
