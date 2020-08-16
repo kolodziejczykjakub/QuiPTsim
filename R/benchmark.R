@@ -8,14 +8,18 @@ create_benchmark_data <- function(paths, setup) {
   results <- list()
   details <- list()
 
-  for (path in paths) {
+  totalIterations = length(paths)
+  pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)",
+                         total = totalIterations)
+  for (i in 1:totalIterations) {
+
+    path <- paths[i]
 
     m <- read_ngram_matrix(path)
-
     res <- filter_ngrams(m, setup[["method"]])
-
     results <- c(results, list(res))
 
+    pb$tick(1)
   }
 
   attr(results, "setup") <- setup
@@ -41,6 +45,14 @@ benchmark_summary <- function(scores, setup) {
 
   })
 
-  evaluation_metrics
+  metrics_names <- names(evaluation_metrics[[1]])
+
+  aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+    lapply(evaluation_metrics, function(results)
+      results[[metric_name]])), unlist)
+
+  data.frame(list(mean = sapply(aggregated_metrics, mean),
+                  standard.dev = sapply(aggregated_metrics, sd)),
+             row.names = metrics_names)
 }
 

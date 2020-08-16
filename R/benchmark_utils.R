@@ -93,13 +93,13 @@ calculate_score <- function(results, setup) {
 
     pvals <- results[["score"]]
 
-    if (pval_adj %in% names(setup)) {
+    if ("pval_adj" %in% names(setup)) {
       y_pred <- p.adjust(pvals, method = setup[["pval_adj"]])
     } else {
       y_pred <- pvals
     }
 
-    if (!(pval_threshold %in% names(details))) {
+    if (!("pval_threshold" %in% names(setup))) {
       stop("P-value threshold not given for a QuiPT!")
     } else {
       y_pred <- (y_pred < setup[["pval_threshold"]])
