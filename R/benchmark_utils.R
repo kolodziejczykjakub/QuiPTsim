@@ -65,13 +65,31 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
   if (feature_selection_method == "QuiPT") {
     out <- data.frame(test_features(target = attr(ngram_matrix, "target"),
-                                             features = ngram_matrix))
+                                             features = ngram_matrix,
+                                    threshold = 0))
+    out[["score"]] <- out[["p.value"]]
   }
+
+  # add a column indicating if given ngram is positive
+  posNgrams <- positive_ngrams(ngram_matrix)
+  out[names(posNgrams)] <- posNgrams
 
   out
 }
 
+#'
+#'
 
+calculate_score <- function(score, method, ...) {
+
+  if (!(feature_selection_method %in% c("QuiPT"))) {
+    stop("Unkown feature selection method!")
+  }
+
+
+
+
+}
 
 
 
