@@ -18,18 +18,20 @@ create_benchmark_data <- function(paths, setup) {
 
   }
 
+  attr(results, "setup") <- setup
+
   results
 }
 
 #' Function summarizes results for a given feature selection method
 #'
-benchmark_summary <- function(scores) {
+benchmark_summary <- function(scores, setup) {
 
   evaluation_metrics <- lapply(scores, function(sc) {
 
 
-    y_true <- res[["positive.ngram"]]
-    y_pred <- calculate_score(res[["score"]], method, ...)
+    y_true <- sc[["positive.ngram"]]
+    y_pred <- calculate_score(sc, setup)
 
     list(sensitivity = sensitivity(y_true, y_pred),
          specificity = specificity(y_true, y_pred),

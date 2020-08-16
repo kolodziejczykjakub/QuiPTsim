@@ -80,15 +80,38 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 #'
 #'
 
-calculate_score <- function(score, method, ...) {
+calculate_score <- function(results, setup) {
 
-  if (!(feature_selection_method %in% c("QuiPT"))) {
+  method <- setup[["method"]]
+
+  if (!(method %in% c("QuiPT", "Boruta"))) {
     stop("Unkown feature selection method!")
   }
 
+  # QuiPT setup
+  if (method == "QuiPT") {
 
+    pvals <- results[["score"]]
 
+    if (pval_adj %in% names(setup)) {
+      y_pred <- p.adjust(pvals, method = setup[["pval_adj"]])
+    } else {
+      y_pred <- pvals
+    }
 
+    if (!(pval_threshold %in% names(details))) {
+      stop("P-value threshold not given for a QuiPT!")
+    } else {
+      y_pred <- (y_pred < setup[["pval_threshold"]])
+    }
+  }
+
+  # Boruta setup
+  if (method == "Boruta") {
+    stop("Not done yet")
+  }
+
+  y_pred
 }
 
 
