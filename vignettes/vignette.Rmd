@@ -38,8 +38,8 @@ Results of each simulation are placed in previously stated directory. The csv fi
 Simulation highlights:
 
 * Each simulation has constant number of sequences ($6000$), since this is an upper bound for most of datasets and these can be sampled in case we would need smaller datasets
-* Various alphabet sizes are used:
-  * Full 20-element alphabet with various probability vectors (based on drake repo)
+* Various alphabet sizes are used *sequences have been sampled idependently*:
+  * Full 20-element alphabet with various probability vectors (based on drake repo) *AmpGram*
   * Simplified alphabet (from literature and AmyloGram) with probabilites from AmyloGram analysis
 * Each simulation has been repeated $100$ in order to ensure stability of results
 * Half of the sequences are positive (have motif injected) -- we can manipulate fraction parameter by sampling full dataset

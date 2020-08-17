@@ -1,0 +1,20 @@
+---
+title: "QuiPTsim full description"
+author: "Jakub Kała"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# What did not work for us
+
+## Generating sequence probabilites using Markov Chains
+
+## Generating alphabet probabilites with  given cosine similarity
