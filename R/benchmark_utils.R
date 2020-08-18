@@ -90,7 +90,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 #'
 #'
 
-calculate_score <- function(results, setup) {
+calculate_score <- function(scores, setup) {
 
   method <- setup[["method"]]
 
@@ -109,7 +109,7 @@ calculate_score <- function(results, setup) {
       stop("P-value adjustments have not been set!")
     }
 
-    WYNIKI <- expand.grid(pval_thresholds = setup[["pval_thresholds"]],
+    results <- expand.grid(pval_thresholds = setup[["pval_thresholds"]],
                           pval_adjustments = setup[["pval_adjustments"]])
 
     for (pval_th in setup[["pval_thresholds"]]) {
@@ -117,10 +117,10 @@ calculate_score <- function(results, setup) {
 
         out <- list()
 
-        for (i in 1:length(results)) {
+        for (i in 1:length(scores)) {
 
-          pvals <- results[[i]][["score"]]
-          y_true <- results[[i]][["positive.ngram"]]
+          pvals <- scores[[i]][["score"]]
+          y_true <- scores[[i]][["positive.ngram"]]
 
           if (!(pval_adj == "")) {
             y_pred <- p.adjust(pvals, method = pval_adj)
@@ -137,15 +137,15 @@ calculate_score <- function(results, setup) {
         metrics_names <- names(out[[1]])
 
         aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
-          lapply(out, function(results)
-            results[[metric_name]])), unlist)
+          lapply(out, function(r)
+            r[[metric_name]])), unlist)
 
         aggregated_out <- c(setNames(sapply(aggregated_metrics, mean),
                                      paste0(metrics_names, "_mean")),
                             setNames(sapply(aggregated_metrics, sd),
                                      paste0(metrics_names, "_std")))
 
-        WYNIKI[WYNIKI[["pval_thresholds"]] == pval_th & WYNIKI[["pval_adjustments"]] == pval_adj,
+        results[results[["pval_thresholds"]] == pval_th & results[["pval_adjustments"]] == pval_adj,
                names(aggregated_out)] = aggregated_out
 
       }
@@ -157,7 +157,7 @@ calculate_score <- function(results, setup) {
     stop("Not done yet")
   }
 
-  WYNIKI
+  results
 
 }
 

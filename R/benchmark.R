@@ -31,18 +31,9 @@ create_benchmark_data <- function(paths, setup) {
 #'
 benchmark_summary <- function(scores, setup) {
 
-    calculate_score(scores, setup)
+  evaluation_metrics <- calculate_score(scores, setup)
 
-#
-#   metrics_names <- names(evaluation_metrics[[1]])
-#
-#   aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
-#     lapply(evaluation_metrics, function(results)
-#       results[[metric_name]])), unlist)
-#
-#   data.frame(list(mean = sapply(aggregated_metrics, mean),
-#                   standard.dev = sapply(aggregated_metrics, sd)),
-#              row.names = metrics_names)
+  attr(evaluation_metrics, "setup") <- setup
 
   evaluation_metrics
 }
