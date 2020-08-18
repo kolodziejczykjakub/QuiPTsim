@@ -101,18 +101,54 @@ calculate_score <- function(results, setup) {
   # QuiPT setup
   if (method == "QuiPT") {
 
-    pvals <- results[["score"]]
-
-    if ("pval_adj" %in% names(setup)) {
-      y_pred <- p.adjust(pvals, method = setup[["pval_adj"]])
-    } else {
-      y_pred <- pvals
+    if (!("pval_thresholds" %in% names(setup))) {
+      stop("P-value thresholds have not been set!")
     }
 
-    if (!("pval_threshold" %in% names(setup))) {
-      stop("P-value threshold not given for a QuiPT!")
-    } else {
-      y_pred <- (y_pred < setup[["pval_threshold"]])
+    if (!("pval_adjustments" %in% names(setup))) {
+      stop("P-value adjustments have not been set!")
+    }
+
+    WYNIKI <- expand.grid(pval_thresholds = setup[["pval_thresholds"]],
+                          pval_adjustments = setup[["pval_adjustments"]])
+
+    for (pval_th in setup[["pval_thresholds"]]) {
+      for (pval_adj in setup[["pval_adjustments"]]) {
+
+        out <- list()
+
+        for (i in 1:length(results)) {
+
+          pvals <- results[[i]][["score"]]
+          y_true <- results[[i]][["positive.ngram"]]
+
+          if (!(pval_adj == "")) {
+            y_pred <- p.adjust(pvals, method = pval_adj)
+          } else {
+            y_pred <- pvals
+          }
+
+          y_pred <- (y_pred < pval_th)
+
+          out[[i]] <- compute_metrics(y_true, y_pred)
+
+        }
+
+        metrics_names <- names(out[[1]])
+
+        aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+          lapply(out, function(results)
+            results[[metric_name]])), unlist)
+
+        aggregated_out <- c(setNames(sapply(aggregated_metrics, mean),
+                                     paste0(metrics_names, "_mean")),
+                            setNames(sapply(aggregated_metrics, sd),
+                                     paste0(metrics_names, "_std")))
+
+        WYNIKI[WYNIKI[["pval_thresholds"]] == pval_th & WYNIKI[["pval_adjustments"]] == pval_adj,
+               names(aggregated_out)] = aggregated_out
+
+      }
     }
   }
 
@@ -121,7 +157,8 @@ calculate_score <- function(results, setup) {
     stop("Not done yet")
   }
 
-  y_pred
+  WYNIKI
+
 }
 
 

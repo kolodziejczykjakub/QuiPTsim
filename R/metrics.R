@@ -71,3 +71,12 @@ F1score <- function (y_true, y_pred) {
   (2 * prec * rec) / (prec + rec)
 }
 
+compute_metrics <- function(y_true, y_pred) {
+
+  list(sensitivity = sensitivity(y_true, y_pred),
+       specificity = specificity(y_true, y_pred),
+       F1score = F1score(y_true, y_pred),
+       precision = precision(y_true, y_pred),
+       recall = recall(y_true, y_pred))
+
+}

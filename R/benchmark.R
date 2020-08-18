@@ -31,28 +31,29 @@ create_benchmark_data <- function(paths, setup) {
 #'
 benchmark_summary <- function(scores, setup) {
 
-  evaluation_metrics <- lapply(scores, function(sc) {
+    calculate_score(scores, setup)
 
+#
+#   metrics_names <- names(evaluation_metrics[[1]])
+#
+#   aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+#     lapply(evaluation_metrics, function(results)
+#       results[[metric_name]])), unlist)
+#
+#   data.frame(list(mean = sapply(aggregated_metrics, mean),
+#                   standard.dev = sapply(aggregated_metrics, sd)),
+#              row.names = metrics_names)
 
-    y_true <- sc[["positive.ngram"]]
-    y_pred <- calculate_score(sc, setup)
+  evaluation_metrics
+}
 
-    list(sensitivity = sensitivity(y_true, y_pred),
-         specificity = specificity(y_true, y_pred),
-         F1score = F1score(y_true, y_pred),
-         precision = precision(y_true, y_pred),
-         recall = recall(y_true, y_pred))
+#'
+#'
 
-  })
+QuiPTsimBenchmark <- function() {
 
-  metrics_names <- names(evaluation_metrics[[1]])
+  # create benchmark data
 
-  aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
-    lapply(evaluation_metrics, function(results)
-      results[[metric_name]])), unlist)
-
-  data.frame(list(mean = sapply(aggregated_metrics, mean),
-                  standard.dev = sapply(aggregated_metrics, sd)),
-             row.names = metrics_names)
+  # benchmark summary
 }
 
