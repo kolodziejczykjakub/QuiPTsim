@@ -5,22 +5,20 @@
 #' @export
 create_benchmark_data <- function(paths, setup) {
 
-  results <- list()
-  details <- list()
+  if (!("shuffle_matrices" %in% names(setup))) {
 
-  totalIterations = length(paths)
-  pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)",
-                         total = totalIterations)
-  for (i in 1:totalIterations) {
+    results <- pblapply(paths, function(path) {
 
-    path <- paths[i]
+      m <- read_ngram_matrix(path)
+      filter_ngrams(m,setup[["method"]])
+    })
 
-    m <- read_ngram_matrix(path)
-    res <- filter_ngrams(m, setup[["method"]])
-    results <- c(results, list(res))
+  } else {
+    listOfPaths <- lapply(1:length(paths), function(x) sample(paths, setup[["shuffle_matrics"]]))
+    # TODO: no idea, how this one should be implemented.
 
-    pb$tick(1)
   }
+
 
   attr(results, "setup") <- setup
 

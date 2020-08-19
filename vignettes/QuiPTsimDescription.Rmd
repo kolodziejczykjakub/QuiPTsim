@@ -13,6 +13,11 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Simulation data
+
+## Extensive 
+
+
 # What did not work for us
 
 ## Generating sequence probabilites using Markov Chains
