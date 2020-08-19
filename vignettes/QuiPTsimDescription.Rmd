@@ -13,9 +13,43 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+QuiPTsim contains source code used utilized in extensive study of Quick Permutation Test (QuiPT) properties. 
+QuiPT have been further compared to other widely used feature selection algorithms (<span style="color:blue">Hope this gonna happen</span>). 
+
 # Simulation data
 
-## Extensive 
+Following steps have been carried out to create datasets:
+
+<ol>
+
+<li> 
+Various alphabets have been defined. Sequences generated consist of both full alphabet and and their simplifications(from literature & domain knowledge of Mr Burdukiewicz).
+</li>
+
+<li>
+Sequences have been generated both using uniform distribution of elements and previously computed element probabilites (AAs occurence count in AmpGram data). Sequence simplification was further based on precomputed AA probabilites. 
+</li>
+
+<li>
+For such sequences, motif injection has been applied. Again, AA occurence probability was precomputed on AmpGram data.
+</li>
+
+
+<li>
+Each n-gram occurence matrix has been equipped with a list of motifs and their masks.
+</li>
+
+</ol>
+
+## Simulation pipeline details
+
+Function `create_simulation_data()` is a high-level wrapper of function implemented in `QuiPTsim` package as a data generation automation framework. 
+
+Results of single simulation iteration are saved in previously stated directory. N-gram occurence matrices (in RDS format) are saved along with master data frame in csv format that contains all the details about prepared dataset. Each row represents single matrix and its location is defined in path column.
+
+Simulation highlights:
+
+* 
 
 
 # What did not work for us
