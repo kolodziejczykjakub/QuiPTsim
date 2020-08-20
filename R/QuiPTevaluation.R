@@ -105,3 +105,23 @@ rbind_ngram_matrices <- function(m1, m2) {
   m_extended
 }
 
+rbind_ngrams <- function(...) {
+
+  matrices <- list(...)
+  m <- matrices[[1]]
+
+  for (i in 2:length(matrices)) {
+    m <- rbind_ngram_matrices(m, matrices[[i]])
+  }
+
+  m
+}
+
+
+
+
+
+
+
+
+
