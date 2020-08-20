@@ -31,7 +31,7 @@ Sequences have been generated both using uniform distribution of elements and pr
 </li>
 
 <li>
-For such sequences, motif injection has been applied. Again, AA occurence probability was precomputed on AmpGram data.
+For such sequences, motifs have been injected. Again, AA occurence probability was precomputed on AmpGram data. Worth nothing is that motif injection has been implemented so that motifs can overlap each other.
 </li>
 
 
@@ -49,7 +49,14 @@ Results of single simulation iteration are saved in previously stated directory.
 
 Simulation highlights:
 
-* 
+* Each simulation has a constant number of sequences ($6000$) since this is an upper bound for most of datasets available. Smaller datasets can be achieved by subsampling all sequences.
+* Both full and simplified alphabets have been considered:
+  * 20-element alphabet with various probability vectors (based on AmpGram drake repository)
+  * Simplified alphabets both from literature and Amylogram analysis with probabilites from AmpGram analysis(<span style="color:blue">make sure this is true</span>).
+* Each simulation has been repeated $100$ times
+* Positive sequences make $50%$ of full dataset.
+* Number of alphabet elements and total number of gaps in motifs are fixed in all considerations($n=4$ and $d=6$ give maximum length of motif 10).
+
 
 
 # What did not work for us
