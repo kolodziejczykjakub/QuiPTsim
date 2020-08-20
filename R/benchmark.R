@@ -9,13 +9,46 @@ create_benchmark_data <- function(paths, setup) {
 
     results <- pblapply(paths, function(path) {
 
-      m <- read_ngram_matrix(path)
+
+      if (!("fraction" %in% names(setup) & "n" %in% names(setup))) {
+        m <- read_ngram_matrix(path)
+      } else {
+        m <- tryCatch({read_ngram_matrix(path, n = setup[["n"]], fraction = setup[["fraction"]])},
+                      error = function(c) {
+                        message("Either number of sequences or fraction have not been set")
+                        message("Original message:")
+                        message(c)
+                        })
+
+      }
+
       filter_ngrams(m,setup[["method"]])
     })
 
   } else {
-    listOfPaths <- lapply(1:length(paths), function(x) sample(paths, setup[["shuffle_matrics"]]))
-    # TODO: no idea, how this one should be implemented.
+
+    listOfPaths <- lapply(1:length(paths), function(x) sample(paths, setup[["shuffle_matrices"]]))
+
+    results <- pblapply(listOfPaths, function(pathsRep) {
+
+      ngram_matrices <- lapply(pathsRep, function(x)
+        read_ngram_matrix(x,
+                          n = round(setup[["n"]] / setup[["shuffle_matrices"]], 0),
+                          fraction = setup[["fraction"]]))
+
+      m <- ngram_matrices[[1]]
+
+      for (i in 2:length(ngram_matrices)) {
+        m <- rbind_ngram_matrices(m, ngram_matrices[[i]])
+      }
+
+      filter_ngrams(m,setup[["method"]])
+
+    })
+
+
+
+
 
   }
 
@@ -24,6 +57,7 @@ create_benchmark_data <- function(paths, setup) {
 
   results
 }
+
 
 #' Function summarizes results for a given feature selection method
 #'
