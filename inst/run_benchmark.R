@@ -22,3 +22,25 @@ benchmark_summary(bm2, list(method = "QuiPT",
                            pval_adjustments = c("", "BH")))
 
 
+
+
+
+paths1 <- as.character(df[df$l_seq == 10 & df$n_motifs == 1, "path"])
+paths2 <- as.character(df[df$l_seq == 10 & df$n_motifs == 2, "path"])
+
+c(paths1, paths2)
+
+# TODO:
+list(paths1, paths2)
+
+####################################################################
+setup = list(method = "QuiPT",
+             fraction = 0.5,
+             n = 100,
+             pval_thresholds = c(0.05, 0.01),
+             pval_adjustments = c("", "BH"))
+
+results <- QuiPTsimBenchmark(paths, setup)
+
+
+

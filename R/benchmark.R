@@ -36,21 +36,13 @@ create_benchmark_data <- function(paths, setup) {
                           n = round(setup[["n"]] / setup[["shuffle_matrices"]], 0),
                           fraction = setup[["fraction"]]))
 
-      m <- ngram_matrices[[1]]
-
-      for (i in 2:length(ngram_matrices)) {
-        m <- rbind_ngram_matrices(m, ngram_matrices[[i]])
-      }
+      m <- rbind_ngram_matrices(ngram_matrices)
 
       filter_ngrams(m,setup[["method"]])
 
     })
 
-
-
-
-
-  }
+}
 
 
   attr(results, "setup") <- setup
@@ -73,10 +65,12 @@ benchmark_summary <- function(scores, setup) {
 #'
 #'
 
-QuiPTsimBenchmark <- function() {
+QuiPTsimBenchmark <- function(paths, setup) {
 
   # create benchmark data
+  benchmark_data <- create_benchmark_data(paths, setup)
 
   # benchmark summary
+  benchmark_summary(benchmark_data, attr(benchmark_data, "setup"))
 }
 

@@ -83,7 +83,7 @@ QuiPT_summary <- function(ngram_matrix) {
 #' @importFrom pbapply  pblapply
 #' @export
 
-rbind_ngram_matrices <- function(m1, m2) {
+rbind_ngrams <- function(m1, m2) {
 
   m1_unique_colnames <- setdiff(colnames(m1), colnames(m2))
   m2_unique_colnames <- setdiff(colnames(m2), colnames(m1))
@@ -105,13 +105,18 @@ rbind_ngram_matrices <- function(m1, m2) {
   m_extended
 }
 
-rbind_ngrams <- function(...) {
+rbind_ngram_matrices <- function(...) {
 
   matrices <- list(...)
+
+  if (length(matrices) < 2) {
+    stop("At least 2 matrices must be passed!")
+  }
+
   m <- matrices[[1]]
 
   for (i in 2:length(matrices)) {
-    m <- rbind_ngram_matrices(m, matrices[[i]])
+    m <- rbind_ngrams(m, matrices[[i]])
   }
 
   m

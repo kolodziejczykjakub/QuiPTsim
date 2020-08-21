@@ -67,7 +67,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
   if (feature_selection_method == "QuiPT") {
     out <- data.frame(test_features(target = attr(ngram_matrix, "target"),
                                              features = ngram_matrix,
-                                    threshold = 0))
+                                    threshold = -1))
     out[["score"]] <- out[["p.value"]]
   }
 
@@ -77,8 +77,6 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
     browser()
     Boruta(as.matrix(m), attr(m, "target"))
   }
-
-
 
   # add a column indicating if given ngram is positive
   posNgrams <- positive_ngrams(ngram_matrix)
