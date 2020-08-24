@@ -54,28 +54,6 @@ read_ngram_matrix <- function(filePath, n = NULL, fraction = 0.5) {
   matrix
 }
 
-#' test QuiPT
-#' @param ngram_matrix matrix of n-gram occurences (computed in [create_simulation_data()])
-#' @param mc markovchain object to calculate n-gram probability
-#' @param adjustments p-value adjustments for multiple testing
-#' @param thresholds p-value thresholds
-#' @return data frame with results of QuiPT testing
-#' @importFrom stats p.adjust
-#' @importFrom biogram decode_ngrams
-#' @importFrom biogram code_ngrams
-#' @export
-
-QuiPT_summary <- function(ngram_matrix) {
-
-  # create list of unique motifs
-  #unique_motifs <- unique(unlist(attr(ngram_matrix, "motifs"), recursive = FALSE))
-
-  res <- data.frame(biogram::test_features(target = attr(ngram_matrix, "target"),
-                                              features = ngram_matrix))
-
-  res
-}
-
 #' function combines two ngram matrices
 #' @param m1 upper matrix
 #' @param m2 lower matrix
@@ -104,6 +82,11 @@ rbind_ngrams <- function(m1, m2) {
 
   m_extended
 }
+
+#' function binds n-gram matrices
+#' @param ... ngram_matrices
+#' @return combined ngram matrix
+#' @export
 
 rbind_ngram_matrices <- function(...) {
 
