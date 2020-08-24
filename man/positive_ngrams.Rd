@@ -6,6 +6,9 @@
 \usage{
 positive_ngrams(ngram_matrix)
 }
+\arguments{
+\item{ngram_matrix}{matrix of n-gram occurences}
+}
 \description{
 Positive n-gram is either n-gram containing motif (not longer than n + (n+1) // 4)
 or n-gram that is a part of motif

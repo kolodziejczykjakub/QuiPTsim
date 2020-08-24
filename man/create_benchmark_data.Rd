@@ -7,6 +7,11 @@ Result is an input to the benchmark.}
 \usage{
 create_benchmark_data(paths, setup)
 }
+\arguments{
+\item{paths}{list of n-gram matrices' paths}
+
+\item{setup}{list of experiment details}
+}
 \description{
 Computes feature selection on n-gram matrices
 Result is an input to the benchmark.

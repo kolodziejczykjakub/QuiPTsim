@@ -2,8 +2,7 @@
 #' @description
 #' Positive n-gram is either n-gram containing motif (not longer than n + (n+1) // 4)
 #' or n-gram that is a part of motif
-#' @param motifs
-#' @param ngram_matrix
+#' @param ngram_matrix matrix of n-gram occurences
 #' @export
 
 positive_ngrams <- function(ngram_matrix) {
@@ -59,6 +58,8 @@ positive_ngrams <- function(ngram_matrix) {
 #' Wrapper for variuous feature selection method evaluated in a QuiPTsim benchmark
 #' @param ngram_matrix matrix of n-gram occurences
 #' @param feature_selection_method feature selection method name (QuiPT, ...)
+#' @importFrom stats setNames
+#' @importFrom stats sd
 #' @export
 
 filter_ngrams <- function(ngram_matrix, feature_selection_method) {

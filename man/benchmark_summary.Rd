@@ -6,6 +6,11 @@
 \usage{
 benchmark_summary(scores, setup)
 }
+\arguments{
+\item{scores}{list of filter scores}
+
+\item{setup}{evaluation details}
+}
 \description{
 Function summarizes results for a given feature selection method
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/benchmark_utils.R
 \name{filter_ngrams}
 \alias{filter_ngrams}
-\title{Wrapper for variuous feature selection method evaluated in a benchmark}
+\title{Wrapper for feature selection methods}
 \usage{
 filter_ngrams(ngram_matrix, feature_selection_method)
 }
@@ -12,5 +12,5 @@ filter_ngrams(ngram_matrix, feature_selection_method)
 \item{feature_selection_method}{feature selection method name (QuiPT, ...)}
 }
 \description{
-Wrapper for variuous feature selection method evaluated in a benchmark
+Wrapper for variuous feature selection method evaluated in a QuiPTsim benchmark
 }

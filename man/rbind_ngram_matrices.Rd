@@ -2,18 +2,16 @@
 % Please edit documentation in R/QuiPTevaluation.R
 \name{rbind_ngram_matrices}
 \alias{rbind_ngram_matrices}
-\title{function combines two ngram matrices}
+\title{function binds n-gram matrices}
 \usage{
-rbind_ngram_matrices(m1, m2)
+rbind_ngram_matrices(...)
 }
 \arguments{
-\item{m1}{upper matrix}
-
-\item{m2}{lower matrix}
+\item{...}{ngram_matrices}
 }
 \value{
 combined ngram matrix
 }
 \description{
-function combines two ngram matrices
+function binds n-gram matrices
 }
