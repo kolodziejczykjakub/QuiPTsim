@@ -1,8 +1,9 @@
 #' Computes feature selection on n-gram matrices
 #' Result is an input to the benchmark.
-#' @param paths
-#' @param setup
+#' @param paths list of n-gram matrices' paths
+#' @param setup list of experiment details
 #' @export
+
 create_benchmark_data <- function(paths, setup) {
 
   if (!("shuffle_matrices" %in% names(setup))) {
@@ -50,9 +51,10 @@ create_benchmark_data <- function(paths, setup) {
   results
 }
 
-
 #' Function summarizes results for a given feature selection method
-#'
+#' @inheritParams calculate_score
+#' @export
+
 benchmark_summary <- function(scores, setup) {
 
   evaluation_metrics <- calculate_score(scores, setup)
@@ -62,8 +64,12 @@ benchmark_summary <- function(scores, setup) {
   evaluation_metrics
 }
 
-#'
-#'
+
+#' Function wraps up QuiPT evaluation auxiliary functions
+#' @param paths list of paths of n-gram matrices
+#' @param setup list of experiment details
+#' @seealso `create_benchmark_data` `benchmark_summary`
+#' @export
 
 QuiPTsimBenchmark <- function(paths, setup) {
 

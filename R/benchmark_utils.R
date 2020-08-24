@@ -1,5 +1,6 @@
 #' Function returns ector indicating n-grams considered positive
-#' @description Positive n-gram is either n-gram containing motif (not longer than n + (n+1) // 4)
+#' @description
+#' Positive n-gram is either n-gram containing motif (not longer than n + (n+1) // 4)
 #' or n-gram that is a part of motif
 #' @param motifs
 #' @param ngram_matrix
@@ -53,13 +54,16 @@ positive_ngrams <- function(ngram_matrix) {
 
 }
 
-#' Wrapper for variuous feature selection method evaluated in a benchmark
+#' Wrapper for feature selection methods
+#' @description
+#' Wrapper for variuous feature selection method evaluated in a QuiPTsim benchmark
 #' @param ngram_matrix matrix of n-gram occurences
 #' @param feature_selection_method feature selection method name (QuiPT, ...)
+#' @export
 
 filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
-  if (!(feature_selection_method %in% c("QuiPT", "Boruta"))) {
+  if (!(feature_selection_method %in% c("QuiPT"))) {
     stop("Unkown feature selection method!")
   }
 
@@ -71,13 +75,6 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
     out[["score"]] <- out[["p.value"]]
   }
 
-  # Boruta algorithm
-  if (feature_selection_method == "Boruta") {
-
-    browser()
-    Boruta(as.matrix(m), attr(m, "target"))
-  }
-
   # add a column indicating if given ngram is positive
   posNgrams <- positive_ngrams(ngram_matrix)
   out[names(posNgrams)] <- posNgrams
@@ -85,14 +82,18 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
   out
 }
 
-#'
-#'
+#' Calculates metrics for a given feature selection method
+#' @description
+#' Function returns metrics average based on scores computed on n-gram matrices
+#' @param scores list of filter scores
+#' @param setup evaluation details
+#' @export
 
 calculate_score <- function(scores, setup) {
 
   method <- setup[["method"]]
 
-  if (!(method %in% c("QuiPT", "Boruta"))) {
+  if (!(method %in% c("QuiPT"))) {
     stop("Unkown feature selection method!")
   }
 
@@ -150,13 +151,7 @@ calculate_score <- function(scores, setup) {
     }
   }
 
-  # Boruta setup
-  if (method == "Boruta") {
-    stop("Not done yet")
-  }
-
   results
-
 }
 
 
