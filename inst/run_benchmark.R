@@ -42,5 +42,13 @@ setup = list(method = "QuiPT",
 
 results <- QuiPTsimBenchmark(paths, setup)
 
+#########################################################################
+
+bm2 <- create_benchmark_data(paths[1:2], list(method = "FCBF",
+                                              fraction = 0.5,
+                                              n = 300))
+
+benchmark_summary(bm2, list(method = "FCBF"))
+
 
 

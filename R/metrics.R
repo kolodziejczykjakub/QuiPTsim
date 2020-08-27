@@ -71,6 +71,10 @@ F1score <- function (y_true, y_pred) {
   (2 * prec * rec) / (prec + rec)
 }
 
+#' Aggregated scores
+#' @inheritParams sensitivity
+#' @export
+
 compute_metrics <- function(y_true, y_pred) {
 
   list(sensitivity = sensitivity(y_true, y_pred),

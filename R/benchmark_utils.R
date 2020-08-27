@@ -60,11 +60,12 @@ positive_ngrams <- function(ngram_matrix) {
 #' @param feature_selection_method feature selection method name (QuiPT, ...)
 #' @importFrom stats setNames
 #' @importFrom stats sd
+#' @importFrom FCBF fcbf
 #' @export
 
 filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
-  if (!(feature_selection_method %in% c("QuiPT"))) {
+  if (!(feature_selection_method %in% c("QuiPT", "FCBF"))) {
     stop("Unkown feature selection method!")
   }
 
@@ -74,6 +75,24 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
                                              features = ngram_matrix,
                                     threshold = -1))
     out[["score"]] <- out[["p.value"]]
+  }
+
+  if (feature_selection_method == "FCBF") {
+
+    features <- apply(ngram_matrix, 1, as.factor)
+    ngram_names <- rownames(features)
+
+    fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = T)
+
+    pred <- logical(length(ngram_names))
+    pred[fcbf_results[["index"]]] <- T
+
+    SU <- logical(length(ngram_names))
+    SU[fcbf_results[["index"]]] <- fcbf_results[["SU"]]
+
+    out <- data.frame(ngram = ngram_names,
+                      score = pred,
+                      SU = SU)
   }
 
   # add a column indicating if given ngram is positive
@@ -94,8 +113,26 @@ calculate_score <- function(scores, setup) {
 
   method <- setup[["method"]]
 
-  if (!(method %in% c("QuiPT"))) {
+  if (!(method %in% c("QuiPT", "FCBF"))) {
     stop("Unkown feature selection method!")
+  }
+
+  # FCBF setup
+  if (method == "FCBF") {
+    out <- lapply(scores, function(res)
+      compute_metrics(res[["positive.ngram"]], res[["score"]]))
+
+    metrics_names <- names(out[[1]])
+
+    aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+      lapply(out, function(r)
+        r[[metric_name]])), unlist)
+
+    aggregated_out <- c(setNames(sapply(aggregated_metrics, mean),
+                                 paste0(metrics_names, "_mean")),
+                        setNames(sapply(aggregated_metrics, sd),
+                                 paste0(metrics_names, "_std")))
+    results <- data.frame(as.list(aggregated_out))
   }
 
   # QuiPT setup
