@@ -13,15 +13,9 @@ create_benchmark_data <- function(paths, setup) {
 
       if (!("fraction" %in% names(setup) & "n" %in% names(setup))) {
         m <- read_ngram_matrix(path)
-      } else {
-        m <- tryCatch({read_ngram_matrix(path, n = setup[["n"]], fraction = setup[["fraction"]])},
-                      error = function(c) {
-                        message("Either number of sequences or fraction have not been set")
-                        message("Original message:")
-                        message(c)
-                        })
-
-      }
+        } else {
+        m <- read_ngram_matrix(path, n = setup[["n"]], fraction = setup[["fraction"]])
+        }
 
       filter_ngrams(m,setup[["method"]])
     })

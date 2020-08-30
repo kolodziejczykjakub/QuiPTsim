@@ -57,4 +57,10 @@ benchmark_summary(bm_QuiPT, list(method = "QuiPT",
                             pval_adjustments = c("", "BH")))
 
 
+#########################################################################
+
+bm_FCBF <- create_benchmark_data(paths, list(method = "Chi-squared",
+                                             fraction = 0.5,
+                                             n = 300))
+
 

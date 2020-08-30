@@ -65,7 +65,7 @@ positive_ngrams <- function(ngram_matrix) {
 
 filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
-  if (!(feature_selection_method %in% c("QuiPT", "FCBF"))) {
+  if (!(feature_selection_method %in% c("QuiPT", "FCBF", "Chi-squared"))) {
     stop("Unkown feature selection method!")
   }
 
@@ -73,6 +73,15 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
   if (feature_selection_method == "QuiPT") {
     out <- data.frame(test_features(target = attr(ngram_matrix, "target"),
                                              features = ngram_matrix,
+                                    threshold = -1))
+    out[["score"]] <- out[["p.value"]]
+  }
+
+  # Chi-squared test
+  if (feature_selection_method == "Chi-squared") {
+    browser()
+    out <- data.frame(test_features(target = attr(ngram_matrix, "target"),
+                                    features = ngram_matrix,
                                     threshold = -1))
     out[["score"]] <- out[["p.value"]]
   }
@@ -113,7 +122,7 @@ calculate_score <- function(scores, setup) {
 
   method <- setup[["method"]]
 
-  if (!(method %in% c("QuiPT", "FCBF"))) {
+  if (!(method %in% c("QuiPT", "FCBF", "Chi-squared"))) {
     stop("Unkown feature selection method!")
   }
 
