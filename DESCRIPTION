@@ -18,7 +18,8 @@ Imports:
     progress (>= 1.2.2),
     seqR,
     markovchain (>= 0.8.5),
-    methods
+    methods,
+    FCBF
 Suggests: 
     testthat,
     covr,
