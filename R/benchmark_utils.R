@@ -3,6 +3,7 @@
 #' Positive n-gram is either n-gram containing motif (not longer than n + (n+1) // 4)
 #' or n-gram that is a part of motif
 #' @param ngram_matrix matrix of n-gram occurences
+#' @importFrom biogram decode_ngrams
 #' @export
 
 positive_ngrams <- function(ngram_matrix) {
@@ -79,11 +80,22 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
   # Chi-squared test
   if (feature_selection_method == "Chi-squared") {
-    browser()
-    out <- data.frame(test_features(target = attr(ngram_matrix, "target"),
-                                    features = ngram_matrix,
-                                    threshold = -1))
-    out[["score"]] <- out[["p.value"]]
+
+    y <- attr(ngram_matrix, "target")
+
+    pvalues <- lapply(1:ncol(ngram_matrix), function(i) {
+
+      x <- as.vector(ngram_matrix[, i])
+
+      if (length(unique(x)) == 1) {
+        pval = 1
+      } else {
+        pval <- chisq.test(x, y, B = 200)$p.value
+      }
+      pval
+      })
+
+    out <- data.frame(score = unlist(pvalues))
   }
 
   if (feature_selection_method == "FCBF") {
@@ -145,7 +157,7 @@ calculate_score <- function(scores, setup) {
   }
 
   # QuiPT setup
-  if (method == "QuiPT") {
+  if (method %in% c("QuiPT", "Chi-squared")) {
 
     if (!("pval_thresholds" %in% names(setup))) {
       stop("P-value thresholds have not been set!")

@@ -1,3 +1,4 @@
+library(QuiPTsim)
 context("QuiPT evaluation")
 
 test_that("Correct simulation details read", {
