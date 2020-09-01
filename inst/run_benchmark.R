@@ -68,18 +68,13 @@ benchmark_summary(bm_chi, list(method = "Chi-squared",
 bm_fselector <- create_benchmark_data(paths[1:2], list(method = "FSelectorRcpp",
                                                  fraction = 0.5,
                                                  n = 300))
-benchmark_summary(bm_chi, list(method = "Chi-squared",
-                               pval_thresholds = c(0.05, 0.01),
-                               pval_adjustments = c("", "BH")))
-
+benchmark_summary(bm_praznik, list(method = "FSelectorRcpp"))
 #########################################################################
 
-bm_fselector <- create_benchmark_data(paths[1:2], list(method = "MRMR",
+bm_praznik <- create_benchmark_data(paths[1:2], list(method = "MRMR",
                                                        fraction = 0.5,
                                                        n = 300))
-benchmark_summary(bm_chi, list(method = "Chi-squared",
-                               pval_thresholds = c(0.05, 0.01),
-                               pval_adjustments = c("", "BH")))
+benchmark_summary(bm_praznik, list(method = "MRMR"))
 
 
 

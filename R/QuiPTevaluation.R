@@ -43,6 +43,7 @@ subset_matrix <- function(filePath, n, fraction) {
 #' @param filePath path of RDS file
 #' @param n number of sequences to be subsetted (optional)
 #' @param fraction fraction of positive sequences (optional)
+#' @import slam
 #' @export
 
 read_ngram_matrix <- function(filePath, n = NULL, fraction = 0.5) {

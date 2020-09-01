@@ -3,7 +3,7 @@
 #' Positive n-gram is either n-gram containing motif (not longer than n + (n+1) // 4)
 #' or n-gram that is a part of motif
 #' @param ngram_matrix matrix of n-gram occurences
-#' @importFrom biogram decode_ngrams
+#' @importFrom biogram decode_ngrams code_ngrams
 #' @export
 
 positive_ngrams <- function(ngram_matrix) {
@@ -88,7 +88,9 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
                                          Y = y,
                                          k = 5)
 
-    browser()
+    filtered_ngrams <- logical(length(colnames(x)))
+    filtered_ngrams[res$selection] <- TRUE
+    out <- data.frame(score = filtered_ngrams)
 
   }
 
@@ -99,15 +101,15 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
     IG <- information_gain(x = x,
                            y = y,
-                           discIntegers = F,
+                           discIntegers = FALSE,
                            type = c("infogain"))
     GR <- information_gain(x = x,
                            y = y,
-                           discIntegers = F,
+                           discIntegers = FALSE,
                            type = c("gainratio"))
     SU <- information_gain(x = x,
                            y = y,
-                           discIntegers = F,
+                           discIntegers = FALSE,
                            type = c("symuncert"))
 
     out <- data.frame(ngram = IG$attributes,
@@ -153,7 +155,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
     fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = T)
 
     pred <- logical(length(ngram_names))
-    pred[fcbf_results[["index"]]] <- T
+    pred[fcbf_results[["index"]]] <- TRUE
 
     SU <- logical(length(ngram_names))
     SU[fcbf_results[["index"]]] <- fcbf_results[["SU"]]
@@ -181,12 +183,15 @@ calculate_score <- function(scores, setup) {
 
   method <- setup[["method"]]
 
-  if (!(method %in% c("QuiPT", "FCBF", "Chi-squared"))) {
+  # Feature selection methods from praznik package
+  praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM")
+
+  if (!(method %in% c("QuiPT", "FCBF", "Chi-squared", praznik_filters))) {
     stop("Unkown feature selection method!")
   }
 
   # FCBF setup
-  if (method == "FCBF") {
+  if (method %in% c("FCBF", praznik_filters)) {
     out <- lapply(scores, function(res)
       compute_metrics(res[["positive.ngram"]], res[["score"]]))
 
