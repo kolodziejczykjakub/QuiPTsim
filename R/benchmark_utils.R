@@ -63,12 +63,33 @@ positive_ngrams <- function(ngram_matrix) {
 #' @importFrom stats sd
 #' @importFrom FCBF fcbf
 #' @importFrom FSelectorRcpp information_gain
+#' @importFrom praznik MIM MRMR JMI JMIM DISR NJMIM CMIM
 #' @export
 
 filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
-  if (!(feature_selection_method %in% c("QuiPT", "FCBF", "Chi-squared", "FSelectorRcpp"))) {
+  # Feature selection methods from praznik package
+  praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM")
+
+  if (!(feature_selection_method %in% c("QuiPT",
+                                        "FCBF",
+                                        "Chi-squared",
+                                        "FSelectorRcpp",
+                                        praznik_filters))) {
     stop("Unkown feature selection method!")
+  }
+
+  if (feature_selection_method %in% praznik_filters) {
+
+    x <- data.frame(as.matrix(ngram_matrix))
+    y <- attr(ngram_matrix, "target")
+
+    res <- get(feature_selection_method)(X = x,
+                                         Y = y,
+                                         k = 5)
+
+    browser()
+
   }
 
   if (feature_selection_method == "FSelectorRcpp") {

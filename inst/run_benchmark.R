@@ -72,5 +72,14 @@ benchmark_summary(bm_chi, list(method = "Chi-squared",
                                pval_thresholds = c(0.05, 0.01),
                                pval_adjustments = c("", "BH")))
 
+#########################################################################
+
+bm_fselector <- create_benchmark_data(paths[1:2], list(method = "MRMR",
+                                                       fraction = 0.5,
+                                                       n = 300))
+benchmark_summary(bm_chi, list(method = "Chi-squared",
+                               pval_thresholds = c(0.05, 0.01),
+                               pval_adjustments = c("", "BH")))
+
 
 
