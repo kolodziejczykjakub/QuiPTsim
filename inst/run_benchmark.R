@@ -55,12 +55,22 @@ benchmark_summary(bm_QuiPT, list(method = "QuiPT",
 
 #########################################################################
 
-bm_FCBF <- create_benchmark_data(paths, list(method = "Chi-squared",
+bm_chi <- create_benchmark_data(paths[1:2], list(method = "Chi-squared",
                                              fraction = 0.5,
                                              n = 300))
-benchmark_summary(bm_QuiPT, list(method = "QuiPT",
+benchmark_summary(bm_chi, list(method = "Chi-squared",
                                  pval_thresholds = c(0.05, 0.01),
                                  pval_adjustments = c("", "BH")))
+
+
+#########################################################################
+
+bm_fselector <- create_benchmark_data(paths[1:2], list(method = "FSelectorRcpp",
+                                                 fraction = 0.5,
+                                                 n = 300))
+benchmark_summary(bm_chi, list(method = "Chi-squared",
+                               pval_thresholds = c(0.05, 0.01),
+                               pval_adjustments = c("", "BH")))
 
 
 

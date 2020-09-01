@@ -62,12 +62,38 @@ positive_ngrams <- function(ngram_matrix) {
 #' @importFrom stats setNames
 #' @importFrom stats sd
 #' @importFrom FCBF fcbf
+#' @importFrom FSelectorRcpp information_gain
 #' @export
 
 filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
-  if (!(feature_selection_method %in% c("QuiPT", "FCBF", "Chi-squared"))) {
+  if (!(feature_selection_method %in% c("QuiPT", "FCBF", "Chi-squared", "FSelectorRcpp"))) {
     stop("Unkown feature selection method!")
+  }
+
+  if (feature_selection_method == "FSelectorRcpp") {
+
+    x <- data.frame(as.matrix(ngram_matrix))
+    y <- attr(ngram_matrix, "target")
+
+    IG <- information_gain(x = x,
+                           y = y,
+                           discIntegers = F,
+                           type = c("infogain"))
+    GR <- information_gain(x = x,
+                           y = y,
+                           discIntegers = F,
+                           type = c("gainratio"))
+    SU <- information_gain(x = x,
+                           y = y,
+                           discIntegers = F,
+                           type = c("symuncert"))
+
+    out <- data.frame(ngram = IG$attributes,
+                      IG = IG$importance,
+                      GR = GR$importance,
+                      SU = SU$importance)
+
   }
 
   # QuiPT feature selection
