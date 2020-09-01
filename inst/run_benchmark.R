@@ -68,7 +68,7 @@ benchmark_summary(bm_chi, list(method = "Chi-squared",
 bm_fselector <- create_benchmark_data(paths[1:2], list(method = "FSelectorRcpp",
                                                  fraction = 0.5,
                                                  n = 300))
-benchmark_summary(bm_praznik, list(method = "FSelectorRcpp"))
+benchmark_summary(bm_fselector, list(method = "FSelectorRcpp"))
 #########################################################################
 
 bm_praznik <- create_benchmark_data(paths[1:2], list(method = "MRMR",

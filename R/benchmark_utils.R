@@ -107,6 +107,8 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
                            y = y,
                            discIntegers = FALSE,
                            type = c("gainratio"))
+    GR[["importance"]][is.na(GR[["importance"]])] <-0
+
     SU <- information_gain(x = x,
                            y = y,
                            discIntegers = FALSE,
@@ -186,8 +188,40 @@ calculate_score <- function(scores, setup) {
   # Feature selection methods from praznik package
   praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM")
 
-  if (!(method %in% c("QuiPT", "FCBF", "Chi-squared", praznik_filters))) {
+  if (!(method %in% c("QuiPT",
+                      "FCBF",
+                      "Chi-squared",
+                      "FSelectorRcpp",
+                      praznik_filters))) {
     stop("Unkown feature selection method!")
+  }
+
+  if (method == "FSelectorRcpp") {
+
+    criterions <- c("IG", "GR", "SU")
+
+    results <- lapply(criterions, function(metric) {
+
+      pos <- 100
+
+      metrics <-lapply(scores, function(res) {
+        y_pred <- res[[metric]] > sort(res[[metric]],
+                                       decreasing = TRUE)[pos]
+        compute_metrics(res[["positive.ngram"]], y_pred)
+      })
+
+      metrics_names <- names(metrics[[1]])
+
+      aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+        lapply(metrics, function(r)
+          r[[metric_name]])), unlist)
+
+      aggregated_metrics <- c(setNames(sapply(aggregated_metrics, mean),
+                                       paste0(metrics_names, "_mean")),
+                              setNames(sapply(aggregated_metrics, sd),
+                                       paste0(metrics_names, "_std")))
+      data.frame(as.list(aggregated_metrics))
+    })
   }
 
   # FCBF setup
