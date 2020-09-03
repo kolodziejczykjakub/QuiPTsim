@@ -8,7 +8,7 @@ create_benchmark_data <- function(paths, setup) {
 
   if (!("shuffle_matrices" %in% names(setup))) {
 
-    results <- pblapply(paths, function(path) {
+    res <- pblapply(paths, function(path) {
 
 
       if (!("fraction" %in% names(setup) & "n" %in% names(setup))) {
@@ -17,9 +17,10 @@ create_benchmark_data <- function(paths, setup) {
         m <- read_ngram_matrix(path, n = setup[["n"]], fraction = setup[["fraction"]])
         }
 
-      filter_ngrams(m,setup[["method"]])
+      computation.time <- system.time(res <- filter_ngrams(m, setup[["method"]]))[1]
+      list(time = computation.time,
+           results = res)
     })
-
   } else {
 
     listOfPaths <- lapply(1:length(paths), function(x) sample(paths, setup[["shuffle_matrices"]]))
@@ -33,13 +34,15 @@ create_benchmark_data <- function(paths, setup) {
 
       m <- rbind_ngram_matrices(ngram_matrices)
 
-      filter_ngrams(m,setup[["method"]])
+      computation.time <- system.time(res <- filter_ngrams(m, setup[["method"]]))[1]
+      list(time = computation.time,
+           results = res)
 
     })
+  }
 
-}
-
-
+  results <- lapply(res, function(x) x[["results"]])
+  attr(results, "time") <- unlist(lapply(res, function(x) x[["time"]]))
   attr(results, "setup") <- setup
 
   results
