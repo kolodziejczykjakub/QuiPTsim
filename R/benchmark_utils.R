@@ -80,18 +80,18 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
   }
 
   if (feature_selection_method %in% praznik_filters) {
-
+    browser()
     x <- data.frame(as.matrix(ngram_matrix))
     y <- attr(ngram_matrix, "target")
 
     res <- get(feature_selection_method)(X = x,
                                          Y = y,
-                                         k = 5)
+                                         k = round(ncol(x) * 0.05, digits = 0))
 
-    filtered_ngrams <- logical(length(colnames(x)))
-    filtered_ngrams[res$selection] <- TRUE
+    filtered_ngrams <- numeric(length(colnames(x)))
+    filtered_ngrams[res$selection] <- 1:(round(ncol(x) * 0.05, digits = 0))
     out <- data.frame(score = filtered_ngrams)
-
+    out[["pred"]] <- out[["score"]] > 0
   }
 
   if (feature_selection_method == "FSelectorRcpp") {

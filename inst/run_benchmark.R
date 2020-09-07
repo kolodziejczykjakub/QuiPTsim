@@ -69,7 +69,7 @@ bm_fselector <- create_benchmark_data(paths[1:2], list(method = "FSelectorRcpp",
                                                  fraction = 0.5,
                                                  n = 300))
 benchmark_summary(bm_fselector, list(method = "FSelectorRcpp",
-                                     fractions = c(0.001, 0.01, 0.1)))
+                                     fractions = c(0.001, 0.01, 0.05)))
 #########################################################################
 
 bm_praznik <- create_benchmark_data(paths[1:2], list(method = "MRMR",
