@@ -198,30 +198,38 @@ calculate_score <- function(scores, setup) {
 
   if (method == "FSelectorRcpp") {
 
+    numFeatures <- sapply(setup[["fractions"]], function(frac)
+      round(nrow(scores[[1]]) * frac, digits = 0))
+
     criterions <- c("IG", "GR", "SU")
 
     results <- lapply(criterions, function(metric) {
 
-      pos <- 100
+      res <- lapply(numFeatures, function(nFeat) {
+        metrics <- lapply(scores, function(res) {
+          y_pred <- res[[metric]] > sort(res[[metric]],
+                                         decreasing = TRUE)[nFeat]
+          compute_metrics(res[["positive.ngram"]], y_pred)
+        })
 
-      metrics <-lapply(scores, function(res) {
-        y_pred <- res[[metric]] > sort(res[[metric]],
-                                       decreasing = TRUE)[pos]
-        compute_metrics(res[["positive.ngram"]], y_pred)
+        metrics_names <- names(metrics[[1]])
+
+        aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+          lapply(metrics, function(r)
+            r[[metric_name]])), unlist)
+
+        aggregated_metrics <- c(setNames(sapply(aggregated_metrics, mean),
+                                         paste0(metrics_names, "_mean")),
+                                setNames(sapply(aggregated_metrics, sd),
+                                         paste0(metrics_names, "_std")))
+
+        data.frame(as.list(aggregated_metrics))
       })
-
-      metrics_names <- names(metrics[[1]])
-
-      aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
-        lapply(metrics, function(r)
-          r[[metric_name]])), unlist)
-
-      aggregated_metrics <- c(setNames(sapply(aggregated_metrics, mean),
-                                       paste0(metrics_names, "_mean")),
-                              setNames(sapply(aggregated_metrics, sd),
-                                       paste0(metrics_names, "_std")))
-      data.frame(as.list(aggregated_metrics))
+      data.frame(num_features = numFeatures,
+                 do.call(rbind, res))
     })
+    results <- data.frame(criterion = rep(criterions, each = length(results)),
+                          do.call(rbind, results))
   }
 
   # FCBF setup
