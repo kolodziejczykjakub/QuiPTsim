@@ -228,8 +228,16 @@ calculate_score <- function(scores, setup) {
 
       res <- lapply(numFeatures, function(nFeat) {
         metrics <- lapply(scores, function(res) {
-          y_pred <- res[[metric]] > sort(res[[metric]],
-                                         decreasing = TRUE)[nFeat]
+
+          if (nFeat == 0 & 0 %in% setup[["fractions"]]) {
+            sorted_crit <- sort(res[[metric]], decreasing = TRUE)
+            id <- cpt.mean(sorted_crit, penalty="SIC", method="AMOC",class=FALSE)[1]
+            y_pred <- res[[metric]] > sorted_crit[id]
+          } else {
+            y_pred <- res[[metric]] > sort(res[[metric]],
+                                           decreasing = TRUE)[nFeat]
+          }
+
           compute_metrics(res[["positive.ngram"]], y_pred)
         })
 
@@ -240,7 +248,7 @@ calculate_score <- function(scores, setup) {
                  top_fraction = setup[["fractions"]],
                  do.call(rbind, res))
     })
-    results <- data.frame(criterion = rep(criterions, each = length(results)),
+    results <- data.frame(criterion = rep(criterions, each = length(numFeatures)),
                           do.call(rbind, results))
   }
 
