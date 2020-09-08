@@ -24,7 +24,7 @@ create_benchmark_data <- function(paths, setup) {
   } else {
 
     listOfPaths <- lapply(1:length(paths), function(x) sample(paths, setup[["shuffle_matrices"]]))
-
+    browser()
     results <- pblapply(listOfPaths, function(pathsRep) {
 
       ngram_matrices <- lapply(pathsRep, function(x)

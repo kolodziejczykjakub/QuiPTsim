@@ -59,6 +59,7 @@ positive_ngrams <- function(ngram_matrix) {
 #' Wrapper for variuous feature selection method evaluated in a QuiPTsim benchmark
 #' @param ngram_matrix matrix of n-gram occurences
 #' @param feature_selection_method feature selection method name (QuiPT, ...)
+#' @importFrom biogram test_features
 #' @importFrom stats setNames
 #' @importFrom stats sd
 #' @importFrom FCBF fcbf
@@ -80,7 +81,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
   }
 
   if (feature_selection_method %in% praznik_filters) {
-    browser()
+
     x <- data.frame(as.matrix(ngram_matrix))
     y <- attr(ngram_matrix, "target")
 
@@ -90,8 +91,8 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
     filtered_ngrams <- numeric(length(colnames(x)))
     filtered_ngrams[res$selection] <- 1:(round(ncol(x) * 0.05, digits = 0))
-    out <- data.frame(score = filtered_ngrams)
-    out[["pred"]] <- out[["score"]] > 0
+    out <- data.frame(rank = filtered_ngrams)
+    out[["score"]] <- out[["rank"]] > 0
   }
 
   if (feature_selection_method == "FSelectorRcpp") {
@@ -154,7 +155,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
     features <- apply(ngram_matrix, 1, as.factor)
     ngram_names <- rownames(features)
 
-    fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = T)
+    fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = FALSE)
 
     pred <- logical(length(ngram_names))
     pred[fcbf_results[["index"]]] <- TRUE
@@ -172,6 +173,26 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
   out[names(posNgrams)] <- posNgrams
 
   out
+}
+
+#' Aggregates metrics
+#' @export
+#'
+aggregate_metrics <- function(metrics) {
+
+  metrics_names <- names(metrics[[1]])
+
+  aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+    lapply(metrics, function(r)
+      r[[metric_name]])), unlist)
+
+  aggregated_metrics <- c(setNames(sapply(aggregated_metrics, mean),
+                                   paste0(metrics_names, "_mean")),
+                          setNames(sapply(aggregated_metrics, sd),
+                                   paste0(metrics_names, "_std")))
+
+  data.frame(as.list(aggregated_metrics))
+
 }
 
 #' Calculates metrics for a given feature selection method
@@ -212,18 +233,20 @@ calculate_score <- function(scores, setup) {
           compute_metrics(res[["positive.ngram"]], y_pred)
         })
 
-        metrics_names <- names(metrics[[1]])
+        # metrics_names <- names(metrics[[1]])
+        #
+        # aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+        #   lapply(metrics, function(r)
+        #     r[[metric_name]])), unlist)
+        #
+        # aggregated_metrics <- c(setNames(sapply(aggregated_metrics, mean),
+        #                                  paste0(metrics_names, "_mean")),
+        #                         setNames(sapply(aggregated_metrics, sd),
+        #                                  paste0(metrics_names, "_std")))
+        #
+        # data.frame(as.list(aggregated_metrics))
 
-        aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
-          lapply(metrics, function(r)
-            r[[metric_name]])), unlist)
-
-        aggregated_metrics <- c(setNames(sapply(aggregated_metrics, mean),
-                                         paste0(metrics_names, "_mean")),
-                                setNames(sapply(aggregated_metrics, sd),
-                                         paste0(metrics_names, "_std")))
-
-        data.frame(as.list(aggregated_metrics))
+        aggregate_metrics(metrics)
       })
       data.frame(num_features = numFeatures,
                  do.call(rbind, res))
@@ -237,17 +260,19 @@ calculate_score <- function(scores, setup) {
     out <- lapply(scores, function(res)
       compute_metrics(res[["positive.ngram"]], res[["score"]]))
 
-    metrics_names <- names(out[[1]])
+    # metrics_names <- names(out[[1]])
+    #
+    # aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+    #   lapply(out, function(r)
+    #     r[[metric_name]])), unlist)
+    #
+    # aggregated_out <- c(setNames(sapply(aggregated_metrics, mean),
+    #                              paste0(metrics_names, "_mean")),
+    #                     setNames(sapply(aggregated_metrics, sd),
+    #                              paste0(metrics_names, "_std")))
+    # results <- data.frame(as.list(aggregated_out))
 
-    aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
-      lapply(out, function(r)
-        r[[metric_name]])), unlist)
-
-    aggregated_out <- c(setNames(sapply(aggregated_metrics, mean),
-                                 paste0(metrics_names, "_mean")),
-                        setNames(sapply(aggregated_metrics, sd),
-                                 paste0(metrics_names, "_std")))
-    results <- data.frame(as.list(aggregated_out))
+    results <- aggregate_metrics(metrics)
   }
 
   # QuiPT setup
@@ -286,16 +311,18 @@ calculate_score <- function(scores, setup) {
 
         }
 
-        metrics_names <- names(out[[1]])
+        aggregated_out <- aggregate_metrics(out)
 
-        aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
-          lapply(out, function(r)
-            r[[metric_name]])), unlist)
-
-        aggregated_out <- c(setNames(sapply(aggregated_metrics, mean),
-                                     paste0(metrics_names, "_mean")),
-                            setNames(sapply(aggregated_metrics, sd),
-                                     paste0(metrics_names, "_std")))
+        # metrics_names <- names(out[[1]])
+        #
+        # aggregated_metrics <- lapply(lapply(metrics_names, function(metric_name)
+        #   lapply(out, function(r)
+        #     r[[metric_name]])), unlist)
+        #
+        # aggregated_out <- c(setNames(sapply(aggregated_metrics, mean),
+        #                              paste0(metrics_names, "_mean")),
+        #                     setNames(sapply(aggregated_metrics, sd),
+        #                              paste0(metrics_names, "_std")))
 
         results[results[["pval_thresholds"]] == pval_th & results[["pval_adjustments"]] == pval_adj,
                names(aggregated_out)] = aggregated_out
