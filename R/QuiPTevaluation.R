@@ -85,13 +85,18 @@ rbind_ngrams <- function(m1, m2) {
 }
 
 #' function binds n-gram matrices
-#' @param ... ngram_matrices
+#' @param ... ngram_matrices (list of matrices can also be passed)
 #' @return combined ngram matrix
 #' @export
 
 rbind_ngram_matrices <- function(...) {
 
   matrices <- list(...)
+
+  # if list of matrices passed
+  if (class(matrices) == "list"  & length(matrices) == 1) {
+    matrices <- unlist(matrices, recursive = FALSE)
+  }
 
   if (length(matrices) < 2) {
     stop("At least 2 matrices must be passed!")

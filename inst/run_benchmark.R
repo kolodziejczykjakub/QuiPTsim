@@ -11,24 +11,24 @@ benchmark_summary(bm, list(method = "QuiPT",
 bm2 <- create_benchmark_data(paths[1:2], list(method = "QuiPT",
                                         shuffle_matrices = 2,
                                         fraction = 0.5,
-                                        n = 300))
+                                        n = 30))
 benchmark_summary(bm2, list(method = "QuiPT",
                            pval_thresholds = c(0.05, 0.01),
                            pval_adjustments = c("", "BH")))
 ############
 setup = list(method = "QuiPT",
              fraction = 0.5,
-             n = 100,
+             n = 10,
              pval_thresholds = c(0.05, 0.01),
              pval_adjustments = c("", "BH"))
-results <- QuiPTsimBenchmark(paths, setup)
+results <- QuiPTsimBenchmark(paths[3:4], setup)
 ############
 bm_FCBF <- create_benchmark_data(paths[1:2], list(method="FCBF"))
 benchmark_summary(bm_FCBF, list(method = "FCBF"))
 ############
 bm_chi <- create_benchmark_data(paths[1:2], list(method = "Chi-squared",
                                              fraction = 0.5,
-                                             n = 300))
+                                             n = 30))
 benchmark_summary(bm_chi, list(method = "Chi-squared",
                                  pval_thresholds = c(0.05, 0.01),
                                  pval_adjustments = c("", "BH")))
@@ -41,7 +41,7 @@ benchmark_summary(bm_fselector, list(method = "FSelectorRcpp",
 ############
 bm_praznik <- create_benchmark_data(paths[1:2], list(method = "MRMR",
                                                        fraction = 0.5,
-                                                       n = 300))
+                                                       n = 30))
 benchmark_summary(bm_praznik, list(method = "MRMR"))
 
 

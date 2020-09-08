@@ -7,7 +7,7 @@
 rbind_ngram_matrices(...)
 }
 \arguments{
-\item{...}{ngram_matrices}
+\item{...}{ngram_matrices (list of matrices can also be passed)}
 }
 \value{
 combined ngram matrix

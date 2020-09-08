@@ -24,8 +24,8 @@ create_benchmark_data <- function(paths, setup) {
   } else {
 
     listOfPaths <- lapply(1:length(paths), function(x) sample(paths, setup[["shuffle_matrices"]]))
-    browser()
-    results <- pblapply(listOfPaths, function(pathsRep) {
+
+    res <- pblapply(listOfPaths, function(pathsRep) {
 
       ngram_matrices <- lapply(pathsRep, function(x)
         read_ngram_matrix(x,
@@ -57,6 +57,7 @@ benchmark_summary <- function(scores, setup) {
   evaluation_metrics <- calculate_score(scores, setup)
 
   attr(evaluation_metrics, "setup") <- setup
+  attr(evaluation_metrics, "time") <- attr(scores, "time")
 
   evaluation_metrics
 }
