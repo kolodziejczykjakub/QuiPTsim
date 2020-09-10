@@ -1,10 +1,10 @@
 library(QuiPTsim)
 
 # Number of sequences
-n_seq <- c(6000)
+n_seq <- c(60)
 
 # Replications
-reps <- 100
+reps <- 10
 
 # Number of motifs
 n_motifs <- 1:3
