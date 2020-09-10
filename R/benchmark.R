@@ -8,24 +8,31 @@ create_benchmark_data <- function(paths, setup) {
 
   if (!("shuffle_matrices" %in% names(setup))) {
 
-    res <- pblapply(paths, function(path) {
+    results <- pblapply(paths, function(path) {
 
 
       if (!("fraction" %in% names(setup) & "n" %in% names(setup))) {
         m <- read_ngram_matrix(path)
-        } else {
-        m <- read_ngram_matrix(path, n = setup[["n"]], fraction = setup[["fraction"]])
-        }
+      } else {
+        browser()
+        prin
+        m <- tryCatch({read_ngram_matrix(path, n = setup[["n"]], fraction = setup[["fraction"]])},
+                      error = function(c) {
+                        message("Either number of sequences or fraction have not been set")
+                        message("Original message:")
+                        message(c)
+                        })
 
-      computation.time <- system.time(res <- filter_ngrams(m, setup[["method"]]))[1]
-      list(time = computation.time,
-           results = res)
+      }
+
+      filter_ngrams(m,setup[["method"]])
     })
+
   } else {
 
     listOfPaths <- lapply(1:length(paths), function(x) sample(paths, setup[["shuffle_matrices"]]))
 
-    res <- pblapply(listOfPaths, function(pathsRep) {
+    results <- pblapply(listOfPaths, function(pathsRep) {
 
       ngram_matrices <- lapply(pathsRep, function(x)
         read_ngram_matrix(x,
@@ -34,15 +41,13 @@ create_benchmark_data <- function(paths, setup) {
 
       m <- rbind_ngram_matrices(ngram_matrices)
 
-      computation.time <- system.time(res <- filter_ngrams(m, setup[["method"]]))[1]
-      list(time = computation.time,
-           results = res)
+      filter_ngrams(m,setup[["method"]])
 
     })
-  }
 
-  results <- lapply(res, function(x) x[["results"]])
-  attr(results, "time") <- unlist(lapply(res, function(x) x[["time"]]))
+}
+
+
   attr(results, "setup") <- setup
 
   results
@@ -57,9 +62,14 @@ benchmark_summary <- function(scores, setup) {
   evaluation_metrics <- calculate_score(scores, setup)
 
   attr(evaluation_metrics, "setup") <- setup
-  attr(evaluation_metrics, "time") <- attr(scores, "time")
 
-  evaluation_metrics
+  results <- evaluation_metrics
+
+  if ("save" %in% names(setup)) {
+    saveRDS(list(results = results, setup = setup), file = setup[["save"]])
+  }
+
+  results
 }
 
 
