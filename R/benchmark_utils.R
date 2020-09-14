@@ -70,7 +70,7 @@ positive_ngrams <- function(ngram_matrix) {
 filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
   # Feature selection methods from praznik package
-  praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM")
+  praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM", "CMI")
 
   if (!(feature_selection_method %in% c("QuiPT",
                                         "FCBF",
@@ -207,7 +207,7 @@ calculate_score <- function(scores, setup) {
   method <- setup[["method"]]
 
   # Feature selection methods from praznik package
-  praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM")
+  praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM", "CMI")
 
   if (!(method %in% c("QuiPT",
                       "FCBF",
