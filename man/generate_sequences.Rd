@@ -50,5 +50,4 @@ results <- generate_sequences(n_seq, len, alph, motifs, 1)
 results <- generate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))
 results
 attributes(results)
-
 }

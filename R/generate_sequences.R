@@ -176,6 +176,38 @@ simulate_sequences <- function(n_seq,
   sequences
 }
 
+#' wrapper for seqR counters
+#' @importFrom seqR count_kmers count_multimers
+#' @export
+count_ngrams <- function(test_dat, alphabet, n = 4, d = 6) {
+
+  if (n == 1) {
+
+    test_res <- count_kmers(test_dat, 1, alphabet)
+
+  } else {
+    # element & gaps' positions for count_multigrams
+    ns <- c()
+    ds <- c()
+    for (i in 1:(n-1)) {
+      ds_ <- expand.grid(list(0:d)[rep(1, i)])
+      ds_ <- ds_[apply(ds_, 1, sum) <= d, , drop = FALSE]
+      ns <- c(ns, rep(i+1, nrow(ds_)))
+      ds <- c(ds, split(ds_, 1:nrow(ds_)))
+    }
+    ds <- lapply(ds, unlist)
+
+    test_res <- count_multimers(test_dat,
+                                c(1, ns),
+                                alphabet,
+                                kmer_gaps_list = c(list(c()), ds),
+                                with_kmer_counts = FALSE)
+
+  }
+
+  test_res
+}
+
 #' function counts n-grams in given sequences
 #' @param n_seq number of sequences to be generated
 #' @param l_seq sequence length
@@ -188,7 +220,6 @@ simulate_sequences <- function(n_seq,
 #' @param d maximum number of gaps in n-gram
 #' @return generated sequences
 #' @export
-#' @importFrom seqR count_multimers
 #' @examples
 #' n_seq <- 20
 #' len <- 1200
@@ -198,7 +229,6 @@ simulate_sequences <- function(n_seq,
 #' results <- generate_sequences(n_seq, len, alph, motifs, 1, seqProbs = c(0.7, 0.1, 0.1, 0.1))
 #' results
 #' attributes(results)
-#'
 generate_sequences <- function(n_seq,
                                l_seq,
                                alphabet,
@@ -223,13 +253,7 @@ generate_sequences <- function(n_seq,
   }
   ds <- lapply(ds, unlist)
 
-  test_res <- count_multimers(test_dat,
-                              c(1, ns),
-                              alphabet,
-                              kmer_gaps_list = c(list(c()), ds),
-                              with_kmer_counts = FALSE)
-
-
+  test_res <- count_ngrams(test_dat, alphabet, n, d)
 
   attr(test_res, "sequences") <- matrix(test_dat, nrow = nrow(test_dat), ncol = ncol(test_dat))
   attr(test_res, "motifs") <- attr(test_dat, "motifs")
