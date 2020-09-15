@@ -224,10 +224,11 @@ generate_sequences <- function(n_seq,
   ds <- lapply(ds, unlist)
 
   test_res <- count_multimers(test_dat,
-                              ns,
+                              c(1, ns),
                               alphabet,
-                              kmer_gaps_list = ds,
+                              kmer_gaps_list = c(list(c()), ds),
                               with_kmer_counts = FALSE)
+
 
 
   attr(test_res, "sequences") <- matrix(test_dat, nrow = nrow(test_dat), ncol = ncol(test_dat))
