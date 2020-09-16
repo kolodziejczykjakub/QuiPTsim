@@ -89,36 +89,27 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
                                          Y = y,
                                          k = round(ncol(x) * 0.05, digits = 0))
 
-    filtered_ngrams <- numeric(length(colnames(x)))
+    filtered_ngrams <- rep(length(colnames(x)), length(colnames(x)))
     filtered_ngrams[res$selection] <- 1:(round(ncol(x) * 0.05, digits = 0))
     out <- data.frame(rank = filtered_ngrams)
     out[["score"]] <- out[["rank"]] > 0
   }
 
-  if (feature_selection_method == "FSelectorRcpp") {
+  if (feature_selection_method %in% c("infogain", "gainratio", "symuncert")) {
 
     x <- data.frame(as.matrix(ngram_matrix))
     y <- attr(ngram_matrix, "target")
 
-    IG <- information_gain(x = x,
-                           y = y,
-                           discIntegers = FALSE,
-                           type = c("infogain"))
-    GR <- information_gain(x = x,
-                           y = y,
-                           discIntegers = FALSE,
-                           type = c("gainratio"))
-    GR[["importance"]][is.na(GR[["importance"]])] <-0
+    score <- information_gain(x = x, y = y, discIntegers = FALSE,
+                           type = feature_selection_method)
 
-    SU <- information_gain(x = x,
-                           y = y,
-                           discIntegers = FALSE,
-                           type = c("symuncert"))
+    if (feature_selection_method == "gainratio") {
+      GR[["importance"]][is.na(GR[["importance"]])] <- 0
+    }
 
-    out <- data.frame(ngram = IG$attributes,
-                      IG = IG$importance,
-                      GR = GR$importance,
-                      SU = SU$importance)
+    out <- data.frame(ngram = score$attributes,
+                      score = score$importance,
+                      rank = order(score$importance, decreasing = TRUE))
 
   }
 
@@ -128,6 +119,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
                                              features = ngram_matrix,
                                     threshold = -1))
     out[["score"]] <- out[["p.value"]]
+    out[["rank"]] <- order(out[["p.value"]])
   }
 
   # Chi-squared test
@@ -147,7 +139,8 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
       pval
       })
 
-    out <- data.frame(score = unlist(pvalues))
+    out <- data.frame(score = unlist(pvalues),
+                      rank = order(unlist(pvalues)))
   }
 
   if (feature_selection_method == "FCBF") {
@@ -165,7 +158,9 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
     out <- data.frame(ngram = ngram_names,
                       score = pred,
+                      rank = fcbf_results[["index"]],
                       SU = SU)
+
   }
 
   # add a column indicating if given ngram is positive
