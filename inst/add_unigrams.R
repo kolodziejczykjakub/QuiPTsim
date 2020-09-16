@@ -2,10 +2,11 @@
 # A 6000x12209151 simple triplet matrix.
 library(pbapply)
 library(QuiPTsim)
+library(parallel)
 
-add_unigrams <- function(old_dir, new_dir, RDSnames, alphabet) {
+add_unigrams <- function(old_dir, new_dir, RDSnames, alphabet, num.cores=1) {
   
-  pblapply(RDSnames, function(n) {
+  mclapply(RDSnames, function(n) {
     m <- readRDS(paste0(old_dir, n))
     m_with_uni <- cbind(count_ngrams(attr(m, "sequences"), alphabet = alphabet, 1), m)
     
@@ -14,11 +15,11 @@ add_unigrams <- function(old_dir, new_dir, RDSnames, alphabet) {
     }
     new_path <- paste0(new_dir, n)
     saveRDS(object = m_with_uni, file = new_path)
-  })
+  }, mc.cores = num.cores)
 }
 
-old_dir <- "./data/reduced_alph_enc_alph4_const/"
-new_dir <- "./data/reduced_alph_enc_alph4_const_unigram/"
+old_dir <- "../data/reduced_alph_enc_alph4_const/"
+new_dir <- "../data/reduced_alph_enc_alph4_const_unigram/"
 paths <- dir(old_dir)
 
 df <- read.csv(paste0(old_dir, paths[grepl("csv", paths)]))
