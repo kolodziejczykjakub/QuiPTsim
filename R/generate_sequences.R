@@ -183,7 +183,7 @@ count_ngrams <- function(test_dat, alphabet, n = 4, d = 6) {
 
   if (n == 1) {
 
-    test_res <- count_kmers(test_dat, 1, alphabet)
+    test_res <- count_kmers(test_dat, 1, alphabet, with_kmer_counts = FALSE)
 
   } else {
     # element & gaps' positions for count_multigrams
@@ -240,19 +240,7 @@ generate_sequences <- function(n_seq,
                                d = 6) {
   # generate sequence data
   test_dat <- simulate_sequences(n_seq, l_seq, alphabet, motifs_list, n_motifs, fraction, seqProbs)
-
-
-  # element & gaps' positions for count_multigrams
-  ns <- c()
-  ds <- c()
-  for (i in 1:(n-1)) {
-    ds_ <- expand.grid(list(0:d)[rep(1, i)])
-    ds_ <- ds_[apply(ds_, 1, sum) <= d, , drop = FALSE]
-    ns <- c(ns, rep(i+1, nrow(ds_)))
-    ds <- c(ds, split(ds_, 1:nrow(ds_)))
-  }
-  ds <- lapply(ds, unlist)
-
+  
   test_res <- count_ngrams(test_dat, alphabet, n, d)
 
   attr(test_res, "sequences") <- matrix(test_dat, nrow = nrow(test_dat), ncol = ncol(test_dat))
