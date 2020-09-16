@@ -71,11 +71,12 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
   # Feature selection methods from praznik package
   praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM", "CMI")
+  FSelectorRcpp_measures <- c("infogain", "gainratio", "symuncert")
 
   if (!(feature_selection_method %in% c("QuiPT",
                                         "FCBF",
                                         "Chi-squared",
-                                        "FSelectorRcpp",
+                                        FSelectorRcpp_measures,
                                         praznik_filters))) {
     stop("Unkown feature selection method!")
   }
@@ -95,7 +96,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
     out[["score"]] <- out[["rank"]] > 0
   }
 
-  if (feature_selection_method %in% c("infogain", "gainratio", "symuncert")) {
+  if (feature_selection_method %in% FSelectorRcpp_measures) {
 
     x <- data.frame(as.matrix(ngram_matrix))
     y <- attr(ngram_matrix, "target")
@@ -104,7 +105,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
                            type = feature_selection_method)
 
     if (feature_selection_method == "gainratio") {
-      GR[["importance"]][is.na(GR[["importance"]])] <- 0
+      score[["importance"]][is.na(score[["importance"]])] <- 0
     }
 
     out <- data.frame(ngram = score$attributes,
@@ -147,18 +148,25 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
     features <- apply(ngram_matrix, 1, as.factor)
     ngram_names <- rownames(features)
+    n_ngrams <- length(ngram_names)
 
     fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = FALSE)
+    fcbf_id <- fcbf_results[["index"]]
 
-    pred <- logical(length(ngram_names))
-    pred[fcbf_results[["index"]]] <- TRUE
+    pred <- logical(n_ngrams)
+    pred[fcbf_id] <- TRUE
 
-    SU <- logical(length(ngram_names))
-    SU[fcbf_results[["index"]]] <- fcbf_results[["SU"]]
+    SU <- logical(n_ngrams)
+    SU[fcbf_id] <- fcbf_results[["SU"]]
+
+    n_features <- length(fcbf_id)
+    rank_ <- rep(-1, n_ngrams)
+    rank_[fcbf_id] <- 1:n_features
+    rank_[-fcbf_id] <- (n_features + 1):n_ngrams
 
     out <- data.frame(ngram = ngram_names,
                       score = pred,
-                      rank = fcbf_results[["index"]],
+                      rank = rank_,
                       SU = SU)
 
   }
@@ -203,48 +211,46 @@ calculate_score <- function(scores, setup) {
 
   # Feature selection methods from praznik package
   praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM", "CMI")
+  FSelectorRcpp_measures <- c("infogain", "gainratio", "symuncert")
+
 
   if (!(method %in% c("QuiPT",
                       "FCBF",
                       "Chi-squared",
-                      "FSelectorRcpp",
+                      FSelectorRcpp_measures,
                       praznik_filters))) {
     stop("Unkown feature selection method!")
   }
 
-  if (method == "FSelectorRcpp") {
+  if (method %in% FSelectorRcpp_measures) {
 
     numFeatures <- sapply(setup[["fractions"]], function(frac)
       round(nrow(scores[[1]]) * frac, digits = 0))
 
-    criterions <- c("IG", "GR", "SU")
+    res <- lapply(numFeatures, function(nFeat) {
+      metrics <- lapply(scores, function(res) {
 
-    results <- lapply(criterions, function(metric) {
+        if (nFeat == 0 & 0 %in% setup[["fractions"]]) {
 
-      res <- lapply(numFeatures, function(nFeat) {
-        metrics <- lapply(scores, function(res) {
+          sorted_crit <- sort(res[[metric]], decreasing = TRUE)
+          id <- cpt.mean(sorted_crit, penalty="SIC", method="AMOC",class=FALSE)[1]
+          y_pred <- res[["score"]] > sorted_crit[id]
 
-          if (nFeat == 0 & 0 %in% setup[["fractions"]]) {
-            sorted_crit <- sort(res[[metric]], decreasing = TRUE)
-            id <- cpt.mean(sorted_crit, penalty="SIC", method="AMOC",class=FALSE)[1]
-            y_pred <- res[[metric]] > sorted_crit[id]
-          } else {
-            y_pred <- res[[metric]] > sort(res[[metric]],
-                                           decreasing = TRUE)[nFeat]
-          }
+        } else {
 
-          compute_metrics(res[["positive.ngram"]], y_pred)
-        })
+          y_pred <- res[["score"]] > sort(res[["score"]],
+                                          decreasing = TRUE)[nFeat]
+        }
 
-        aggregate_metrics(metrics)
+        compute_metrics(res[["positive.ngram"]], y_pred)
       })
 
-      data.frame(num_features = numFeatures,
-                 top_fraction = setup[["fractions"]],
-                 do.call(rbind, res))
+      aggregate_metrics(metrics)
     })
-    results <- data.frame(criterion = rep(criterions, each = length(numFeatures)),
-                          do.call(rbind, results))
+
+    results <- data.frame(num_features = numFeatures,
+                          top_fraction = setup[["fractions"]],
+                          do.call(rbind, res))
   }
 
   # FCBF setup

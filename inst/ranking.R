@@ -19,6 +19,12 @@ results <- mclapply(setups, function(setup) {
 
 x <- results[[1]]
 
+results1 <- mclapply(setups[3], function(setup) {
+  print(setup)
+  create_benchmark_data(paths, setup)
+}, mc.cores = 4)
+
+
 for (res in x) {
 
 }
