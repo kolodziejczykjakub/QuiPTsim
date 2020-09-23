@@ -6,3 +6,4 @@ NAMESPACE
 QuiPTsim.Rproj
 inst/doc
 inst/vis_dat_fit_best.csv
+.drake/

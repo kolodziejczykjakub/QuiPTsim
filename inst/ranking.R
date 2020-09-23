@@ -12,19 +12,9 @@ setups <- list(
   list(method="MRMR")
 )
 
+paths <- paths[1:2]
 results <- mclapply(setups, function(setup) {
   print(setup)
   create_benchmark_data(paths, setup)
 }, mc.cores = 4)
 
-x <- results[[1]]
-
-results1 <- mclapply(setups[3], function(setup) {
-  print(setup)
-  create_benchmark_data(paths, setup)
-}, mc.cores = 4)
-
-
-for (res in x) {
-
-}
