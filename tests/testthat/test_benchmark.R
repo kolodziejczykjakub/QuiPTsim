@@ -3,8 +3,6 @@ context("Benchmark tests")
 test_that("QuiPT benchmark", {
 
   path <- c("./example_QuiPT_simulation_data_result.Rds")
-
-  # QuiPT
   bm_QuiPT <- create_benchmark_data(path, list(method = "QuiPT"))
 
   results_QuiPT <- benchmark_summary(bm_QuiPT, list(method = "QuiPT",
@@ -36,8 +34,6 @@ test_that("QuiPT benchmark", {
 test_that("FCBF benchmark", {
 
   path <- c("./example_QuiPT_simulation_data_result.Rds")
-
-  # QuiPT
   bm_FCBF <- create_benchmark_data(path, list(method = "FCBF"))
 
   results_FCBF <- benchmark_summary(bm_FCBF, list(method = "FCBF"))
@@ -54,8 +50,6 @@ test_that("FCBF benchmark", {
 test_that("Chi-squared benchmark", {
 
   path <- c("./example_QuiPT_simulation_data_result.Rds")
-
-  # QuiPT
   bm_chi <- create_benchmark_data(path, list(method = "Chi-squared"))
 
   results_chi <- benchmark_summary(bm_chi, list(method = "Chi-squared",
@@ -84,30 +78,20 @@ test_that("Chi-squared benchmark", {
 test_that("FSelectorRcpp benchmark", {
 
   path <- c("./example_QuiPT_simulation_data_result.Rds")
+  #path <- c("./tests/testthat/example_QuiPT_simulation_data_result.Rds")
+  bm_fselector <- create_benchmark_data(path, list(method = "gainratio"))
 
-  # QuiPT
-  bm_fselector <- create_benchmark_data(path, list(method = "FSelectorRcpp"))
-
-  results_fselector <- benchmark_summary(bm_fselector, list(method = "FSelectorRcpp"))
+  results_fselector <- benchmark_summary(bm_fselector,
+                                         list(method = "gainratio",
+                                              fraction = 0.025))
 
   expect_equal(results_fselector,
-               structure(list(structure(list(sensitivity_mean = 0.555555555555556,
-                                             specificity_mean = 0.995712702924033, F1score_mean = 0.170940170940171,
-                                             precision_mean = 0.101010101010101, recall_mean = 0.555555555555556,
-                                             sensitivity_std = NA_real_, specificity_std = NA_real_, F1score_std = NA_real_,
-                                             precision_std = NA_real_, recall_std = NA_real_), class = "data.frame", row.names = c(NA, -1L)),
-                              structure(list(sensitivity_mean = 0.555555555555556, specificity_mean = 0.995760874801291,
-                                             F1score_mean = 0.172413793103448, precision_mean = 0.102040816326531,
-                                             recall_mean = 0.555555555555556, sensitivity_std = NA_real_,
-                                             specificity_std = NA_real_, F1score_std = NA_real_, precision_std = NA_real_,
-                                             recall_std = NA_real_), class = "data.frame", row.names = c(NA, -1L)),
-                              structure(list(sensitivity_mean = 0.555555555555556, specificity_mean = 0.995712702924033,
-                                             F1score_mean = 0.170940170940171, precision_mean = 0.101010101010101,
-                                             recall_mean = 0.555555555555556, sensitivity_std = NA_real_,
-                                             specificity_std = NA_real_, F1score_std = NA_real_, precision_std = NA_real_,
-                                             recall_std = NA_real_), class = "data.frame", row.names = c(NA,
-                                             -1L))), setup = list(method = "FSelectorRcpp")))
-
+               structure(list(num_features = 519, top_fraction = 0.025, sensitivity_mean = 0.722222222222222,
+                              specificity_mean = 0.976299436389036, F1score_mean = 0.0497131931166348,
+                              precision_mean = 0.0257425742574257, recall_mean = 0.722222222222222,
+                              sensitivity_std = NA_real_, specificity_std = NA_real_, F1score_std = NA_real_,
+                              precision_std = NA_real_, recall_std = NA_real_), class = "data.frame", row.names = c(NA,
+                                                                                                                    -1L), setup = list(method = "gainratio", fraction = 0.025)))
 })
 
 test_that("MRMR benchmark", {
@@ -120,9 +104,9 @@ test_that("MRMR benchmark", {
   results_MRMR <- benchmark_summary(bm_MRMR, list(method = "MRMR"))
 
   expect_equal(results_MRMR,
-               structure(list(sensitivity_mean = 0, specificity_mean = 0.99975914061371,
-                              F1score_mean = NaN, precision_mean = 0, recall_mean = 0,
-                              sensitivity_std = NA_real_, specificity_std = NA_real_, F1score_std = NA_real_,
-                              precision_std = NA_real_, recall_std = NA_real_), class = "data.frame", row.names = c(NA,
-                                                                                                                    -1L), setup = list(method = "MRMR")))
+               structure(list(sensitivity_mean = 1, specificity_mean = 0, F1score_mean = 0.00173118538110123,
+                              precision_mean = 0.000866342590364345, recall_mean = 1, sensitivity_std = NA_real_,
+                              specificity_std = NA_real_, F1score_std = NA_real_, precision_std = NA_real_,
+                              recall_std = NA_real_), class = "data.frame", row.names = c(NA,
+                                                                                          -1L), setup = list(method = "MRMR")))
 })

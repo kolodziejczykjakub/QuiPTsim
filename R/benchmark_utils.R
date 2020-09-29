@@ -224,13 +224,13 @@ calculate_score <- function(scores, setup) {
 
   if (method %in% FSelectorRcpp_measures) {
 
-    numFeatures <- sapply(setup[["fractions"]], function(frac)
+    numFeatures <- sapply(setup[["fraction"]], function(frac)
       round(nrow(scores[[1]]) * frac, digits = 0))
 
     res <- lapply(numFeatures, function(nFeat) {
       metrics <- lapply(scores, function(res) {
 
-        if (nFeat == 0 & 0 %in% setup[["fractions"]]) {
+        if (nFeat == 0 & 0 %in% setup[["fraction"]]) {
 
           sorted_crit <- sort(res[[metric]], decreasing = TRUE)
           id <- cpt.mean(sorted_crit, penalty="SIC", method="AMOC",class=FALSE)[1]
@@ -249,7 +249,7 @@ calculate_score <- function(scores, setup) {
     })
 
     results <- data.frame(num_features = numFeatures,
-                          top_fraction = setup[["fractions"]],
+                          top_fraction = setup[["fraction"]],
                           do.call(rbind, res))
   }
 
