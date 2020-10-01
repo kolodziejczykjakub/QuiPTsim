@@ -75,6 +75,30 @@ test_that("Correct motif injection", {
                injected2)
 })
 
-test_that("Count n-grams assertion", {
+test_that("Add motifs - stop", {
+
+  set.seed(1)
+  alph <- 1:4
+  motifs <- list(as.character(rep(1, 10)), as.character(rep(2, 10)))
+  expect_error(add_motifs(motifs, rep(3, 10)), "Given motifs cannot be injected to a sequence!")
 
 })
+
+test_that("count 1-mers", {
+
+  set.seed(1)
+  n_seq <- 20
+  len <- 10
+  alph <- letters[1:20]
+  motifs <- generate_motifs(alph, 2)
+  results <- generate_sequences(n_seq, len, alph, motifs, 1, n = 1, d = 0)
+  expect_equal(apply(results, 1, sum),
+               c(7L, 9L, 7L, 8L, 8L, 9L, 8L, 6L, 8L, 9L, 9L, 8L, 6L, 8L, 9L,
+                 8L, 7L, 8L, 8L, 9L))
+  expect_equal(apply(results, 2, sum),
+               c(j = 10L, r = 10L, n = 12L, f = 7L, t = 10L, k = 9L, o = 4L,
+                 s = 5L, g = 12L, h = 9L, l = 9L, m = 5L, p = 8L, d = 10L, b = 6L,
+                 a = 6L, c = 5L, i = 8L, q = 7L, e = 7L))
+
+})
+
