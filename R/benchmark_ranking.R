@@ -27,25 +27,12 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
 
 evaluate_filtering_results <- function(m, filtering_results, setup, validation_scheme){
 
-  # Validation scheme should contain:
-  # + metrics
-  # + CV details
-  # + number of k-mers (if needed)
-
-  # Feature selection methods
-  # praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM", "CMI")
-  # FSelectorRcpp_measures <- c("infogain", "gainratio", "symuncert")
-  # QuiPT
-  # FCBF
-  # Chi-squared
-
-
   if (setup[["method"]] == "FCBF") {
     setup[["n_kmers"]] <- sum(filtering_results[["score"]])
   }
 
   # Iterate over numbers of selected k-mers
-  lapply(setup[["n_kmers"]], function(n_kmers) {
+  lapply(validation_scheme[["n_kmers"]], function(n_kmers) {
 
     #TODO: switch
     if (setup[["method"]] == "FCBF") {
@@ -56,6 +43,16 @@ evaluate_filtering_results <- function(m, filtering_results, setup, validation_s
 
       results <- evaluate_selected_kmers(df, validation_scheme)
 
+    }
+
+    if (setup[["method"]] == "QuiPT") {
+
+      X <- as.matrix(m[, filtering_results[["rank"]] <= n_kmers])
+      y <- attr(m, "target")
+
+      df <- data.frame(X, y)
+
+      results <- evaluate_selected_kmers(df, validation_scheme)
     }
 
   })
