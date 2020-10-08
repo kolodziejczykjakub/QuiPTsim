@@ -11,6 +11,8 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(QuiPTsim)
+setwd("~/amylogram/QuiPTsim/vignettes/")
 ```
 
 QuiPTsim contains source code used utilized in extensive study of Quick Permutation Test (QuiPT) properties. 

@@ -11,7 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
-)
+  )
 ```
 
 ```{r setup}
@@ -25,8 +25,8 @@ QuiPTsim is a framework generating matrices of n-gram occurences of given sequen
 # QuiPT details
 
 ```{r, echo=FALSE, out.height="500px"}
-source("./inst/QuiPTdiagramme.R")
-my_graphviz
+# source("./inst/QuiPTdiagramme.R")
+# my_graphviz
 ```
 
 # Simulation pipeline

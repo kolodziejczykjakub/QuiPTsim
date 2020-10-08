@@ -1,3 +1,9 @@
+#' Evaluation of filtered k-mers in ranking model approach
+#' @param df data frame containing both selected k-mers and target variable y
+#' @param validation_scheme list containing folds, n_kmers, cv_reps - validation setup
+#' @export
+#' @importFrom caret createFolds
+#' @importFrom stats glm
 evaluate_selected_kmers <- function(df, validation_scheme) {
 
   folds <- createFolds(y = df[["y"]],
@@ -20,12 +26,21 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
                  auc = auc(y_true, y_proba))
   })
 
-  data.frame(do.call(rbind, results))
+  results <- data.frame(do.call(rbind, results))
+  results[["fold"]] <- 1:validation_scheme[["folds"]]
+  rownames(results) <- NULL
+
+  results
 }
 
 
 
-
+#' Wrapper for `evaluate_selected_kmers` functions
+#' @param m k-mer matrix
+#' @param filtering_results data.frame containing ranking of top k-mers
+#' @param setup filter usage setup
+#' @param validation_scheme list containing folds, n_kmers, cv_reps - validation setup
+#' @export
 evaluate_filtering_results <- function(m, filtering_results, setup, validation_scheme){
 
   if (setup[["method"]] == "FCBF") {
@@ -54,11 +69,14 @@ evaluate_filtering_results <- function(m, filtering_results, setup, validation_s
   results
 }
 
+#' High-level wrapper of ranking evaluation tools
+#' @inheritParams evaluate_filtering_results
+#' @export
 ranking_summary <- function(paths, setup, validation_scheme) {
 
   results <- pblapply(paths, function(path) {
 
-    # read n-gram matrix
+
     # TODO: fraction, mixing matrices etc.
     m <- read_ngram_matrix(path)
 
@@ -67,11 +85,9 @@ ranking_summary <- function(paths, setup, validation_scheme) {
 
     # Cross-validation, bootstraping, holdout etc.
     results <- evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
-
-    }
-
   })
 
+  results
 }
 
 
