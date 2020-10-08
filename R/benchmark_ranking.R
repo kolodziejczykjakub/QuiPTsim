@@ -1,4 +1,3 @@
-
 evaluate_selected_kmers <- function(df, validation_scheme) {
 
   folds <- createFolds(y = df[["y"]],
@@ -21,46 +20,38 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
                  auc = auc(y_true, y_proba))
   })
 
-  do.call(rbind, results)
+  data.frame(do.call(rbind, results))
 }
+
+
 
 
 evaluate_filtering_results <- function(m, filtering_results, setup, validation_scheme){
 
   if (setup[["method"]] == "FCBF") {
-    setup[["n_kmers"]] <- sum(filtering_results[["score"]])
+    validation_scheme[["n_kmers"]] <- sum(filtering_results[["score"]])
   }
 
-  # Iterate over numbers of selected k-mers
-  lapply(validation_scheme[["n_kmers"]], function(n_kmers) {
+  # Repeated k-fold cross validation
+  results <- lapply(1:validation_scheme[["cv_reps"]], function(cv_rep) {
 
-    #TODO: switch
-    if (setup[["method"]] == "FCBF") {
-
-      X <- as.matrix(m[, filtering_results[["score"]]])
-      y <- attr(m, "target")
-      df <- data.frame(X, y)
-
-      results <- evaluate_selected_kmers(df, validation_scheme)
-
-    }
-
-    if (setup[["method"]] == "QuiPT") {
+    # CV repeated for each number of selected k-mers
+    res <- lapply(validation_scheme[["n_kmers"]], function(n_kmers) {
 
       X <- as.matrix(m[, filtering_results[["rank"]] <= n_kmers])
       y <- attr(m, "target")
 
       df <- data.frame(X, y)
+      res <- evaluate_selected_kmers(df, validation_scheme)
+      res[["n_kmers"]] <- n_kmers
 
-      results <- evaluate_selected_kmers(df, validation_scheme)
-    }
+      res
+    })
 
+    do.call(rbind, res)
   })
 
-
-  # # one function that builds model etc.
-  # results <- evaluate_selected_kmers(df, validation_scheme)
-
+  results
 }
 
 ranking_summary <- function(paths, setup, validation_scheme) {
