@@ -1,3 +1,17 @@
+#' Accuracy (fraction of correctly classified obesravtions)
+#' @param y_true boolean vector of target variable
+#' @param y_pred boolean vector of predictions
+#' @export
+
+accuracy <- function (y_true, y_pred) {
+
+  if (!(length(y_true) == length(y_pred))) {
+    stop("Target and predictions do not have the same length!")
+  }
+
+  sum(y_true == y_pred) / length(y_pred)
+}
+
 #' Sensitivity (true positive rate, recall)
 #' @param y_true boolean vector of target variable
 #' @param y_pred boolean vector of predictions
@@ -77,7 +91,8 @@ F1score <- function (y_true, y_pred) {
 
 compute_metrics <- function(y_true, y_pred) {
 
-  list(sensitivity = sensitivity(y_true, y_pred),
+  list(accuracy = accuracy(y_true, y_pred),
+       sensitivity = sensitivity(y_true, y_pred),
        specificity = specificity(y_true, y_pred),
        F1score = F1score(y_true, y_pred),
        precision = precision(y_true, y_pred),
