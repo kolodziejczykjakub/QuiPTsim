@@ -1,39 +1,24 @@
-#' Evaluation of filtered k-mers in ranking model approach
-#' @param df data frame containing both selected k-mers and target variable y
-#' @param validation_scheme list containing folds, n_kmers, cv_reps - validation setup
+#' High-level wrapper of ranking evaluation tools
+#' @inheritParams evaluate_filtering_results
 #' @export
-#' @importFrom caret createFolds
-#' @importFrom stats glm
-evaluate_selected_kmers <- function(df, validation_scheme) {
+#' @importFrom pbapply pblapply
+ranking_summary <- function(paths, setup, validation_scheme) {
 
-  folds <- createFolds(y = df[["y"]],
-                       k = validation_scheme[["folds"]])
-
-  results <- lapply(folds, function(fold_indices) {
-
-    df_train <- df[-fold_indices, ]
-    df_test <- df[fold_indices, ]
-
-    # linear model
-    logReg <- glm(y ~ ., family = binomial(link = "logit"), data = df_train)
-
-    y_true <- df_test[["y"]]
-    y_proba <- predict(logReg, df_test)
-    y_pred <- y_proba > 0.5
+  results <- pblapply(paths, function(path) {
 
 
-    c(compute_metrics(y_true, y_pred),
-                 auc = auc(y_true, y_proba))
+    # TODO: fraction, mixing matrices etc.
+    m <- read_ngram_matrix(path)
+
+    # scoring k-mers
+    filtering_results <- filter_ngrams(m,setup[["method"]])
+
+    # Cross-validation, bootstraping, holdout etc.
+    results <- evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
   })
-
-  results <- data.frame(do.call(rbind, results))
-  results[["fold"]] <- 1:validation_scheme[["folds"]]
-  rownames(results) <- NULL
 
   results
 }
-
-
 
 #' Wrapper for `evaluate_selected_kmers` functions
 #' @param m k-mer matrix
@@ -69,26 +54,98 @@ evaluate_filtering_results <- function(m, filtering_results, setup, validation_s
   results
 }
 
-#' High-level wrapper of ranking evaluation tools
-#' @inheritParams evaluate_filtering_results
+#' Evaluation of filtered k-mers in ranking model approach
+#' @param df data frame containing both selected k-mers and target variable y
+#' @param validation_scheme list containing folds, n_kmers, cv_reps - validation setup
 #' @export
-ranking_summary <- function(paths, setup, validation_scheme) {
+#' @importFrom caret createFolds
+#' @importFrom stats glm
+#' @importFrom pROC auc
+evaluate_selected_kmers <- function(df, validation_scheme) {
 
-  results <- pblapply(paths, function(path) {
+  folds <- createFolds(y = df[["y"]],
+                       k = validation_scheme[["folds"]])
 
+  results <- lapply(folds, function(fold_indices) {
 
-    # TODO: fraction, mixing matrices etc.
-    m <- read_ngram_matrix(path)
+    df_train <- df[-fold_indices, ]
+    df_test <- df[fold_indices, ]
 
-    # scoring k-mers
-    filtering_results <- filter_ngrams(m,setup[["method"]])
+    evaluate_models(df_train, df_test) #, models = c())
 
-    # Cross-validation, bootstraping, holdout etc.
-    results <- evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
   })
+
+  results <- data.frame(do.call(rbind, results))
+  results[["fold"]] <- 1:validation_scheme[["folds"]]
+  rownames(results) <- NULL
 
   results
 }
+
+#' Function trains and evaluates model on selected k-mers
+#' @export
+#' @importFrom glmnet glmnet
+evaluate_models <- function(df_train, df_test) {
+  browser()
+
+  X_train <- df_train[, !names(df_train) %in% "y" ]
+  y_train <- df_train[["y"]]
+
+  X_test <- df_test[, !names(df_test) %in% "y" ]
+  y_test <- df_test[["y"]]
+
+  # Logistic regression with l1 penalty
+  logReg <- glmnet(x = X_train,
+                   y = y_train,
+                   family = binomial(link="logit"),
+                   lambda = 1)
+  # TODO: evaluate grid of lambdas
+  kNN_classifier <- knn(X_train, y_train, cl = 3, prob=TRUE)
+  # k-NN
+  # Naive bayes
+
+  #naiveBayes_classifier <- naiveBayes()
+  # head(knn(train = X_default_trn,
+  #          test  = X_default_tst,
+  #          cl    = y_default_trn,
+  #          k     = 3))
+
+  # Random forest - ranger
+
+
+  # logReg <- glmnet(x = X, y = y, family = binomial(link="logit"), lambda = 1)
+  #
+  # logReg <- glm(y ~ ., family = binomial(link = "logit"), data = df)
+  # logReg <- logReg(x = df[,])
+  # y_true <- df_test[["y"]]
+  # y_proba <- predict(logReg, df_test)
+  # y_pred <- y_proba > 0.5
+  #
+  #
+  # c(compute_metrics(y_true, y_pred),
+  #   auc = auc(y_true, y_proba))
+
+}
+
+
+
+
+# linear model
+# TODO: lapply(list_of_models, ...)
+# attr (betas in LM, feature importance)
+# Logistic regression
+# lambdas <- c(0.1, 0.25, 0.5, 1) runif(...)
+# LR LASSO, RF, Naive Bayes, k-NN
+#
+# logReg <- glm(y ~ ., family = binomial(link = "logit"), data = df_train)
+#
+# y_true <- df_test[["y"]]
+# y_proba <- predict(logReg, df_test)
+# y_pred <- y_proba > 0.5
+#
+#
+# c(compute_metrics(y_true, y_pred),
+#   auc = auc(y_true, y_proba))
 
 
 
