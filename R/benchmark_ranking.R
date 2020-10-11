@@ -85,6 +85,9 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
 #' Function trains and evaluates model on selected k-mers
 #' @export
 #' @importFrom glmnet glmnet
+#' @importFrom ranger ranger
+#' @importFrom e1071 naiveBayes
+#' @importFrom class knn
 evaluate_models <- function(df_train, df_test) {
   browser()
 
@@ -95,57 +98,35 @@ evaluate_models <- function(df_train, df_test) {
   y_test <- df_test[["y"]]
 
   # Logistic regression with l1 penalty
+  lambdas <- 1:5 * 0.01
   logReg <- glmnet(x = X_train,
                    y = y_train,
                    family = binomial(link="logit"),
-                   lambda = 1)
-  # TODO: evaluate grid of lambdas
-  kNN_classifier <- knn(X_train, y_train, cl = 3, prob=TRUE)
-  # k-NN
-  # Naive bayes
+                   lambda = lambdas)
 
-  #naiveBayes_classifier <- naiveBayes()
-  # head(knn(train = X_default_trn,
-  #          test  = X_default_tst,
-  #          cl    = y_default_trn,
-  #          k     = 3))
+  logReg_probs <- predict(logReg, as.matrix(X_test), type = "response")
+  # TODO: evaluate grid of lambdas
+
+  # k-NN
+  n_neighbors <- 1:10
+  kNN_probs <- lapply(n_neighbors, function(neighbors) {
+    kNN_classifier <- knn(X_train, X_test,
+                          cl = y_train,
+                          k = neighbors,
+                          prob = TRUE)
+    attr(kNN_classifier, "prob")
+  })
+
+  # Naive bayes
+  naiveBayes_classifier <- naiveBayes(X_train, y_train)
+  naiveBayes_preds <- predict(naiveBayes_classifier, X_test, type = "raw")[, 2]
 
   # Random forest - ranger
+  rf_classifier <- ranger(y~., data = df_train, probability = TRUE)
+  rf_preds <- predict(rf_classifier, df_test)
 
-
-  # logReg <- glmnet(x = X, y = y, family = binomial(link="logit"), lambda = 1)
-  #
-  # logReg <- glm(y ~ ., family = binomial(link = "logit"), data = df)
-  # logReg <- logReg(x = df[,])
-  # y_true <- df_test[["y"]]
-  # y_proba <- predict(logReg, df_test)
-  # y_pred <- y_proba > 0.5
-  #
-  #
   # c(compute_metrics(y_true, y_pred),
   #   auc = auc(y_true, y_proba))
-
 }
-
-
-
-
-# linear model
-# TODO: lapply(list_of_models, ...)
-# attr (betas in LM, feature importance)
-# Logistic regression
-# lambdas <- c(0.1, 0.25, 0.5, 1) runif(...)
-# LR LASSO, RF, Naive Bayes, k-NN
-#
-# logReg <- glm(y ~ ., family = binomial(link = "logit"), data = df_train)
-#
-# y_true <- df_test[["y"]]
-# y_proba <- predict(logReg, df_test)
-# y_pred <- y_proba > 0.5
-#
-#
-# c(compute_metrics(y_true, y_pred),
-#   auc = auc(y_true, y_proba))
-
 
 
