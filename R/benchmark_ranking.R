@@ -89,7 +89,6 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
 #' @importFrom e1071 naiveBayes
 #' @importFrom class knn
 evaluate_models <- function(df_train, df_test) {
-  browser()
 
   X_train <- df_train[, !names(df_train) %in% "y" ]
   y_train <- df_train[["y"]]
@@ -98,13 +97,22 @@ evaluate_models <- function(df_train, df_test) {
   y_test <- df_test[["y"]]
 
   # Logistic regression with l1 penalty
+  browser()
   lambdas <- 1:5 * 0.01
-  logReg <- glmnet(x = X_train,
-                   y = y_train,
-                   family = binomial(link="logit"),
+  logReg <- glmnet(x = as.matrix(X_train),
+                   y = as.numeric(y_train),
+                   family = "binomial",
                    lambda = lambdas)
 
   logReg_probs <- predict(logReg, as.matrix(X_test), type = "response")
+
+  lm_metrics <- apply(logReg_probs, 2, function(y_pred) {
+    c(compute_metrics(y_test, y_pred > 0.5),
+      auc = auc(as.numeric(y_test), y_pred))})
+
+  lm_results <- data.frame(model = "lm", lambda = lambdas, do.call(rbind, lm_metrics))
+
+
   # TODO: evaluate grid of lambdas
 
   # k-NN
@@ -114,19 +122,70 @@ evaluate_models <- function(df_train, df_test) {
                           cl = y_train,
                           k = neighbors,
                           prob = TRUE)
-    attr(kNN_classifier, "prob")
+    ifelse(y_test == TRUE,
+           attr(kNN_classifier, "prob"),
+           1 - attr(kNN_classifier, "prob"))
   })
+
+  kNN_probs_matrix <- do.call(cbind, kNN_probs)
+
+  knn_metrics <- apply(kNN_probs_matrix, 2, function(y_pred) {
+    c(compute_metrics(y_test, y_pred > 0.5),
+      auc = auc(as.numeric(y_test), y_pred))})
+
+  knn_results <- data.frame(model = "knn", neighbors = n_neighbors, do.call(rbind, knn_metrics))
 
   # Naive bayes
   naiveBayes_classifier <- naiveBayes(X_train, y_train)
   naiveBayes_preds <- predict(naiveBayes_classifier, X_test, type = "raw")[, 2]
-
+  naiveBayes_results <- data.frame(model = "naive bayes",
+                                   compute_metrics(y_test, naiveBayes_preds))
   # Random forest - ranger
-  rf_classifier <- ranger(y~., data = df_train, probability = TRUE)
-  rf_preds <- predict(rf_classifier, df_test)
+  numTrees <- c(100, 200, 300)
+  rf_predictions <- lapply(numTrees, function(n) {
 
-  # c(compute_metrics(y_true, y_pred),
-  #   auc = auc(y_true, y_proba))
+    rf_classifier <- ranger(y~.,
+                            data = df_train,
+                            probability = TRUE,
+                            num.trees = n)
+    rf_preds <- predict(rf_classifier, df_test)
+    rf_preds$predictions[, 1]
+  })
+  rf_predictions_matrix <- do.call(cbind, rf_predictions)
+  rf_metrics <- apply(rf_predictions_matrix, 2, function(y_pred) {
+    c(compute_metrics(y_test, y_pred > 0.5),
+      auc = auc(as.numeric(y_test), y_pred))})
+
+
+  rf_results <- data.frame(model = "rf", num.trees = numTrees, do.call(rbind, rf_metrics))
+
+
+  rbind_results(knn_results, rf_results, lm_results, naiveBayes_results)
 }
 
+#' functions binds rows of two data frames in a smart way
+#' (non overlapping columns are filled with NAs)
+#' @param df1
+#' @param df2
+#' @export
+rbind_smart <- function(df1, df2) {
+  df1[setdiff(names(df2), names(df1))] <- NA
+  df2[setdiff(names(df1), names(df2))] <- NA
+  rbind(df1, df2)
+}
 
+#' functions binds rows of data frames in a smart way
+#' @param ... dataframes to bind
+#' @export
+rbind_results <- function(...) {
+  dfs <- list(...)
+  df <- dfs[[1]]
+
+  if (length(dfs) > 1) {
+    for (i in 2:length(dfs)) {
+      df <- rbind_smart(df, dfs[[i]])
+    }
+  }
+
+  df
+}
