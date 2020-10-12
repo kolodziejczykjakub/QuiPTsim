@@ -48,10 +48,11 @@ evaluate_filtering_results <- function(m, filtering_results, setup, validation_s
       res
     })
 
+    res[["cv.rep"]] = validation_scheme[["cv_reps"]]
     do.call(rbind, res)
   })
 
-  results
+  do.call(rbind, results)
 }
 
 #' Evaluation of filtered k-mers in ranking model approach
@@ -97,7 +98,6 @@ evaluate_models <- function(df_train, df_test) {
   y_test <- df_test[["y"]]
 
   # Logistic regression with l1 penalty
-  browser()
   lambdas <- 1:5 * 0.01
   logReg <- glmnet(x = as.matrix(X_train),
                    y = as.numeric(y_train),
@@ -106,18 +106,9 @@ evaluate_models <- function(df_train, df_test) {
 
   logReg_probs <- predict(logReg, as.matrix(X_test), type = "response")
 
-  lm_metrics <- apply(logReg_probs, 2, function(y_pred) {
-    c(compute_metrics(y_test, y_pred > 0.5),
-      auc = auc(as.numeric(y_test), y_pred))})
-
-  lm_results <- data.frame(model = "lm", lambda = lambdas, do.call(rbind, lm_metrics))
-
-
-  # TODO: evaluate grid of lambdas
-
   # k-NN
   n_neighbors <- 1:10
-  kNN_probs <- lapply(n_neighbors, function(neighbors) {
+  kNN_probs <- do.call(cbind, lapply(n_neighbors, function(neighbors) {
     kNN_classifier <- knn(X_train, X_test,
                           cl = y_train,
                           k = neighbors,
@@ -125,24 +116,15 @@ evaluate_models <- function(df_train, df_test) {
     ifelse(y_test == TRUE,
            attr(kNN_classifier, "prob"),
            1 - attr(kNN_classifier, "prob"))
-  })
-
-  kNN_probs_matrix <- do.call(cbind, kNN_probs)
-
-  knn_metrics <- apply(kNN_probs_matrix, 2, function(y_pred) {
-    c(compute_metrics(y_test, y_pred > 0.5),
-      auc = auc(as.numeric(y_test), y_pred))})
-
-  knn_results <- data.frame(model = "knn", neighbors = n_neighbors, do.call(rbind, knn_metrics))
+  }))
 
   # Naive bayes
   naiveBayes_classifier <- naiveBayes(X_train, y_train)
-  naiveBayes_preds <- predict(naiveBayes_classifier, X_test, type = "raw")[, 2]
-  naiveBayes_results <- data.frame(model = "naive bayes",
-                                   compute_metrics(y_test, naiveBayes_preds))
+  naiveBayes_probs <- predict(naiveBayes_classifier, X_test, type = "raw")[, 2, drop=FALSE]
+
   # Random forest - ranger
   numTrees <- c(100, 200, 300)
-  rf_predictions <- lapply(numTrees, function(n) {
+  rf_probs <- do.call(cbind, lapply(numTrees, function(n) {
 
     rf_classifier <- ranger(y~.,
                             data = df_train,
@@ -150,17 +132,35 @@ evaluate_models <- function(df_train, df_test) {
                             num.trees = n)
     rf_preds <- predict(rf_classifier, df_test)
     rf_preds$predictions[, 1]
-  })
-  rf_predictions_matrix <- do.call(cbind, rf_predictions)
-  rf_metrics <- apply(rf_predictions_matrix, 2, function(y_pred) {
-    c(compute_metrics(y_test, y_pred > 0.5),
-      auc = auc(as.numeric(y_test), y_pred))})
+  }))
 
+  # Aggregation
+  aggregated_results <- list(
+    list(probs = logReg_probs,
+         model = "lm",
+         params = list(lambda = lambdas)),
+    list(probs = kNN_probs,
+         model = "knn",
+         params = list(neighbors = n_neighbors)),
+    list(probs = naiveBayes_probs,
+         model = "naive bayes",
+         params = list(laplace = 0)),
+    list(probs = rf_probs,
+         model = "rf",
+         params = list(num.trees = numTrees))
+  )
 
-  rf_results <- data.frame(model = "rf", num.trees = numTrees, do.call(rbind, rf_metrics))
+  results <- lapply(aggregated_results, function(results) {
+    res <- apply(results[["probs"]], 2, function(y_pred) {
+      c(compute_metrics(y_test, y_pred > 0.5),
+        auc = auc(as.numeric(y_test), y_pred))
+      })
+    data.frame(model = results[["model"]],
+               results[["params"]],
+               do.call(rbind, res))
+    })
 
-
-  rbind_results(knn_results, rf_results, lm_results, naiveBayes_results)
+  do.call(rbind_results, results)
 }
 
 #' functions binds rows of two data frames in a smart way

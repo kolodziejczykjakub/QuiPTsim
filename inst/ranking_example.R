@@ -21,7 +21,7 @@ evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
 setup <- list(method = "QuiPT")
 validation_scheme <- list(type = "cv",
                           folds = 5,
-                          n_kmers = c(125),
+                          n_kmers = c(2),
                           cv_reps = 2)
 m <-read_ngram_matrix(paths[1])
 filtering_results <- filter_ngrams(m, setup[["method"]])
