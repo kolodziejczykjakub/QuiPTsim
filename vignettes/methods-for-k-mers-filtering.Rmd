@@ -1,0 +1,47 @@
+---
+title: "Methods for k-mers filtering"
+author: "Jakub Kała"
+date: "`r format(Sys.time(), '%d/%m/%Y')`"
+output:
+  html_document:
+    toc: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+## Biological background
+## k-mer representation of sequences
+## k-mer filtering
+
+# Datasets
+## Simulated data
+### Alphabets & probabilities
+### Datasets specification
+## Real datasets
+
+# Evaluation
+## Introduction to feature filtering
+## Filters
+### QuiPT
+### Chi-squared test
+### FCBF
+### FSelectorRcpp
+### praznik
+## Filter assesment
+### Model approach
+### Model-less approach
+## Experiments design
+
+# Results
+
+
+
+
+
+
+
+
