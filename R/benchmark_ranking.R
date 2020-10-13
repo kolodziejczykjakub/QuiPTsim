@@ -97,95 +97,92 @@ evaluate_models <- function(df_train, df_test) {
   X_test <- df_test[, !names(df_test) %in% "y" ]
   y_test <- df_test[["y"]]
 
-  # Logistic regression with l1 penalty
-  lambdas <- 1:5 * 0.01
-  logReg <- glmnet(x = as.matrix(X_train),
-                   y = as.numeric(y_train),
-                   family = "binomial",
-                   lambda = lambdas)
-
-  logReg_probs <- predict(logReg, as.matrix(X_test), type = "response")
-
-  # k-NN
-  n_neighbors <- 1:10
-  kNN_probs <- do.call(cbind, lapply(n_neighbors, function(neighbors) {
-    kNN_classifier <- knn(X_train, X_test,
-                          cl = y_train,
-                          k = neighbors,
-                          prob = TRUE)
-    ifelse(y_test == TRUE,
-           attr(kNN_classifier, "prob"),
-           1 - attr(kNN_classifier, "prob"))
-  }))
-
-  # Naive bayes
-  naiveBayes_classifier <- naiveBayes(X_train, y_train)
-  naiveBayes_probs <- predict(naiveBayes_classifier, X_test, type = "raw")[, 2, drop=FALSE]
-
-  # Random forest - ranger
-  numTrees <- c(100, 200, 300)
-  rf_probs <- do.call(cbind, lapply(numTrees, function(n) {
-
-    rf_classifier <- ranger(y~.,
-                            data = df_train,
-                            probability = TRUE,
-                            num.trees = n)
-    rf_preds <- predict(rf_classifier, df_test)
-    rf_preds$predictions[, 1]
-  }))
-
-  # Aggregation
-  aggregated_results <- list(
-    list(probs = logReg_probs,
-         model = "lm",
-         params = list(lambda = lambdas)),
-    list(probs = kNN_probs,
-         model = "knn",
-         params = list(neighbors = n_neighbors)),
-    list(probs = naiveBayes_probs,
-         model = "naive bayes",
-         params = list(laplace = 0)),
-    list(probs = rf_probs,
-         model = "rf",
-         params = list(num.trees = numTrees))
+  modele <- list(
+    list(model = "lm",
+         param_name = "lambda",
+         param_value = 1:2),
+    list(model = "knn",
+         param_name = "neighbors",
+         param_value = 1:2),
+    list(model = "rf",
+         param_name = "num.trees",
+         param_value = 1:2),
+    list(model = "naive bayes",
+         param_name = "laplace",
+         param_value = 1:2)
   )
 
-  results <- lapply(aggregated_results, function(results) {
-    res <- apply(results[["probs"]], 2, function(y_pred) {
+  models_probs <- lapply(modele, function(m)
+    build_model(X_train, y_train, X_test, y_test, m[["param_value"]], m[["model"]]))
+
+  results <- lapply(1:length(modele), function(i) {
+
+    res <- apply(models_probs[[i]], 2, function(y_pred) {
       c(compute_metrics(y_test, y_pred > 0.5),
         auc = auc(as.numeric(y_test), y_pred))
-      })
-    data.frame(model = results[["model"]],
-               results[["params"]],
-               do.call(rbind, res))
     })
 
-  do.call(rbind_results, results)
+    data.frame(model = modele[[i]][["model"]],
+               param = modele[[i]][["param_name"]],
+               value = modele[[i]][["param_value"]],
+               do.call(rbind, res),
+               row.names = NULL)
+  })
+
+  do.call(rbind, results)
 }
 
-#' functions binds rows of two data frames in a smart way
-#' (non overlapping columns are filled with NAs)
-#' @param df1
-#' @param df2
+#' function builds a model and predicts out of fold probabilites
 #' @export
-rbind_smart <- function(df1, df2) {
-  df1[setdiff(names(df2), names(df1))] <- NA
-  df2[setdiff(names(df1), names(df2))] <- NA
-  rbind(df1, df2)
-}
+#' @importFrom glmnet glmnet
+#' @importFrom ranger ranger
+#' @importFrom e1071 naiveBayes
+#' @importFrom class knn
+build_model <- function(X_train, y_train, X_test, y_test, param, method) {
 
-#' functions binds rows of data frames in a smart way
-#' @param ... dataframes to bind
-#' @export
-rbind_results <- function(...) {
-  dfs <- list(...)
-  df <- dfs[[1]]
+  switch(method,
+         "lm" = {
 
-  if (length(dfs) > 1) {
-    for (i in 2:length(dfs)) {
-      df <- rbind_smart(df, dfs[[i]])
-    }
-  }
+           logReg <- glmnet(x = as.matrix(X_train),
+                            y = as.numeric(y_train),
+                            family = "binomial",
+                            lambda = param)
 
-  df
+           predict(logReg, as.matrix(X_test), type = "response")
+
+         },
+         "knn" = {
+
+           do.call(cbind, lapply(param, function(neighbors) {
+             kNN_classifier <- knn(train = X_train, test = X_test,
+                                   cl = y_train,
+                                   k = neighbors,
+                                   prob = TRUE)
+             ifelse(y_test == TRUE,
+                    attr(kNN_classifier, "prob"),
+                    1 - attr(kNN_classifier, "prob"))
+           }))
+
+         },
+         "rf" = {
+
+           do.call(cbind, lapply(param, function(n) {
+             rf_classifier <- ranger(y~.,
+                                     data = cbind(X_train, y = y_train, row.names = NULL),
+                                     probability = TRUE,
+                                     num.trees = n)
+             rf_preds <- predict(rf_classifier, cbind(X_test, y = y_test, row.names = NULL))
+             rf_preds$predictions[, 1]
+           }))
+
+         },
+         "naive bayes" = {
+
+           do.call(cbind, lapply(param, function(lapl) {
+             naiveBayes_classifier <- naiveBayes(X_train, y_train, laplace = lapl)
+             predict(naiveBayes_classifier, X_test, type = "raw")[, 2, drop=FALSE]
+           }))
+
+         },
+         stop("Wrong model name"))
 }
