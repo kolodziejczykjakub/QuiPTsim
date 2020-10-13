@@ -72,7 +72,7 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
     df_train <- df[-fold_indices, ]
     df_test <- df[fold_indices, ]
 
-    evaluate_models(df_train, df_test) #, models = c())
+    evaluate_models(df_train, df_test, validation_scheme)
 
   })
 
@@ -89,7 +89,10 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
 #' @importFrom ranger ranger
 #' @importFrom e1071 naiveBayes
 #' @importFrom class knn
-evaluate_models <- function(df_train, df_test) {
+evaluate_models <- function(df_train, df_test, validation_scheme) {
+
+  # TODO: works with only one hyperparameter
+  models_details <- validation_scheme[["models_details"]]
 
   X_train <- df_train[, !names(df_train) %in% "y" ]
   y_train <- df_train[["y"]]
@@ -97,34 +100,19 @@ evaluate_models <- function(df_train, df_test) {
   X_test <- df_test[, !names(df_test) %in% "y" ]
   y_test <- df_test[["y"]]
 
-  modele <- list(
-    list(model = "lm",
-         param_name = "lambda",
-         param_value = 1:2),
-    list(model = "knn",
-         param_name = "neighbors",
-         param_value = 1:2),
-    list(model = "rf",
-         param_name = "num.trees",
-         param_value = 1:2),
-    list(model = "naive bayes",
-         param_name = "laplace",
-         param_value = 1:2)
-  )
-
-  models_probs <- lapply(modele, function(m)
+  models_probs <- lapply(models_details, function(m)
     build_model(X_train, y_train, X_test, y_test, m[["param_value"]], m[["model"]]))
 
-  results <- lapply(1:length(modele), function(i) {
+  results <- lapply(1:length(models_details), function(i) {
 
     res <- apply(models_probs[[i]], 2, function(y_pred) {
       c(compute_metrics(y_test, y_pred > 0.5),
         auc = auc(as.numeric(y_test), y_pred))
     })
 
-    data.frame(model = modele[[i]][["model"]],
-               param = modele[[i]][["param_name"]],
-               value = modele[[i]][["param_value"]],
+    data.frame(model = models_details[[i]][["model"]],
+               param = models_details[[i]][["param_name"]],
+               value = models_details[[i]][["param_value"]],
                do.call(rbind, res),
                row.names = NULL)
   })

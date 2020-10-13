@@ -4,7 +4,7 @@
 \alias{evaluate_models}
 \title{Function trains and evaluates model on selected k-mers}
 \usage{
-evaluate_models(df_train, df_test)
+evaluate_models(df_train, df_test, validation_scheme)
 }
 \description{
 Function trains and evaluates model on selected k-mers
