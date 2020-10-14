@@ -28,10 +28,6 @@ ranking_summary <- function(paths, setup, validation_scheme) {
 #' @export
 evaluate_filtering_results <- function(m, filtering_results, setup, validation_scheme){
 
-  if (setup[["method"]] == "FCBF") {
-    validation_scheme[["n_kmers"]] <- sum(filtering_results[["score"]])
-  }
-
   # Repeated k-fold cross validation
   results <- lapply(1:validation_scheme[["cv_reps"]], function(cv_rep) {
 
@@ -121,6 +117,13 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
 }
 
 #' function builds a model and predicts out of fold probabilites
+#' @param X_train
+#' @param y_train
+#' @param X_test
+#' @param y_test
+#' @param param vector of parameters (lm : lambda,
+#'  knn: neighbors, naive bayes: laplace, rf: num.trees)
+#' @param method model (one of: lm, knn, naive bayes, rf)
 #' @export
 #' @importFrom glmnet glmnet
 #' @importFrom ranger ranger
@@ -173,4 +176,24 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
 
          },
          stop("Wrong model name"))
+}
+
+#' calculates number of k-mers to select for non-ranking methods
+#' @param filtering_results data.frame containing ranking of k-mers
+#' @param method feature filtering method
+#' @thresholds optional parameter for statistical tests
+#' @export
+kmers_for_nonranking_methods <- function(filtering_results, method, thresholds) {
+
+  switch(method,
+         "QuiPT" =,
+         "Chi-squared"= unlist(lapply(thresholds, function(th)
+           sum(filtering_results[["p.value"]]< th))),
+         "gainratio" = ,
+         "infogain" = ,
+         "symuncert" = cpt.var(sort(filtering_results, decreasing = TRUE),
+                               class = F,
+                               penalty = "BIC")[1],
+         "FCBF"= sum(filtering_results[["score"]]),
+         stop("Unkown filter!"))
 }

@@ -230,17 +230,8 @@ calculate_score <- function(scores, setup) {
     res <- lapply(numFeatures, function(nFeat) {
       metrics <- lapply(scores, function(res) {
 
-        if (nFeat == 0 & 0 %in% setup[["fraction"]]) {
-
-          sorted_crit <- sort(res[[metric]], decreasing = TRUE)
-          id <- cpt.mean(sorted_crit, penalty="SIC", method="AMOC",class=FALSE)[1]
-          y_pred <- res[["score"]] > sorted_crit[id]
-
-        } else {
-
-          y_pred <- res[["score"]] > sort(res[["score"]],
-                                          decreasing = TRUE)[nFeat]
-        }
+        y_pred <- res[["score"]] > sort(res[["score"]],
+                                        decreasing = TRUE)[nFeat]
 
         compute_metrics(res[["positive.ngram"]], y_pred)
       })

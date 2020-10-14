@@ -6,6 +6,12 @@
 \usage{
 build_model(X_train, y_train, X_test, y_test, param, method)
 }
+\arguments{
+\item{param}{vector of parameters (lm : lambda,
+knn: neighbors, naive bayes: laplace, rf: num.trees)}
+
+\item{method}{model (one of: lm, knn, naive bayes, rf)}
+}
 \description{
 function builds a model and predicts out of fold probabilites
 }
