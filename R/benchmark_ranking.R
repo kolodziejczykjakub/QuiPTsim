@@ -182,16 +182,17 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
 #' @param filtering_results data.frame containing ranking of k-mers
 #' @param method feature filtering method
 #' @thresholds optional parameter for statistical tests
+#' @importFrom changepoint cpt.var
 #' @export
 kmers_for_nonranking_methods <- function(filtering_results, method, thresholds) {
 
   switch(method,
          "QuiPT" =,
          "Chi-squared"= unlist(lapply(thresholds, function(th)
-           sum(filtering_results[["p.value"]]< th))),
+           sum(filtering_results[["score"]]< th))),
          "gainratio" = ,
          "infogain" = ,
-         "symuncert" = cpt.var(sort(filtering_results, decreasing = TRUE),
+         "symuncert" = cpt.var(sort(filtering_results[["score"]], decreasing = TRUE),
                                class = F,
                                penalty = "BIC")[1],
          "FCBF"= sum(filtering_results[["score"]]),

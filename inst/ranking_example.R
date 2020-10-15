@@ -39,7 +39,11 @@ validation_scheme <- list(type = "cv",
                           n_kmers = c(2, 5, 100),
                           cv_reps = 2,
                           models_details = models_details)
-m <-read_ngram_matrix(paths[1])
-filtering_results <- filter_ngrams(m, setup[["method"]])
-evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
+results <- ranking_summary(paths[1:2], setup, validation_scheme)
 
+
+
+setup <- list(method = "FCBF")
+filtering_results <- filter_ngrams(m, setup[["method"]])
+
+kmers_for_nonranking_methods(filtering_results, setup[["method"]], c(0.001, 0.01, 0.05))
