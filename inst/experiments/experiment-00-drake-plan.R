@@ -35,6 +35,12 @@ plan <- drake_plan(
                             cv_reps = 2,
                             models_details = models_details),
 
+  validation_scheme_nonranking = list(type = "cv",
+                           folds = 5,
+                           cv_reps = 2,
+                           models_details = models_details),
+
+
   ###### Validation scheme
   filter_names = c("QuiPT",
                     "Chi-squared",
@@ -86,112 +92,181 @@ plan <- drake_plan(
 
   ###### Classifiers on selected k-mers
 
-  results_QuiPT = lapply(filtering_results_QuiPT, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="QuiPT"), validation_scheme)
-
-    })
+  results_QuiPT = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_QuiPT[[i]],
+                               list(method="QuiPT"),
+                               validation_scheme)
   }),
 
-  results_Chi = lapply(filtering_results_Chi, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="Chi"), validation_scheme)
-
-    })
+  results_Chi = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_Chi[[i]],
+                               list(method="Chi-squared"),
+                               validation_scheme)
   }),
 
-  results_FCBF = lapply(filtering_results_FCBF, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="FCBF"), validation_scheme)
-
-    })
+  results_FCBF = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_FCBF[[i]],
+                               list(method="FCBF"),
+                               validation_scheme)
   }),
 
-  results_infogain = lapply(filtering_results_infogain, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="infogain"), validation_scheme)
-
-    })
+  results_infogain = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_infogain[[i]],
+                               list(method="infogain"),
+                               validation_scheme)
   }),
 
-  results_gainratio = lapply(filtering_results_gainratio, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="gainratio"), validation_scheme)
-
-    })
+  results_gainratio = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_gainratio[[i]],
+                               list(method="gainratio"),
+                               validation_scheme)
   }),
 
-  results_symuncert = lapply(filtering_results_symuncert, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="symuncert"), validation_scheme)
-
-    })
+  results_symuncert = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_symuncert[[i]],
+                               list(method="symuncert"),
+                               validation_scheme)
   }),
 
-  results_MRMR = lapply(filtering_results_MRMR, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="MRMR"), validation_scheme)
-
-    })
+  results_MRMR = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_MRMR[[i]],
+                               list(method="MRMR"),
+                               validation_scheme)
   }),
 
-  results_JMI = lapply(filtering_results_JMI, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="JMI"), validation_scheme)
-
-    })
+  results_JMI = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_JMI[[i]],
+                               list(method="JMI"),
+                               validation_scheme)
   }),
 
-  results_JMIM = lapply(filtering_results_JMIM, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="JMIM"), validation_scheme)
-
-    })
+  results_JMIM = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_JMIM[[i]],
+                               list(method="JMIM"),
+                               validation_scheme)
   }),
 
-  results_DISR = lapply(filtering_results_DISR, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="DISR"), validation_scheme)
-
-    })
+  results_DISR = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_DISR[[i]],
+                               list(method="DISR"),
+                               validation_scheme)
   }),
 
-  results_CMIM = lapply(filtering_results_CMIM, function(fr) {
-    lapply(paths, function(path) {
-
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="CMIM"), validation_scheme)
-
-    })
+  results_CMIM = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_CMIM[[i]],
+                               list(method="CMIM"),
+                               validation_scheme)
   }),
 
-  results_NJMIM = lapply(filtering_results_NJMIM, function(fr) {
-    lapply(paths, function(path) {
+  results_NJMIM = lapply(1:length(paths), function(i) {
+    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
+                               filtering_results_NJMIM[[i]],
+                               list(method="NJMIM"),
+                               validation_scheme)
+  }),
 
-      m <- read_ngram_matrix(path)
-      evaluate_filtering_results(m, fr, list(method="NJMIM"), validation_scheme)
+    # results for non-ranking methods
+  thresholds = c(0.01, 0.05),
 
-    })
+  results_QuiPT_nonranking = lapply(1:length(filtering_results_QuiPT), function(i) {
+
+    fr = filtering_results_QuiPT[[i]]
+    validation_scheme_nonranking_tmp = validation_scheme_nonranking
+    validation_scheme_nonranking_tmp[["n_kmers"]] =
+      kmers_for_nonranking_methods(fr, "QuiPT", thresholds)
+
+    m <- read_ngram_matrix(paths[[i]])
+    evaluate_filtering_results(m,
+                               fr,
+                               list(method="QuiPT"),
+                               validation_scheme_nonranking_tmp)
+
+  }),
+
+  results_Chi_nonranking = lapply(1:length(filtering_results_Chi), function(i) {
+
+    fr = filtering_results_Chi[[i]]
+    validation_scheme_nonranking_tmp = validation_scheme_nonranking
+    validation_scheme_nonranking_tmp[["n_kmers"]] =
+      kmers_for_nonranking_methods(fr, "Chi-squared", thresholds)
+
+    m <- read_ngram_matrix(paths[[i]])
+    evaluate_filtering_results(m,
+                               fr,
+                               list(method="Chi-squared"),
+                               validation_scheme_nonranking_tmp)
+
+  }),
+
+  results_gainratio_nonranking = lapply(1:length(filtering_results_gainratio), function(i) {
+
+    fr = filtering_results_gainratio[[i]]
+    validation_scheme_nonranking_tmp = validation_scheme_nonranking
+    validation_scheme_nonranking_tmp[["n_kmers"]] =
+      kmers_for_nonranking_methods(fr, "gainratio")
+
+    m <- read_ngram_matrix(paths[[i]])
+    evaluate_filtering_results(m,
+                               fr,
+                               list(method="gainratio"),
+                               validation_scheme_nonranking_tmp)
+
+  }),
+
+  results_infogain_nonranking = lapply(1:length(filtering_results_infogain), function(i) {
+
+    fr = filtering_results_infogain[[i]]
+    validation_scheme_nonranking_tmp = validation_scheme_nonranking
+    validation_scheme_nonranking_tmp[["n_kmers"]] =
+      kmers_for_nonranking_methods(fr, "infogain")
+
+    m <- read_ngram_matrix(paths[[i]])
+    evaluate_filtering_results(m,
+                               fr,
+                               list(method="infogain"),
+                               validation_scheme_nonranking_tmp)
+
+  }),
+
+  results_symuncert_nonranking = lapply(1:length(filtering_results_symuncert), function(i) {
+
+    fr = filtering_results_symuncert[[i]]
+    validation_scheme_nonranking_tmp = validation_scheme_nonranking
+    validation_scheme_nonranking_tmp[["n_kmers"]] =
+      kmers_for_nonranking_methods(fr, "symuncert")
+
+    m <- read_ngram_matrix(paths[[i]])
+    evaluate_filtering_results(m,
+                               fr,
+                               list(method="symuncert"),
+                               validation_scheme_nonranking_tmp)
+
+  }),
+
+  results_FCBF_nonranking = lapply(1:length(filtering_results_FCBF), function(i) {
+
+    fr = filtering_results_FCBF[[i]]
+    validation_scheme_nonranking_tmp = validation_scheme_nonranking
+    validation_scheme_nonranking_tmp[["n_kmers"]] =
+      kmers_for_nonranking_methods(fr, "FCBF")
+
+    m <- read_ngram_matrix(paths[[i]])
+    evaluate_filtering_results(m,
+                               fr,
+                               list(method="FCBF"),
+                               validation_scheme_nonranking_tmp)
+
   })
 )
 
