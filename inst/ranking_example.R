@@ -14,8 +14,8 @@ validation_scheme <- list(type = "cv",
                           cv_reps = 2)
 
 m <-read_ngram_matrix(paths[1])
-filtering_results <- filter_ngrams(m, setup[["method"]])
-evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
+# filtering_results <- filter_ngrams(m, setup[["method"]])
+# evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
 
 # QuiPT
 setup <- list(method = "QuiPT")
@@ -23,7 +23,7 @@ setup <- list(method = "QuiPT")
 models_details <- list(
   list(model = "lm",
        param_name = "lambda",
-       param_value = 1:2),
+       param_value = NULL),
   list(model = "knn",
        param_name = "neighbors",
        param_value = 1:2),
@@ -39,8 +39,9 @@ validation_scheme <- list(type = "cv",
                           n_kmers = c(2, 5, 100),
                           cv_reps = 2,
                           models_details = models_details)
-results <- ranking_summary(paths[1:2], setup, validation_scheme)
-
+# results <- ranking_summary(paths[1:2], setup, validation_scheme)
+filtering_results <- filter_ngrams(m, setup[["method"]])
+res <- evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
 
 
 setup <- list(method = "FCBF")

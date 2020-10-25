@@ -63,17 +63,17 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
   folds <- createFolds(y = df[["y"]],
                        k = validation_scheme[["folds"]])
 
-  results <- lapply(folds, function(fold_indices) {
+  results <- lapply(1:length(folds), function(i) {
 
-    df_train <- df[-fold_indices, ]
-    df_test <- df[fold_indices, ]
+    df_train <- df[-folds[[i]], ]
+    df_test <- df[folds[[i]], ]
 
-    evaluate_models(df_train, df_test, validation_scheme)
+    data.frame(evaluate_models(df_train, df_test, validation_scheme),
+               fold = i)
 
   })
 
   results <- data.frame(do.call(rbind, results))
-  results[["fold"]] <- 1:validation_scheme[["folds"]]
   rownames(results) <- NULL
 
   results
@@ -96,14 +96,23 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
   X_test <- df_test[, !names(df_test) %in% "y" ]
   y_test <- df_test[["y"]]
 
-  models_probs <- lapply(models_details, function(m)
-    build_model(X_train, y_train, X_test, y_test, m[["param_value"]], m[["model"]]))
+  models_probs <- lapply(models_details, function(m) {
+    build_model(X_train, y_train, X_test, y_test, m[["param_value"]], m[["model"]])
+  })
+
 
   results <- lapply(1:length(models_details), function(i) {
 
+    # in case of not specified lambdas in LASSO lm
+    if (models_details[[i]][["model"]] == "lm" &
+        is.null(models_details[[i]][["param_value"]])) {
+      models_details[[i]][["param_name"]] <- "lambda"
+      models_details[[i]][["param_value"]] <- attr(models_probs[[i]], "lambda")
+    }
+
     res <- apply(models_probs[[i]], 2, function(y_pred) {
       c(compute_metrics(y_test, y_pred > 0.5),
-        auc = auc(as.numeric(y_test), y_pred))
+        auc = suppressWarnings(auc(as.numeric(y_test), y_pred)))
     })
 
     data.frame(model = models_details[[i]][["model"]],
@@ -134,12 +143,21 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
   switch(method,
          "lm" = {
 
-           logReg <- glmnet(x = as.matrix(X_train),
-                            y = as.numeric(y_train),
-                            family = "binomial",
-                            lambda = param)
+           # if param is not specified, default lambda parameters are computed
+           if (is.null(param)) {
+             logReg <- glmnet(x = as.matrix(X_train),
+                              y = as.numeric(y_train),
+                              family = "binomial")
+           } else {
+             logReg <- glmnet(x = as.matrix(X_train),
+                              y = as.numeric(y_train),
+                              family = "binomial",
+                              lambda = param)
+           }
 
-           predict(logReg, as.matrix(X_test), type = "response")
+           ans <- predict(logReg, as.matrix(X_test), type = "response")
+           attr(ans, "lambda") <- logReg[["lambda"]]
+           ans
 
          },
          "knn" = {

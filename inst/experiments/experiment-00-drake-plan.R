@@ -3,8 +3,6 @@ library(drake)
 
 # TODO:
 # - parallelization
-# - normalization for k-NN, lm, naive bayes!
-# - set parameters for models
 
 plan <- drake_plan(
 
@@ -18,16 +16,16 @@ plan <- drake_plan(
   models_details = list(
     list(model = "lm",
          param_name = "lambda",
-         param_value = 1:2),
+         param_value = NULL),
     list(model = "knn",
          param_name = "neighbors",
-         param_value = 1:2),
+         param_value = 2^(0:4)),
     list(model = "rf",
-         param_name = "num.trees",
-         param_value = 1:2),
+         param_name = "num.trees", # 500, 1000
+         param_value = c(500, 100)),
     list(model = "naive bayes",
          param_name = "laplace",
-         param_value = 1:2)
+         param_value = 0)
   ),
 
   ###### Validation scheme
@@ -199,82 +197,3 @@ plan <- drake_plan(
 
 #make(plan)
 vis_drake_graph(plan)
-
-example <- drake_plan(x = 5)
-example1 <- drake_plan(y = 5,
-                       z = x + 3)
-ex2 <- bind_plans(example, example1)
-
-
-##########################################################################
-plan <- drake_plan(
-
-  ###### data frame containing datasets' details and their paths to RDS files
-  df = read.csv("./reduced_alph_enc_alph4_const/alph4_const.csv"),
-
-  ###### selected paths
-  paths = df[df$l_seq == 10 & df$n_motifs == 2, "path"],
-
-  ###### details of models used in ranking comparison
-  models_details = list(
-    list(model = "lm",
-         param_name = "lambda",
-         param_value = 1:2),
-    list(model = "knn",
-         param_name = "neighbors",
-         param_value = 1:2),
-    list(model = "rf",
-         param_name = "num.trees",
-         param_value = 1:2),
-    list(model = "naive bayes",
-         param_name = "laplace",
-         param_value = 1:2)
-  ),
-
-  ###### Validation scheme
-  validation_scheme = list(type = "cv",
-                           folds = 5,
-                           n_kmers = c(1:128, 2^(8:13)),
-                           cv_reps = 2,
-                           models_details = models_details),
-
-  ###### Validation scheme
-  filter_names = c("QuiPT",
-                   "Chi-squared",
-                   "FCBF",
-                   "infogain", "gainratio", "symuncert",
-                   "MRMR", "JMI", "JMIM", "DISR", "CMIM", "NJMIM")
-)
-
-make(plan)
-
-filters_plans <- lapply(readd(filter_names), function(filter_name) {
-
-  assign(paste0("drake_plan_", filter_name), drake_plan(
-
-    `<-`(paste0("filtering_results_", filter_name), lapply(paths, function(x)
-      filter_ngrams(read_ngram_matrix(x), feature_selection_method = filter_name))),
-    #
-    # assign(paste0("filtering_results_", filter_name), lapply(paths, function(x)
-    #   filter_ngrams(read_ngram_matrix(x), feature_selection_method = filter_name))),
-    #
-    assign(paste0("results_", filter_name),
-           lapply(get(paste0("filtering_results_", filter_name)), function(fr) {
-             lapply(paths, function(path) {
-
-               m <- read_ngram_matrix(path)
-              evaluate_filtering_results(m, fr, filter_name, validation_scheme)
-      })
-    }))
-  ))
-
-})
-
-
-
-
-
-
-
-
-
