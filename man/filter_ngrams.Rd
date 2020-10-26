@@ -4,12 +4,14 @@
 \alias{filter_ngrams}
 \title{Wrapper for feature selection methods}
 \usage{
-filter_ngrams(ngram_matrix, feature_selection_method)
+filter_ngrams(ngram_matrix, feature_selection_method, rank_n_kmers = 8192)
 }
 \arguments{
 \item{ngram_matrix}{matrix of n-gram occurences}
 
 \item{feature_selection_method}{feature selection method name (QuiPT, ...)}
+
+\item{rank_n_kmers}{number of selected k-mers in praznik filters}
 }
 \description{
 Wrapper for variuous feature selection method evaluated in a QuiPTsim benchmark

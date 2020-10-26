@@ -59,6 +59,7 @@ positive_ngrams <- function(ngram_matrix) {
 #' Wrapper for variuous feature selection method evaluated in a QuiPTsim benchmark
 #' @param ngram_matrix matrix of n-gram occurences
 #' @param feature_selection_method feature selection method name (QuiPT, ...)
+#' @param rank_n_kmers number of selected k-mers in praznik filters
 #' @importFrom biogram test_features
 #' @importFrom stats setNames
 #' @importFrom stats sd
@@ -67,7 +68,7 @@ positive_ngrams <- function(ngram_matrix) {
 #' @importFrom praznik MIM MRMR JMI JMIM DISR NJMIM CMIM
 #' @export
 
-filter_ngrams <- function(ngram_matrix, feature_selection_method) {
+filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers = 8192) {
 
   # Feature selection methods from praznik package
   praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM", "CMI")
@@ -88,10 +89,10 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method) {
 
     res <- get(feature_selection_method)(X = x,
                                          Y = y,
-                                         k = round(ncol(x) * 0.05, digits = 0))
+                                         k = rank_n_kmers)
 
     filtered_ngrams <- rep(length(colnames(x)), length(colnames(x)))
-    filtered_ngrams[res$selection] <- 1:(round(ncol(x) * 0.05, digits = 0))
+    filtered_ngrams[res$selection] <- 1:rank_n_kmers
     out <- data.frame(rank = filtered_ngrams)
     out[["score"]] <- out[["rank"]] > 0
   }

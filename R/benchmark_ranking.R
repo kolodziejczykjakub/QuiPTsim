@@ -1,25 +1,3 @@
-#' High-level wrapper of ranking evaluation tools
-#' @inheritParams evaluate_filtering_results
-#' @export
-#' @importFrom pbapply pblapply
-ranking_summary <- function(paths, setup, validation_scheme) {
-
-  results <- pblapply(paths, function(path) {
-
-
-    # TODO: fraction, mixing matrices etc.
-    m <- read_ngram_matrix(path)
-
-    # scoring k-mers
-    filtering_results <- filter_ngrams(m,setup[["method"]])
-
-    # Cross-validation, bootstraping, holdout etc.
-    results <- evaluate_filtering_results(m, filtering_results, setup, validation_scheme)
-  })
-
-  results
-}
-
 #' Wrapper for `evaluate_selected_kmers` functions
 #' @param m k-mer matrix
 #' @param filtering_results data.frame containing ranking of top k-mers
@@ -80,6 +58,9 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
 }
 
 #' Function trains and evaluates model on selected k-mers
+#' @param df_train training set (data frame contating target column named `y`)
+#' @param df_test test set (data frame contating target column named `y`)
+#' @param validation_scheme list contating details of model evaluation
 #' @export
 #' @importFrom glmnet glmnet
 #' @importFrom ranger ranger
@@ -130,15 +111,14 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
 #' @param y_train
 #' @param X_test
 #' @param y_test
-#' @param param vector of parameters (lm : lambda,
-#'  knn: neighbors, naive bayes: laplace, rf: num.trees)
+#' @param p vector of parameters (lm : lambda, knn: neighbors, naive bayes: laplace, rf: num.trees)
 #' @param method model (one of: lm, knn, naive bayes, rf)
 #' @export
 #' @importFrom glmnet glmnet
 #' @importFrom ranger ranger
 #' @importFrom e1071 naiveBayes
 #' @importFrom class knn
-build_model <- function(X_train, y_train, X_test, y_test, param, method) {
+build_model <- function(X_train, y_train, X_test, y_test, p, method) {
 
   switch(method,
          "lm" = {
@@ -152,7 +132,7 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
              logReg <- glmnet(x = as.matrix(X_train),
                               y = as.numeric(y_train),
                               family = "binomial",
-                              lambda = param)
+                              lambda = p)
            }
 
            ans <- predict(logReg, as.matrix(X_test), type = "response")
@@ -162,7 +142,7 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
          },
          "knn" = {
 
-           do.call(cbind, lapply(param, function(neighbors) {
+           do.call(cbind, lapply(p, function(neighbors) {
              kNN_classifier <- knn(train = X_train, test = X_test,
                                    cl = y_train,
                                    k = neighbors,
@@ -175,7 +155,7 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
          },
          "rf" = {
 
-           do.call(cbind, lapply(param, function(n) {
+           do.call(cbind, lapply(p, function(n) {
              rf_classifier <- ranger(y~.,
                                      data = cbind(X_train, y = y_train, row.names = NULL),
                                      probability = TRUE,
@@ -187,7 +167,7 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
          },
          "naive bayes" = {
 
-           do.call(cbind, lapply(param, function(lapl) {
+           do.call(cbind, lapply(p, function(lapl) {
              naiveBayes_classifier <- naiveBayes(X_train, y_train, laplace = lapl)
              predict(naiveBayes_classifier, X_test, type = "raw")[, 2, drop=FALSE]
            }))
@@ -199,7 +179,7 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
 #' calculates number of k-mers to select for non-ranking methods
 #' @param filtering_results data.frame containing ranking of k-mers
 #' @param method feature filtering method
-#' @thresholds optional parameter for statistical tests
+#' @param thresholds optional parameter for statistical tests
 #' @importFrom changepoint cpt.var
 #' @export
 kmers_for_nonranking_methods <- function(filtering_results, method, thresholds) {

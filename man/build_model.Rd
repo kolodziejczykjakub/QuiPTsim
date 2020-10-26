@@ -4,11 +4,10 @@
 \alias{build_model}
 \title{function builds a model and predicts out of fold probabilites}
 \usage{
-build_model(X_train, y_train, X_test, y_test, param, method)
+build_model(X_train, y_train, X_test, y_test, p, method)
 }
 \arguments{
-\item{param}{vector of parameters (lm : lambda,
-knn: neighbors, naive bayes: laplace, rf: num.trees)}
+\item{p}{vector of parameters (lm : lambda, knn: neighbors, naive bayes: laplace, rf: num.trees)}
 
 \item{method}{model (one of: lm, knn, naive bayes, rf)}
 }

@@ -6,6 +6,13 @@
 \usage{
 evaluate_models(df_train, df_test, validation_scheme)
 }
+\arguments{
+\item{df_train}{training set (data frame contating target column named `y`)}
+
+\item{df_test}{test set (data frame contating target column named `y`)}
+
+\item{validation_scheme}{list contating details of model evaluation}
+}
 \description{
 Function trains and evaluates model on selected k-mers
 }
