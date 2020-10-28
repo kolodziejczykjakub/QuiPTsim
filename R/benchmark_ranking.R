@@ -124,7 +124,7 @@ build_model <- function(X_train, y_train, X_test, y_test, p, method) {
          "lm" = {
 
            # if param is not specified, default lambda parameters are computed
-           if (is.null(param)) {
+           if (is.null(p)) {
              logReg <- glmnet(x = as.matrix(X_train),
                               y = as.numeric(y_train),
                               family = "binomial")
