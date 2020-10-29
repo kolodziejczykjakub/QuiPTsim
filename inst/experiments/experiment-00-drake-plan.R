@@ -23,7 +23,7 @@ plan <- drake_plan(
          param_value = 2^(0:4)),
     list(model = "rf",
          param_name = "num.trees", # 500, 1000
-         param_value = c(500, 100)),
+         param_value = c(500, 1000)),
     list(model = "naive bayes",
          param_name = "laplace",
          param_value = 0)

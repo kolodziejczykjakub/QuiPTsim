@@ -62,7 +62,67 @@ test_that("kmers_for_nonranking_methods", {
                            0.889105085232103, 7.16940001698361e-07, 0.437404884724875), .Dim = c(10L,
                                                                                                  1L), .Dimnames = list(NULL, "1")))
 })
-# test_that("kmers_for_nonranking_methods", {
-#
-#
-# })
+test_that("kmers_for_nonranking_methods", {
+
+  set.seed(1)
+  models_details = list(
+    list(model = "lm",
+         param_name = "lambda",
+         param_value = 0),
+    list(model = "knn",
+         param_name = "neighbors",
+         param_value = 2),
+    list(model = "rf",
+         param_name = "num.trees",
+         param_value = 50),
+    list(model = "naive bayes",
+         param_name = "laplace",
+         param_value = 0))
+
+  validation_scheme = list(type = "cv",
+                           folds = 2,
+                           n_kmers = 2,
+                           cv_reps = 1,
+                           models_details = models_details)
+
+  df <- data.frame(matrix(sample(0:1, 1000, replace = T), ncol = 10), y = c(rep(1, 50), rep(0, 50)))
+
+  evaluated_kmers <- evaluate_selected_kmers(df, validation_scheme)
+
+  expect_equal(evaluated_kmers,
+               structure(list(
+                 model = c("lm", "knn", "rf", "naive bayes", "lm",
+                           "knn", "rf", "naive bayes"),
+                 param = c("lambda", "neighbors", "num.trees", "laplace",
+                           "lambda", "neighbors", "num.trees", "laplace")
+                 , value = c(0, 2, 50, 0, 0, 2, 50, 0),
+                 accuracy = structure(list(0.38, 0.84, 0.44, 0.46, 0.54, 0.92, 0.44, 0.44),
+                                      .Names = c(NA, "accuracy", "accuracy",
+                                                 "", NA, "accuracy", "accuracy", "")),
+                 sensitivity = structure(list(0.36, 0.68, 0.44, 0.4, 0.56,
+                                              0.84, 0.6, 0.52),
+                                         .Names = c(NA, "sensitivity", "sensitivity",
+                                                    "", NA, "sensitivity", "sensitivity", "")),
+                 specificity = structure(list(0.4, 1, 0.44, 0.52, 0.52, 1, 0.28, 0.36),
+                                         .Names = c(NA, "specificity", "specificity",
+                                                    "", NA, "specificity", "specificity", "")),
+                 F1score = structure(list(0.36734693877551, 0.80952380952381, 0.44,
+                                          0.425531914893617, 0.549019607843137,
+                                          0.91304347826087, 0.517241379310345,
+                                          0.481481481481481),
+                                     .Names = c(NA, "F1score", "F1score", "",
+                                                NA, "F1score", "F1score", "")),
+                 precision = structure(list(0.375, 1, 0.44, 0.454545454545455,
+                                            0.538461538461538, 1, 0.454545454545455,
+                                            0.448275862068966),
+                                       .Names = c(NA, "precision", "precision", "",
+                                                  NA, "precision", "precision", "")),
+                 recall = structure(list(0.36, 0.68, 0.44, 0.4, 0.56, 0.84, 0.6, 0.52),
+                                    .Names = c(NA, "recall", "recall", "", NA, "recall",
+                                               "recall", "")),
+                 auc = structure(list(0.5792, 0.9424, 0.5584, 0.5224, 0.5152, 0.984,
+                                      0.5728, 0.528), .Names = c(NA, "auc", "auc", "",
+                                                                 NA, "auc", "auc", "")),
+                 fold = c(1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L)),
+                 class = "data.frame", row.names = c(NA, -8L)))
+})
