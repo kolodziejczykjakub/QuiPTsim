@@ -8,9 +8,9 @@ plan <- drake_plan(
 
   ###### selected paths
   # workaround after adding unigrams
-  paths = paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
+  paths1 = paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
 		sapply(strsplit(x = df[["path"]], split = "/"), function(x) x[[3]])),
-  
+  paths = paths1[1:2],
   ###### details of models used in ranking comparison
   models_details = list(
     list(model = "lm",
@@ -176,7 +176,7 @@ plan <- drake_plan(
   }),
 
     # results for non-ranking methods
-  thresholds = c(0.001, 0.05),
+  thresholds = c(0.01, 0.05),
 
   results_QuiPT_nonranking = lapply(1:length(filtering_results_QuiPT), function(i) {
 
