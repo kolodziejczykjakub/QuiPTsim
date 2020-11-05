@@ -87,9 +87,11 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
     x <- data.frame(as.matrix(ngram_matrix))
     y <- attr(ngram_matrix, "target")
 
-    res <- get(feature_selection_method)(X = x,
-                                         Y = y,
-                                         k = rank_n_kmers)
+    comp.time <- system.time(
+      res <- get(feature_selection_method)(X = x,
+                                           Y = y,
+                                           k = rank_n_kmers)
+    )
 
     filtered_ngrams <- rep(length(colnames(x)), length(colnames(x)))
     filtered_ngrams[res$selection] <- 1:rank_n_kmers
@@ -102,8 +104,11 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
     x <- data.frame(as.matrix(ngram_matrix))
     y <- attr(ngram_matrix, "target")
 
-    score <- information_gain(x = x, y = y, discIntegers = FALSE,
-                           type = feature_selection_method)
+
+    comp.time <- system.time(
+      score <- information_gain(x = x, y = y, discIntegers = FALSE,
+                                type = feature_selection_method)
+      )
 
     if (feature_selection_method == "gainratio") {
       score[["importance"]][is.na(score[["importance"]])] <- 0
@@ -117,9 +122,12 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
 
   # QuiPT feature selection
   if (feature_selection_method == "QuiPT") {
-    out <- data.frame(test_features(target = attr(ngram_matrix, "target"),
-                                             features = ngram_matrix,
-                                    threshold = -1))
+
+    comp.time <- system.time(
+      out <- data.frame(test_features(target = attr(ngram_matrix, "target"),
+                                      features = ngram_matrix,
+                                      threshold = -1))
+    )
     out[["score"]] <- out[["p.value"]]
     out[["rank"]] <- order(out[["p.value"]])
   }
@@ -129,17 +137,19 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
 
     y <- attr(ngram_matrix, "target")
 
-    pvalues <- lapply(1:ncol(ngram_matrix), function(i) {
+    comp.time <- system.time(
+      pvalues <- lapply(1:ncol(ngram_matrix), function(i) {
 
-      x <- as.vector(ngram_matrix[, i])
+        x <- as.vector(ngram_matrix[, i])
 
-      if (length(unique(x)) == 1) {
-        pval = 1
-      } else {
-        pval <- chisq.test(x, y, B = 200)$p.value
-      }
-      pval
+        if (length(unique(x)) == 1) {
+          pval = 1
+        } else {
+          pval <- chisq.test(x, y, B = 200)$p.value
+        }
+        pval
       })
+    )
 
     out <- data.frame(score = unlist(pvalues),
                       rank = order(unlist(pvalues)))
@@ -151,7 +161,10 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
     ngram_names <- rownames(features)
     n_ngrams <- length(ngram_names)
 
-    fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = FALSE)
+    comp.time <- system.time(
+      fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = FALSE)
+    )
+
     fcbf_id <- fcbf_results[["index"]]
 
     pred <- logical(n_ngrams)
@@ -176,6 +189,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
   posNgrams <- positive_ngrams(ngram_matrix)
   out[names(posNgrams)] <- posNgrams
 
+  attr(out, "time") <- comp.time
   out
 }
 
