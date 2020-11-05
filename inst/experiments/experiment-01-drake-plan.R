@@ -30,7 +30,7 @@ plan <- drake_plan(
   ###### Validation scheme
   validation_scheme = list(type = "cv",
                             folds = 5,
-                            n_kmers = c(1:128, 2^(8:13)),
+                            n_kmers = c(2:128, 2^(8:13)),
                             cv_reps = 3,
                             models_details = models_details),
 
@@ -102,13 +102,6 @@ plan <- drake_plan(
     evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
                                filtering_results_Chi[[i]],
                                list(method="Chi-squared"),
-                               validation_scheme)
-  }),
-
-  results_FCBF = lapply(1:length(paths), function(i) {
-    evaluate_filtering_results(read_ngram_matrix(paths[[i]]),
-                               filtering_results_FCBF[[i]],
-                               list(method="FCBF"),
                                validation_scheme)
   }),
 
@@ -269,9 +262,15 @@ plan <- drake_plan(
   })
 )
 
+
+# supressing warnings from Chi2 and AUC
+oldw <- getOption("warn")
+options(warn = -1)
+
 make(
   plan,
   parallelism = "future",
   jobs = 35,
   log_make = "drake.log"
 )
+options(warn = oldw)

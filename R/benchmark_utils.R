@@ -59,7 +59,7 @@ positive_ngrams <- function(ngram_matrix) {
 #' Wrapper for variuous feature selection method evaluated in a QuiPTsim benchmark
 #' @param ngram_matrix matrix of n-gram occurences
 #' @param feature_selection_method feature selection method name (QuiPT, ...)
-#' @param rank_n_kmers number of selected k-mers in praznik filters
+#' @param rank_n_kmers number of ranked k-mers in praznik filters
 #' @importFrom biogram test_features
 #' @importFrom stats setNames
 #' @importFrom stats sd

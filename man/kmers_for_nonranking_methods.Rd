@@ -10,8 +10,6 @@ kmers_for_nonranking_methods(filtering_results, method, thresholds)
 \item{filtering_results}{data.frame containing ranking of k-mers}
 
 \item{method}{feature filtering method}
-
-\item{thresholds}{optional parameter for statistical tests}
 }
 \description{
 calculates number of k-mers to select for non-ranking methods

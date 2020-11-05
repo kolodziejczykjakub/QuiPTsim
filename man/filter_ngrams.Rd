@@ -11,7 +11,7 @@ filter_ngrams(ngram_matrix, feature_selection_method, rank_n_kmers = 8192)
 
 \item{feature_selection_method}{feature selection method name (QuiPT, ...)}
 
-\item{rank_n_kmers}{number of selected k-mers in praznik filters}
+\item{rank_n_kmers}{number of ranked k-mers in praznik filters}
 }
 \description{
 Wrapper for variuous feature selection method evaluated in a QuiPTsim benchmark

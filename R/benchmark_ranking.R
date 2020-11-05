@@ -58,9 +58,7 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
 }
 
 #' Function trains and evaluates model on selected k-mers
-#' @param df_train training set (data frame contating target column named `y`)
-#' @param df_test test set (data frame contating target column named `y`)
-#' @param validation_scheme list contating details of model evaluation
+#' @param df_train
 #' @export
 #' @importFrom glmnet glmnet
 #' @importFrom ranger ranger
@@ -111,20 +109,21 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
 #' @param y_train
 #' @param X_test
 #' @param y_test
-#' @param p vector of parameters (lm : lambda, knn: neighbors, naive bayes: laplace, rf: num.trees)
+#' @param param vector of parameters (lm : lambda,
+#'  knn: neighbors, naive bayes: laplace, rf: num.trees)
 #' @param method model (one of: lm, knn, naive bayes, rf)
 #' @export
 #' @importFrom glmnet glmnet
 #' @importFrom ranger ranger
 #' @importFrom e1071 naiveBayes
 #' @importFrom class knn
-build_model <- function(X_train, y_train, X_test, y_test, p, method) {
+build_model <- function(X_train, y_train, X_test, y_test, param, method) {
 
   switch(method,
          "lm" = {
 
            # if param is not specified, default lambda parameters are computed
-           if (is.null(p)) {
+           if (is.null(param)) {
              logReg <- glmnet(x = as.matrix(X_train),
                               y = as.numeric(y_train),
                               family = "binomial")
@@ -132,7 +131,7 @@ build_model <- function(X_train, y_train, X_test, y_test, p, method) {
              logReg <- glmnet(x = as.matrix(X_train),
                               y = as.numeric(y_train),
                               family = "binomial",
-                              lambda = p)
+                              lambda = param)
            }
 
            ans <- predict(logReg, as.matrix(X_test), type = "response")
@@ -142,7 +141,7 @@ build_model <- function(X_train, y_train, X_test, y_test, p, method) {
          },
          "knn" = {
 
-           do.call(cbind, lapply(p, function(neighbors) {
+           do.call(cbind, lapply(param, function(neighbors) {
              kNN_classifier <- knn(train = X_train, test = X_test,
                                    cl = y_train,
                                    k = neighbors,
@@ -155,7 +154,7 @@ build_model <- function(X_train, y_train, X_test, y_test, p, method) {
          },
          "rf" = {
 
-           do.call(cbind, lapply(p, function(n) {
+           do.call(cbind, lapply(param, function(n) {
              rf_classifier <- ranger(y~.,
                                      data = cbind(X_train, y = y_train, row.names = NULL),
                                      probability = TRUE,
@@ -167,7 +166,7 @@ build_model <- function(X_train, y_train, X_test, y_test, p, method) {
          },
          "naive bayes" = {
 
-           do.call(cbind, lapply(p, function(lapl) {
+           do.call(cbind, lapply(param, function(lapl) {
              naiveBayes_classifier <- naiveBayes(X_train, y_train, laplace = lapl)
              predict(naiveBayes_classifier, X_test, type = "raw")[, 2, drop=FALSE]
            }))
@@ -179,7 +178,7 @@ build_model <- function(X_train, y_train, X_test, y_test, p, method) {
 #' calculates number of k-mers to select for non-ranking methods
 #' @param filtering_results data.frame containing ranking of k-mers
 #' @param method feature filtering method
-#' @param thresholds optional parameter for statistical tests
+#' @thresholds optional parameter for statistical tests
 #' @importFrom changepoint cpt.var
 #' @export
 kmers_for_nonranking_methods <- function(filtering_results, method, thresholds) {
