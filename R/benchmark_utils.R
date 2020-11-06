@@ -18,6 +18,7 @@ positive_ngrams <- function(ngram_matrix) {
 
   motifs <- unique(unlist(attr(ngram_matrix, "motifs"), recursive = FALSE))
   ngrams <- colnames(ngram_matrix)
+  ngrams <- sapply(ngrams, function(x) ifelse(nchar(x) == 1, paste0(x, "_0"), x))
 
   pos <- lapply(motifs, function(motif) {
 
