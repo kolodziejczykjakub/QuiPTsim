@@ -49,45 +49,45 @@ plan <- drake_plan(
   ###### Filtering results
   # QuiPT
   filtering_results_QuiPT = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "QuiPT")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "QuiPT")),
 
   # Chi-squared test
   filtering_results_Chi = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "Chi-squared")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "Chi-squared")),
 
   #  FCBF
   filtering_results_FCBF = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "FCBF")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "FCBF")),
 
   # "infogain", "gainratio", "symuncert"
   filtering_results_infogain = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "infogain")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "infogain")),
 
   filtering_results_gainratio = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "gainratio")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "gainratio")),
 
   filtering_results_symuncert = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "symuncert")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "symuncert")),
 
   # MRMR
   filtering_results_MRMR = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "MRMR")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "MRMR")),
 
   filtering_results_JMI = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "JMI")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "JMI")),
 
   filtering_results_DISR = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "DISR")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "DISR")),
 
   filtering_results_JMIM = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "JMIM")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "JMIM")),
 
   filtering_results_CMIM = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "CMIM")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "CMIM")),
 
 
   filtering_results_NJMIM = lapply(paths, function(x)
-    filter_ngrams(read_ngram_matrix(x), feature_selection_method = "NJMIM")),
+    filter_ngrams(read_ngram_matrix(x, n = 100, fraction = 0.5), feature_selection_method = "NJMIM")),
 
   ###### Classifiers on selected k-mers
 
