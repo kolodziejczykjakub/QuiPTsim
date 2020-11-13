@@ -145,7 +145,8 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
              kNN_classifier <- knn(train = X_train, test = X_test,
                                    cl = y_train,
                                    k = neighbors,
-                                   prob = TRUE)
+                                   prob = TRUE, 
+                                   use.all = FALSE)
              ifelse(y_test == TRUE,
                     attr(kNN_classifier, "prob"),
                     1 - attr(kNN_classifier, "prob"))
