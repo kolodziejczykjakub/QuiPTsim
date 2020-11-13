@@ -116,7 +116,7 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
 #' @importFrom glmnet glmnet
 #' @importFrom ranger ranger
 #' @importFrom e1071 naiveBayes
-#' @importFrom class knn
+#' @importFrom kknn kknn
 build_model <- function(X_train, y_train, X_test, y_test, param, method) {
 
   switch(method,
@@ -142,13 +142,15 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
          "knn" = {
 
            do.call(cbind, lapply(param, function(neighbors) {
-             kNN_classifier <- knn(train = X_train, test = X_test,
-                                   cl = y_train,
-                                   k = neighbors,
-                                   prob = TRUE)
-             ifelse(y_test == TRUE,
-                    attr(kNN_classifier, "prob"),
-                    1 - attr(kNN_classifier, "prob"))
+             
+             
+             kknn_model <- kknn(y~.,
+                                data.frame(X_train, y = y_train),
+                                data.frame(X_test),
+                                k = neighbors,
+                                kernel = "rectangular")
+             
+             kknn_model$fitted.values
            }))
 
          },
