@@ -4,7 +4,7 @@
 \alias{filter_ngrams}
 \title{Wrapper for feature selection methods}
 \usage{
-filter_ngrams(ngram_matrix, feature_selection_method, rank_n_kmers = 8192)
+filter_ngrams(ngram_matrix, feature_selection_method, rank_n_kmers = 4096)
 }
 \arguments{
 \item{ngram_matrix}{matrix of n-gram occurences}
