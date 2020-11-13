@@ -69,7 +69,7 @@ positive_ngrams <- function(ngram_matrix) {
 #' @importFrom praznik MIM MRMR JMI JMIM DISR NJMIM CMIM
 #' @export
 
-filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers = 8192) {
+filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers = 4096) {
 
   # Feature selection methods from praznik package
   praznik_filters <- c("MIM", "MRMR", "JMI", "JMIM", "DISR", "NJMIM", "CMIM", "CMI")

@@ -142,8 +142,7 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
          "knn" = {
 
            do.call(cbind, lapply(param, function(neighbors) {
-             
-             
+
              kknn_model <- kknn(y~.,
                                 data.frame(X_train, y = y_train),
                                 data.frame(X_test),
