@@ -35,7 +35,6 @@ evaluate_filtering_results <- function(m, filtering_results, setup, validation_s
 #' @export
 #' @importFrom caret createFolds
 #' @importFrom stats glm
-#' @importFrom pROC auc
 evaluate_selected_kmers <- function(df, validation_scheme) {
 
   folds <- createFolds(y = df[["y"]],
@@ -64,6 +63,7 @@ evaluate_selected_kmers <- function(df, validation_scheme) {
 #' @importFrom ranger ranger
 #' @importFrom e1071 naiveBayes
 #' @importFrom class knn
+#' @importFrom pROC auc
 evaluate_models <- function(df_train, df_test, validation_scheme) {
 
   # TODO: works with only one hyperparameter
@@ -91,7 +91,7 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
 
     res <- apply(models_probs[[i]], 2, function(y_pred) {
       c(compute_metrics(y_test, y_pred > 0.5),
-        auc = suppressWarnings(auc(as.numeric(y_test), y_pred)))
+        auc = suppressMessages(auc(as.numeric(y_test), y_pred)))
     })
 
     data.frame(model = models_details[[i]][["model"]],

@@ -146,7 +146,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
         if (length(unique(x)) == 1) {
           pval = 1
         } else {
-          pval <- chisq.test(x, y, B = 200)$p.value
+          pval <- suppressWarnings(chisq.test(x, y, B = 200)$p.value)
         }
         pval
       })
