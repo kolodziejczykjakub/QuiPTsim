@@ -270,7 +270,7 @@ options(warn = -1)
 make(
   plan,
   parallelism = "future",
-  jobs = 35,
+  jobs = 8,
   log_make = "drake.log"
 )
 options(warn = oldw)

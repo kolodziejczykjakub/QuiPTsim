@@ -267,12 +267,12 @@ plan <- drake_plan(
 oldw <- getOption("warn")
 options(warn = -1)
 
-cache <- new_cache("drake-exp-03")
+cache <- new_cache("drake-exp-02")
 make(
   plan,
   parallelism = "future",
-  jobs = 4,
-  log_make = "drake-exp03.log",
+  jobs = 1,
+  log_make = "drake-exp02.log",
   cache = cache
 )
 )
