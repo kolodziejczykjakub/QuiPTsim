@@ -118,7 +118,7 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
 #' @importFrom e1071 naiveBayes
 #' @importFrom kknn kknn
 build_model <- function(X_train, y_train, X_test, y_test, param, method) {
-
+  
   switch(method,
          "lm" = {
 
@@ -195,4 +195,59 @@ kmers_for_nonranking_methods <- function(filtering_results, method, thresholds) 
                                penalty = "BIC")[1],
          "FCBF"= sum(filtering_results[["score"]]),
          stop("Unkown filter!"))
+}
+
+#' function creates and evaluates filtering rankings
+#' @param paths list of paths containing n-gram matrices
+#' @param feature_selection_method filter (e.g. QuiPT)
+#' @param n number of total sequences
+#' @param fraction fraction of positive examples
+#' @param validation_scheme list with ranking details
+#' @export
+filter_rankings <- function(paths, feature_selection_method, n, fraction, validation_scheme) {
+  
+  lapply(paths, function(path) {
+    
+    m <- read_ngram_matrix(path, n = n, fraction = fraction)
+    filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
+    
+    results <- evaluate_filtering_results(m,
+                                          filtering_results,
+                                          list(method=feature_selection_method),
+                                          validation_scheme)
+    
+    list(filtering_results = filtering_results,
+         results = results)
+    
+  })
+}
+
+#' function that evaluates nonranking methods
+#' @param paths list of paths containing n-gram matrices
+#' @param feature_selection_method filter (e.g. QuiPT)
+#' @param n number of total sequences
+#' @param fraction fraction of positive examples
+#' @param validation_scheme list with ranking details
+#' @param thresholds p-value thresholds for statistical tests
+#' @export
+filter_nonrankings <- function(paths, feature_selection_method, n, fraction, validation_scheme, 
+                               thresholds = NULL) {
+  
+  lapply(paths, function(path) {
+    
+    m <- read_ngram_matrix(path, n = n, fraction = fraction)
+    filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
+    
+    validation_scheme[["n_kmers"]] <- kmers_for_nonranking_methods(filtering_results, 
+                                                                   feature_selection_method,
+                                                                   thresholds)
+    results <- evaluate_filtering_results(m,
+                                          filtering_results,
+                                          list(method = feature_selection_method),
+                                          validation_scheme)
+    
+    list(filtering_results = filtering_results,
+         results = results)
+  })
+  
 }
