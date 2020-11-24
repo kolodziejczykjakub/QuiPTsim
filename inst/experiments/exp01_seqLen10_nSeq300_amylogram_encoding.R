@@ -9,7 +9,7 @@ plan <- drake_plan(
   ###### selected paths
   #paths = df[df$seqLen==10 & df$nMotif=1 & nSeq = 300, "path"],
   paths = "./tests/testthat/example_QuiPT_simulation_data_result.Rds",
-  
+  output_prefix = "./do-usuniecia/",
   ###### details of models used in ranking comparison
   models_details = list(
     list(model = "lm",
@@ -46,29 +46,29 @@ plan <- drake_plan(
                    "infogain", "gainratio", "symuncert",
                    "MRMR", "JMI", "JMIM", "DISR", "CMIM", "NJMIM"),
   
-  ranking_QuiPT = filter_rankings(paths, "QuiPT", 300, 0.5, validation_scheme),
-  ranking_Chi = filter_rankings(paths, "Chi-squared", 300, 0.5, validation_scheme),
-  ranking_FCBF = filter_rankings(paths, "FCBF", 300, 0.5, validation_scheme),
-  ranking_infogain = filter_rankings(paths, "infogain", 300, 0.5, validation_scheme),
-  ranking_gainratio = filter_rankings(paths, "gainratio", 300, 0.5, validation_scheme),
-  ranking_symuncert = filter_rankings(paths, "symuncert", 300, 0.5, validation_scheme),
-  ranking_MRMR = filter_rankings(paths, "MRMR", 300, 0.5, validation_scheme),
-  ranking_JMI = filter_rankings(paths, "JMI", 300, 0.5, validation_scheme),
-  ranking_JMIM = filter_rankings(paths, "JMIM", 300, 0.5, validation_scheme),
-  ranking_DISR = filter_rankings(paths, "DISR", 300, 0.5, validation_scheme),
-  ranking_NJMIM = filter_rankings(paths, "NJMIM", 300, 0.5, validation_scheme),
+  ranking_QuiPT = filter_rankings(paths, output_prefix, "QuiPT", 300, 0.5, validation_scheme),
+  ranking_Chi = filter_rankings(paths, output_prefix, "Chi-squared", 300, 0.5, validation_scheme),
+  ranking_FCBF = filter_rankings(paths, output_prefix, "FCBF", 300, 0.5, validation_scheme),
+  ranking_infogain = filter_rankings(paths, output_prefix, "infogain", 300, 0.5, validation_scheme),
+  ranking_gainratio = filter_rankings(paths, output_prefix, "gainratio", 300, 0.5, validation_scheme),
+  ranking_symuncert = filter_rankings(paths, output_prefix, "symuncert", 300, 0.5, validation_scheme),
+  ranking_MRMR = filter_rankings(paths, output_prefix, "MRMR", 300, 0.5, validation_scheme),
+  ranking_JMI = filter_rankings(paths, output_prefix, "JMI", 300, 0.5, validation_scheme),
+  ranking_JMIM = filter_rankings(paths, output_prefix, "JMIM", 300, 0.5, validation_scheme),
+  ranking_DISR = filter_rankings(paths, output_prefix, "DISR", 300, 0.5, validation_scheme),
+  ranking_NJMIM = filter_rankings(paths, output_prefix, "NJMIM", 300, 0.5, validation_scheme),
   
   
   thresholds = c(0.01, 0.05),
   
-  nonranking_QuiPT = filter_nonrankings(paths, "QuiPT", 300, 0.5, validation_scheme_nonranking,
+  nonranking_QuiPT = filter_nonrankings(paths, output_prefix, "QuiPT", 300, 0.5, validation_scheme_nonranking,
                                          thresholds),
-  nonranking_Chi = filter_nonrankings(paths, "Chi-squared", 300, 0.5, validation_scheme_nonranking,
+  nonranking_Chi = filter_nonrankings(paths, output_prefix, "Chi-squared", 300, 0.5, validation_scheme_nonranking,
                                        thresholds),
   
-  nonranking_gainratio = filter_nonrankings(paths, "gainratio", 300, 0.5, validation_scheme_nonranking), 
-  nonranking_infogain = filter_nonrankings(paths, "infogain", 300, 0.5, validation_scheme_nonranking), 
-  nonranking_symuncert = filter_nonrankings(paths, "symuncert", 300, 0.5, validation_scheme_nonranking), 
+  nonranking_gainratio = filter_nonrankings(paths, output_prefix, "gainratio", 300, 0.5, validation_scheme_nonranking), 
+  nonranking_infogain = filter_nonrankings(paths, output_prefix, "infogain", 300, 0.5, validation_scheme_nonranking), 
+  nonranking_symuncert = filter_nonrankings(paths, output_prefix, "symuncert", 300, 0.5, validation_scheme_nonranking), 
   
   nonranking_FCBF = filter_nonrankings(paths, "FCBF", 300, 0.5, validation_scheme_nonranking)
 )
