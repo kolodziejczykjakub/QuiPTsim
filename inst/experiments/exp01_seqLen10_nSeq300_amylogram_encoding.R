@@ -9,7 +9,7 @@ plan <- drake_plan(
   numSeq = 300,
   fraction = 0.5,
   ###### selected paths
-  paths = df[df$seqLen==10 & df$nMotif=1 & nSeq = numSeq, "path"],
+  paths = df[df$seqLen==10 & df$nMotif==1, "path"],
   
   output_prefix = "./experiment-results/exp01-seqLen10-nSeq300-amylogram-encoding/result_",
    
