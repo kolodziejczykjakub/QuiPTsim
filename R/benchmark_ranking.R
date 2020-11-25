@@ -222,9 +222,11 @@ filter_rankings <- function(paths, output_prefix, feature_selection_method, n, f
     saveRDS(list(filtering_results = filtering_results,
                  results = results),
             output_paths[[i]])
-    message(paste0("File ", i, "saved in directory: ", output_paths[[i]]))
+    message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
     
   }
+  
+  output_paths
 }
 
 #' function that evaluates nonranking methods
@@ -261,4 +263,6 @@ filter_nonrankings <- function(paths, output_prefix, feature_selection_method, n
     message(paste0("File ", i, "saved in directory: ", output_paths[[i]]))
     
   }
+  
+  output_paths
 }
