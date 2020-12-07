@@ -78,12 +78,12 @@ plan <- drake_plan(
 )
 
 
-cache <- new_cache("exp01_seqLen10_nSeq600_amylogram_encoding")
+cache <- new_cache("exp01_seqLen10_nSeq600_frac09_amylogram_encoding")
 make(
   plan,
   parallelism = "future",
   jobs = 8,
-  log_make = "exp01_seqLen10_nSeq600_amylogram_encoding.log",
+  log_make = "exp01_seqLen10_nSeq600_frac09_amylogram_encoding.log",
   cache = cache,
   seed = 42
 )
