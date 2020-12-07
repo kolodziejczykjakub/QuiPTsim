@@ -9,9 +9,10 @@ plan <- drake_plan(
   numSeq = 600,
   fraction = 0.5,
   ###### selected paths
-  paths = df[df$seqLen==10 & df$nMotif==1, "path"],
-  
-  output_prefix = "./experiment-results/exp01-seqLen10-nSeq600-amylogram-encoding/result_",
+  paths = paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
+                sapply(strsplit(x = df[df$l_seq==10 & df$n_motifs==1,"path"], split = "/"), function(x) x[[3]])),
+
+  output_prefix = "~/experiment-results/exp01-seqLen10-nSeq600-amylogram-encoding/result_",
    
   ###### details of models used in ranking comparison
   models_details = list(
