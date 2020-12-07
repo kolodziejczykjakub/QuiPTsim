@@ -213,17 +213,24 @@ filter_rankings <- function(paths, output_prefix, feature_selection_method, n, f
   for (i in 1:length(paths)) {
     
     m <- read_ngram_matrix(paths[[i]], n, fraction)
-    filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
-    results <- evaluate_filtering_results(m,
-                                          filtering_results,
-                                          list(method = feature_selection_method),
-                                          validation_scheme)
-    
-    saveRDS(list(filtering_results = filtering_results,
-                 results = results),
-            output_paths[[i]])
-    message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
-    
+
+    tryCatch({
+      
+      filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
+      results <- evaluate_filtering_results(m,
+                                            filtering_results,
+                                            list(method = feature_selection_method),
+                                            validation_scheme)
+      
+      toSave <- list(filtering_results = filtering_results, results = results)
+      
+      saveRDS(toSave,
+              output_paths[[i]])
+      message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
+    }, 
+    error = {warning(paste0("Error in "), paths[[i]])},
+    warning = {warning(paste0("Warning in "), paths[[i]])}
+    )
   }
   
   output_paths
@@ -243,26 +250,32 @@ filter_nonrankings <- function(paths, output_prefix, feature_selection_method, n
   
   output_paths <- lapply(1:length(paths), function(i)
     paste0(output_prefix, "_",feature_selection_method, "_nonranking_", i, ".Rds"))
-  
+
   for (i in 1:length(paths)) {
     
     m <- read_ngram_matrix(paths[[i]], n, fraction)
-    filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
-    results <- evaluate_filtering_results(m,
-                                          filtering_results,
-                                          list(method = feature_selection_method),
-                                          validation_scheme)
     
-    validation_scheme[["n_kmers"]] <- kmers_for_nonranking_methods(filtering_results, 
-                                                                   feature_selection_method,
-                                                                   thresholds)
-    
-    saveRDS(list(filtering_results = filtering_results,
-                 results = results),
-            output_paths[[i]])
-    message(paste0("File ", i, "saved in directory: ", output_paths[[i]]))
-    
+    tryCatch({
+      
+      filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
+      validation_scheme[["n_kmers"]] <- kmers_for_nonranking_methods(filtering_results, 
+                                                                     feature_selection_method,
+                                                                     thresholds)
+      results <- evaluate_filtering_results(m,
+                                            filtering_results,
+                                            list(method = feature_selection_method),
+                                            validation_scheme)
+      
+      toSave <- list(filtering_results = filtering_results, results = results)
+      
+      saveRDS(toSave,
+              output_paths[[i]])
+      message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
+      
+    },
+    error = {warning(paste0("Error in "), paths[[i]])},
+    warning = {warning(paste0("Warning in "), paths[[i]])}
+    )
   }
-  
   output_paths
 }
