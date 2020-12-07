@@ -228,9 +228,14 @@ filter_rankings <- function(paths, output_prefix, feature_selection_method, n, f
               output_paths[[i]])
       message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
     }, 
-    error = {warning(paste0("Error in "), paths[[i]])},
-    warning = {warning(paste0("Warning in "), paths[[i]])}
-    )
+    error = function(error_cond) {
+      warning(paste0("Error in "), paths[[i]])
+      message(error_cond)
+    },
+    warning = function(warning_cond) {
+      warning(paste0("Warning in "), paths[[i]])
+      message(warning_cond)
+    })
   }
   
   output_paths
@@ -272,10 +277,15 @@ filter_nonrankings <- function(paths, output_prefix, feature_selection_method, n
               output_paths[[i]])
       message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
       
+    }, 
+    error = function(error_cond) {
+      warning(paste0("Error in "), paths[[i]])
+      message(error_cond)
     },
-    error = {warning(paste0("Error in "), paths[[i]])},
-    warning = {warning(paste0("Warning in "), paths[[i]])}
-    )
+    warning = function(warning_cond) {
+      warning(paste0("Warning in "), paths[[i]])
+      message(warning_cond)
+    })
   }
   output_paths
 }
