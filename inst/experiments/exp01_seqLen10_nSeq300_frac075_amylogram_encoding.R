@@ -8,10 +8,11 @@ plan <- drake_plan(
   
   numSeq = 300,
   fraction = 0.75,
+  size = 10,
   ###### selected paths
-  paths = paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
-                 sapply(strsplit(x = df[df$l_seq==10 & df$n_motifs==1,"path"], split = "/"), function(x) x[[3]])),
-  
+  paths = sample(paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
+                        sapply(strsplit(x = df[df$l_seq==10 & df$n_motifs==1,"path"], split = "/"), function(x) x[[3]])),
+                 size = size),
   output_prefix = "~/experiment-results/exp01-seqLen10-nSeq300-frac075-amylogram-encoding/result_",
   
   ###### details of models used in ranking comparison
@@ -52,7 +53,6 @@ plan <- drake_plan(
   
   ranking_QuiPT = filter_rankings(paths, output_prefix, "QuiPT", numSeq, fraction, validation_scheme),
   ranking_Chi = filter_rankings(paths, output_prefix, "Chi-squared", numSeq, fraction, validation_scheme),
-  ranking_FCBF = filter_rankings(paths, output_prefix, "FCBF", numSeq, fraction, validation_scheme),
   ranking_infogain = filter_rankings(paths, output_prefix, "infogain", numSeq, fraction, validation_scheme),
   ranking_gainratio = filter_rankings(paths, output_prefix, "gainratio", numSeq, fraction, validation_scheme),
   ranking_symuncert = filter_rankings(paths, output_prefix, "symuncert", numSeq, fraction, validation_scheme),
