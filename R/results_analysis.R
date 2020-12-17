@@ -56,5 +56,20 @@ parse_results <- function(paths) {
     data.frame(path = path, rbind(agg_results_wo_lm, agg_results_lm))
   })
   
-  do.call(rbind, x)
+  results <- do.call(rbind, x)
+  
+  # pretty model names
+  results[["Model"]] <- unlist(lapply(paste(results[["model"]], results[["param"]], results[["value"]]), function(x)
+    switch(x,
+           "knn neighbors 1" = "1-NN",
+           "knn neighbors 2" = "2-NN",
+           "knn neighbors 4" = "4-NN",
+           "knn neighbors 8" = "8-NN",
+           "knn neighbors 16" = "16-NN",
+           "lm NA NA" = "LR LASSO",
+           "rf num.trees 500" = "RF (500 trees)",
+           "rf num.trees 1000" = "RF (1000 trees)",
+           "naive bayes laplace 0" = "Naive Bayes")))
+  
+  results
 }
