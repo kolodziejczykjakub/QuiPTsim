@@ -71,5 +71,44 @@ parse_results <- function(paths) {
            "rf num.trees 1000" = "RF (1000 trees)",
            "naive bayes laplace 0" = "Naive Bayes")))
   
+  results[["Model"]] <- factor(results[["Model"]], 
+                               levels = c(
+    "LR LASSO",
+    "RF (500 trees)",
+    "RF (1000 trees)",
+    "1-NN",
+    "2-NN",
+    "4-NN",
+    "8-NN",
+    "16-NN",
+    "Naive Bayes"
+  ))
   results
+}
+
+#' aggregates results from `parse_results`
+#' @param df output of `parse_results()`
+#' @return aggregated results (metrics means and SEs)
+#' @export
+aggregate_results <- function(df) {
+  
+  std <- function(x) sd(x)/sqrt(length(x))
+  
+  summarise(group_by(df, n_kmers, model, param, value, Model),
+    accuracy_mean = mean(as.numeric(accuracy)),
+    sensitivity_mean = mean(as.numeric(sensitivity)),
+    specificity_mean = mean(as.numeric(specificity)),
+    F1score_mean = mean(as.numeric(F1score)),
+    precision_mean = mean(as.numeric(precision)),
+    recall_mean = mean(as.numeric(recall)),
+    auc_mean = mean(as.numeric(auc)),
+    
+    accuracy_std = std(as.numeric(accuracy)),
+    sensitivity_std = std(as.numeric(sensitivity)),
+    specificity_std = std(as.numeric(specificity)),
+    F1score_std = std(as.numeric(F1score)),
+    precision_std = std(as.numeric(precision)),
+    recall_std = std(as.numeric(recall)),
+    auc_std = std(as.numeric(auc)),
+    .groups = 'keep')
 }
