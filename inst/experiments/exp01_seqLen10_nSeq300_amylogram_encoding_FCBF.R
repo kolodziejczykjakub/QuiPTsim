@@ -13,7 +13,7 @@ plan <- drake_plan(
   paths = sample(paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
                 sapply(strsplit(x = df[df$l_seq==10 & df$n_motifs==1,"path"], split = "/"), function(x) x[[3]])),
                 size = size),
-  output_prefix = "~/experiment-results/exp01-seqLen10-nSeq300-amylogram-encoding/result_",
+  output_prefix = "~/experiment-results/exp01-seqLen10-nSeq300-amylogram-encoding-FCBF/result_",
    
   ###### details of models used in ranking comparison
   models_details = list(

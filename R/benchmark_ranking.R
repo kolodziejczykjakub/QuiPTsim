@@ -69,10 +69,10 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
   # TODO: works with only one hyperparameter
   models_details <- validation_scheme[["models_details"]]
 
-  X_train <- df_train[, !names(df_train) %in% "y" ]
+  X_train <- df_train[, !names(df_train) %in% "y", drop=FALSE]
   y_train <- df_train[["y"]]
 
-  X_test <- df_test[, !names(df_test) %in% "y" ]
+  X_test <- df_test[, !names(df_test) %in% "y", drop=FALSE]
   y_test <- df_test[["y"]]
 
   models_probs <- lapply(models_details, function(m) {
@@ -124,7 +124,7 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
            
            # glmnet performs a check 
            # this is a workaround
-           if (ncol(X_train) <= 2){
+           if (ncol(X_train) < 2){
              X_train = cbind(X_train, rep(1, nrows(X_train)))
              X_test = cbind(X_test, rep(1, nrows(X_test)))
            }
