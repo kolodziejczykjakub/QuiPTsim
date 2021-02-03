@@ -125,8 +125,8 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
            # glmnet performs a check 
            # this is a workaround
            if (ncol(X_train) < 2){
-             X_train = cbind(X_train, rep(1, nrows(X_train)))
-             X_test = cbind(X_test, rep(1, nrows(X_test)))
+             X_train = cbind(X_train, rep(1, nrow(X_train)))
+             X_test = cbind(X_test, rep(1, nrow(X_test)))
            }
 
            # if param is not specified, default lambda parameters are computed
