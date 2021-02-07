@@ -6,7 +6,7 @@ plan <- drake_plan(
   ###### data frame containing datasets' details and their paths to RDS files
   df = read.csv("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/amylogram_encoding.csv"),
 
-  numSeq = 300,
+  numSeq = 600,
   fraction = 0.5,
   size = 10,
   ###### selected paths
@@ -23,7 +23,7 @@ plan <- drake_plan(
                          size = size),
   paths = c(paths_motifs1, paths_motifs2, paths_motifs3),
 
-  output_prefix = "~/experiment-results/exp01-seqLen10-nSeq300-amylogram-encoding/result_",
+  output_prefix = "~/experiment-results/exp01-seqLen10-nSeq600-amylogram-encoding/result_",
 
   ###### details of models used in ranking comparison
   models_details = list(
@@ -88,12 +88,12 @@ plan <- drake_plan(
 )
 
 
-cache <- new_cache("exp01_seqLen10_nSeq300_amylogram_encoding")
+cache <- new_cache("exp01_seqLen10_nSeq600_amylogram_encoding")
 make(
   plan,
   parallelism = "future",
   jobs = 8,
-  log_make = "exp01_seqLen10_nSeq300_amylogram_encoding.log",
+  log_make = "exp01_seqLen10_nSeq600_amylogram_encoding.log",
   cache = cache,
   seed = 42
 )
