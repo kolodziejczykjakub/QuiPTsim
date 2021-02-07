@@ -118,11 +118,11 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
 #' @importFrom e1071 naiveBayes
 #' @importFrom kknn kknn
 build_model <- function(X_train, y_train, X_test, y_test, param, method) {
-  
+
   switch(method,
          "lm" = {
-           
-           # glmnet performs a check 
+
+           # glmnet performs a check
            # this is a workaround
            if (ncol(X_train) < 2){
              X_train = cbind(X_train, rep(1, nrow(X_train)))
@@ -149,13 +149,13 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
          "knn" = {
 
            do.call(cbind, lapply(param, function(neighbors) {
-             
+
              kknn_model <- kknn(y~.,
                                 data.frame(X_train, y = as.numeric(y_train)),
                                 data.frame(X_test),
                                 k = neighbors,
                                 kernel = "rectangular")
-             
+
              kknn_model$fitted.values
            }))
 
@@ -206,19 +206,19 @@ kmers_for_nonranking_methods <- function(filtering_results, method, thresholds) 
 
 #' function creates and evaluates filtering rankings
 #' @param paths list of paths containing n-gram matrices
-#' @param output_prefix output files directory 
+#' @param output_prefix output files directory
 #' @param feature_selection_method filter (e.g. QuiPT)
 #' @param n number of total sequences
 #' @param fraction fraction of positive examples
 #' @param validation_scheme list with ranking details
 #' @export
 filter_rankings <- function(paths, output_prefix, feature_selection_method, n, fraction, validation_scheme) {
-  
+
   output_paths <- lapply(1:length(paths), function(i)
     paste0(output_prefix, "_",feature_selection_method, "_", i, ".Rds"))
-  
+
   for (i in 1:length(paths)) {
-    
+
     m <- read_ngram_matrix(paths[[i]], n, fraction)
 
     filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
@@ -226,51 +226,59 @@ filter_rankings <- function(paths, output_prefix, feature_selection_method, n, f
                                           filtering_results,
                                           list(method = feature_selection_method),
                                           validation_scheme)
-    
+
     toSave <- list(filtering_results = filtering_results, results = results)
-    
+
     saveRDS(toSave,
             output_paths[[i]])
     message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
   }
-  
+
   output_paths
 }
 
 #' function that evaluates nonranking methods
 #' @param paths list of paths containing n-gram matrices
-#' @param output_prefix output files directory 
+#' @param output_prefix output files directory
 #' @param feature_selection_method filter (e.g. QuiPT)
 #' @param n number of total sequences
 #' @param fraction fraction of positive examples
 #' @param validation_scheme list with ranking details
 #' @param thresholds p-value thresholds for statistical tests
 #' @export
-filter_nonrankings <- function(paths, output_prefix, feature_selection_method, n, fraction, validation_scheme, 
+filter_nonrankings <- function(paths, output_prefix, feature_selection_method, n, fraction, validation_scheme,
                                thresholds = NULL) {
-  
+
   output_paths <- lapply(1:length(paths), function(i)
     paste0(output_prefix, "_",feature_selection_method, "_nonranking_", i, ".Rds"))
 
   for (i in 1:length(paths)) {
-    
+
     m <- read_ngram_matrix(paths[[i]], n, fraction)
-    
+
     filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
-    validation_scheme[["n_kmers"]] <- kmers_for_nonranking_methods(filtering_results, 
-                                                                   feature_selection_method,
-                                                                   thresholds)
+    n_kmers <- kmers_for_nonranking_methods(filtering_results,
+                                            feature_selection_method,
+                                            thresholds)
+
+    print(paste0("Method: ", feature_selection_method, ", path: ", paths[[i]], ", number of k-mers:", n_kmers))
+
+    # if threshold if further, trim to best 4096 k-mers
+    n_kmers = min(n_kmers, 4096)
+
+    validation_scheme[["n_kmers"]] <- n_kmers
+
     results <- evaluate_filtering_results(m,
                                           filtering_results,
                                           list(method = feature_selection_method),
                                           validation_scheme)
-    
+
     toSave <- list(filtering_results = filtering_results, results = results)
-    
+
     saveRDS(toSave,
             output_paths[[i]])
     message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
-    
+
   }
   output_paths
 }

@@ -6,6 +6,7 @@
 \usage{
 filter_nonrankings(
   paths,
+  output_prefix,
   feature_selection_method,
   n,
   fraction,
@@ -15,6 +16,8 @@ filter_nonrankings(
 }
 \arguments{
 \item{paths}{list of paths containing n-gram matrices}
+
+\item{output_prefix}{output files directory}
 
 \item{feature_selection_method}{filter (e.g. QuiPT)}
 
