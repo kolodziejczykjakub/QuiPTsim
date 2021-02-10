@@ -10,9 +10,18 @@ plan <- drake_plan(
   fraction = 0.75,
   size = 10,
   ###### selected paths
-  paths = sample(paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
-                        sapply(strsplit(x = df[df$l_seq==10 & df$n_motifs==1,"path"], split = "/"), function(x) x[[3]])),
-                 size = size),
+  paths_motifs1 = sample(paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
+                                sapply(strsplit(x = df[df$l_seq==10 & df$n_motifs==1,"path"], split = "/"), function(x) x[[3]])),
+                         size = size),
+  
+  paths_motifs2 = sample(paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
+                                sapply(strsplit(x = df[df$l_seq==10 & df$n_motifs==2,"path"], split = "/"), function(x) x[[3]])),
+                         size = size),
+  
+  paths_motifs3 = sample(paste0("~/projects/QuiPTsim-data/reduced_alph_enc_amylogram_encoding_unigram/",
+                                sapply(strsplit(x = df[df$l_seq==10 & df$n_motifs==3,"path"], split = "/"), function(x) x[[3]])),
+                         size = size),
+  paths = c(paths_motifs1, paths_motifs2, paths_motifs3),
   output_prefix = "~/experiment-results/exp01-seqLen10-nSeq300-frac075-amylogram-encoding/result_",
   
   ###### details of models used in ranking comparison
