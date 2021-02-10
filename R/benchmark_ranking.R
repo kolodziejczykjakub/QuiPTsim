@@ -133,6 +133,7 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
            if (sum(apply(X_train, 2, var)) == 0){
              
              ans <- sample(0:1, size = nrow(X_test), prob = table(y_train) / length(y_train), replace = TRUE)
+             ans <- matrix(ans)
              attr(ans, "lambda") <- -999
              
            } else {
