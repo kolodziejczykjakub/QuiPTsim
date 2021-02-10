@@ -125,26 +125,34 @@ build_model <- function(X_train, y_train, X_test, y_test, param, method) {
            # glmnet performs a check
            # this is a workaround
            if (ncol(X_train) < 2){
-             X_train = cbind(X_train, rep(1, nrow(X_train)))
-             X_test = cbind(X_test, rep(1, nrow(X_test)))
+             X_train <- cbind(X_train, rep(1, nrow(X_train)))
+             X_test <- cbind(X_test, rep(1, nrow(X_test)))
            }
 
-           # if param is not specified, default lambda parameters are computed
-           if (is.null(param)) {
-             logReg <- glmnet(x = as.matrix(X_train),
-                              y = as.numeric(y_train),
-                              family = "binomial")
+           # if all variables have zero variance, random guess instead of LM
+           if (sum(apply(X_train, 2, var)) == 0){
+             
+             ans <- sample(0:1, size = nrow(X_test), prob = table(y_train) / length(y_train), replace = TRUE)
+             attr(ans, "lambda") <- -999
+             
            } else {
-             logReg <- glmnet(x = as.matrix(X_train),
-                              y = as.numeric(y_train),
-                              family = "binomial",
-                              lambda = param)
+             # if param is not specified, default lambda parameters are computed
+             if (is.null(param)) {
+               logReg <- glmnet(x = as.matrix(X_train),
+                                y = as.numeric(y_train),
+                                family = "binomial")
+             } else {
+               logReg <- glmnet(x = as.matrix(X_train),
+                                y = as.numeric(y_train),
+                                family = "binomial",
+                                lambda = param)
+             }
+             
+             ans <- predict(logReg, as.matrix(X_test), type = "response")
+             attr(ans, "lambda") <- logReg[["lambda"]]
            }
-
-           ans <- predict(logReg, as.matrix(X_test), type = "response")
-           attr(ans, "lambda") <- logReg[["lambda"]]
+           
            ans
-
          },
          "knn" = {
 
