@@ -75,32 +75,35 @@ evaluate_models <- function(df_train, df_test, validation_scheme) {
   X_test <- df_test[, !names(df_test) %in% "y", drop=FALSE]
   y_test <- df_test[["y"]]
 
-  models_probs <- lapply(models_details, function(m) {
-    build_model(X_train, y_train, X_test, y_test, m[["param_value"]], m[["model"]])
-  })
-
-
-  results <- lapply(1:length(models_details), function(i) {
-
-    # in case of not specified lambdas in LASSO lm
-    if (models_details[[i]][["model"]] == "lm" &
-        is.null(models_details[[i]][["param_value"]])) {
-      models_details[[i]][["param_name"]] <- "lambda"
-      models_details[[i]][["param_value"]] <- attr(models_probs[[i]], "lambda")
-    }
-
-    res <- apply(models_probs[[i]], 2, function(y_pred) {
-      c(compute_metrics(y_test, y_pred > 0.5),
-        auc = suppressMessages(auc(as.numeric(y_test), y_pred)))
+  # if all predictors have no variance glmnet is not working
+  if (! sum(apply(X_train, 2, var)) == 0) {
+    
+    models_probs <- lapply(models_details, function(m) {
+      build_model(X_train, y_train, X_test, y_test, m[["param_value"]], m[["model"]])
     })
-
-    data.frame(model = models_details[[i]][["model"]],
-               param = models_details[[i]][["param_name"]],
-               value = models_details[[i]][["param_value"]],
-               do.call(rbind, res),
-               row.names = NULL)
-  })
-
+    
+    results <- lapply(1:length(models_details), function(i) {
+      
+      # in case of not specified lambdas in LASSO lm
+      if (models_details[[i]][["model"]] == "lm" &
+          is.null(models_details[[i]][["param_value"]])) {
+        models_details[[i]][["param_name"]] <- "lambda"
+        models_details[[i]][["param_value"]] <- attr(models_probs[[i]], "lambda")
+      }
+      
+      res <- apply(models_probs[[i]], 2, function(y_pred) {
+        c(compute_metrics(y_test, y_pred > 0.5),
+          auc = suppressMessages(auc(as.numeric(y_test), y_pred)))
+      })
+      
+      data.frame(model = models_details[[i]][["model"]],
+                 param = models_details[[i]][["param_name"]],
+                 value = models_details[[i]][["param_value"]],
+                 do.call(rbind, res),
+                 row.names = NULL)
+    })
+  }
+  
   do.call(rbind, results)
 }
 
