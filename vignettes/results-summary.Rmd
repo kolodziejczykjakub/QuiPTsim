@@ -1,0 +1,75 @@
+---
+title: "Results summary - plots + tables"
+author: "JK"
+date: "2/17/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+experiment_name <- "Baseline (1 motif, 300 sequences)"
+nSeq = 300
+motif = 1
+# fraction
+data_path <- "../data/experiment-results/exp01-seqLen10-nSeq300-amylogram-encoding/"
+#cache_path <- "data/experiment-drake-caches/exp01_seqLen10_nSeq300_amylogram_encoding/"
+cache_path <- "../data/experiment-drake-caches/exp01_seqLen10_nSeq300_amylogram_encoding/"
+library(QuiPTsim)
+library(drake)
+cache <- drake_cache(cache_path)
+paths <- readd(paths, cache = cache)
+```
+
+
+```{r, echo=FALSE}
+print(paste0("Experiment name: ", experiment_name))
+```
+
+```{r}
+ranking_methods <- c(
+  "symuncert",
+  "QuiPT",
+  "NJMIM",
+  "MRMR",
+  "JMIM",
+  "JMI",
+  "infogain",
+  "gainratio",
+  "DISR",
+  "Chi-squared_nonranking"
+  )
+
+nonranking_methods <- c(
+  "symuncert_nonranking",
+  "QuiPT_nonranking",
+  "infogain_nonranking",
+  "gainratio_nonranking",
+  "FCBF_nonranking",
+  "Chi-squared_nonranking"
+  )
+
+num_reps <- grep(paste0("nMotifs_", motif), paths)
+method = "QuiPT"
+result_files <- paste0("result__", method, "_", num_reps, ".Rds")
+
+```
+
+
+```{r}
+result_files <- paste0("result__", method, "_", num_reps, ".Rds")
+cached(cache=cache)[startsWith(cached(cache=cache), "ranking")]
+```
+
+
+```{r}
+collect_filtering_times(paste0(data_path, result_files))
+```
+
+```{r}
+lapply(ranking_methods, function(method) {
+  print(method)
+  result_files <- paste0("result__", method, "_", num_reps, ".Rds")
+  print(collect_filtering_times(paste0(data_path, result_files)))
+})
+```

@@ -1,12 +1,15 @@
 #' function aggregates computation times 
 #' @param paths list of paths that contain filtering results
 #' @return computation times
+#' @importFrom pbapply pblapply
 #' @export
 collect_filtering_times <- function(paths) {
-  lapply(paths, function(path) {
+  ans <- pblapply(paths, function(path) {
     x <- readRDS(path)
     attr(x$filtering_results, "time")[1]
   })
+  
+  unlist(ans)
 }
 
 #' parsing filtering results

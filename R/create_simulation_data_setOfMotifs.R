@@ -3,6 +3,7 @@
 #' @param seq_nums vector of sequences' numbers
 #' @param seq_lengths vector of sequences' lengths
 #' @param num_motifs vector of number of motifs to be injected
+#' @param motif_set_size number of motifs to be created
 #' @param alphabet elements used to build both sequence and motif
 #' @param path file path of RDS files
 #' @param title simulation name
@@ -17,29 +18,10 @@
 #' @importFrom progress progress_bar
 #' @importFrom tools md5sum
 #' @export
-#' @examples
-#' alph <- letters[1:4]
-#' reps <- 10
-#' n_seq <- c(10)
-#' l_seq <- c(10)
-#' n_motifs <- c(1, 2)
-#' path = "./"
-#' results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph, path, "SEQ",FALSE)
-#'
-#' alph <- letters[1:4]
-#' reps <- 3
-#' n_seq <- c(10)
-#' l_seq <- c(10)
-#' n_motifs <- 1
-#' results <- create_simulation_data(reps, n_seq, l_seq, n_motifs, alph,
-#'                                  path, "SEQ", FALSE,
-#'                                  motifProbs = c(0.7, 0.1, 0.1, 0.1),
-#'                                  seqProbs = c(0.7, 0.1, 0.1, 0.1),
-#'                                  n = 4, d = 4)
-#'
 create_simulation_data <- function(replications,
                                    seq_nums,
                                    seq_lengths,
+                                   motif_set_size,
                                    num_motifs,
                                    alphabet,
                                    path,
@@ -74,7 +56,7 @@ create_simulation_data <- function(replications,
     for (n_motifs in num_motifs) {
 
       motifs <- generate_motifs(alphabet,
-                                n_motifs,
+                                motif_set_size,
                                 n = n,
                                 d = d,
                                 motifProbs = motifProbs)
