@@ -17,6 +17,7 @@ data_path <- "../data/experiment-results/exp01-seqLen10-nSeq300-amylogram-encodi
 cache_path <- "../data/experiment-drake-caches/exp01_seqLen10_nSeq300_amylogram_encoding/"
 library(QuiPTsim)
 library(drake)
+library(pbapply)
 cache <- drake_cache(cache_path)
 paths <- readd(paths, cache = cache)
 ```
@@ -37,7 +38,7 @@ ranking_methods <- c(
   "infogain",
   "gainratio",
   "DISR",
-  "Chi-squared_nonranking"
+  "Chi-squared"
   )
 
 nonranking_methods <- c(
@@ -55,21 +56,82 @@ result_files <- paste0("result__", method, "_", num_reps, ".Rds")
 
 ```
 
-
 ```{r}
-result_files <- paste0("result__", method, "_", num_reps, ".Rds")
-cached(cache=cache)[startsWith(cached(cache=cache), "ranking")]
-```
-
-
-```{r}
-collect_filtering_times(paste0(data_path, result_files))
-```
-
-```{r}
-lapply(ranking_methods, function(method) {
-  print(method)
-  result_files <- paste0("result__", method, "_", num_reps, ".Rds")
-  print(collect_filtering_times(paste0(data_path, result_files)))
+ranking_times <- pblapply(ranking_methods, function(method) {
+  result_files <- paste0(data_path, "result__", method, "_", num_reps, ".Rds")
+  collect_filtering_times(result_files)
 })
+names(ranking_times) <- ranking_methods
+
+nonranking_times <- pblapply(nonranking_methods, function(method) {
+  result_files <- paste0(data_path, "result__", method, "_", num_reps, ".Rds")
+  collect_filtering_times(result_files)
+})
+names(nonranking_times) <- nonranking_methods
+```
+```{r}
+
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+theme_set(theme_bw())
+```
+
+```{r}
+total_times <- c(ranking_times, nonranking_times)
+total_times$`Chi-squared_nonranking` <- NULL
+total_times$symuncert_nonranking <- NULL
+total_times$infogain_nonranking <- NULL
+total_times$gainratio_nonranking <- NULL
+total_times$QuiPT_nonranking <- NULL
+names(total_times) <- c(
+  "SU",
+  "QuiPT",
+  "NJMIM",
+  "MRMR",
+  "JMIM",
+  "JMI",
+  "IG",
+  "GR",
+  "DISR",
+  "Chi-squared",
+  "FCBF"
+)
+melted_times <- reshape2::melt(total_times)
+
+g <- ggplot(melted_times, aes(L1, value))
+g + geom_boxplot() + 
+#  geom_dotplot(binaxis='y', 
+#               stackdir='center', 
+#               dotsize = .5, 
+#               fill="red") +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Box plot + Dot plot", 
+       subtitle="dummy",
+       caption="dummy",
+       x="dummy",
+       y="dummy") +
+  scale_y_continuous(trans='log2')
+```
+
+```{r}
+table_text = paste0("\\begin{table}
+\\centering
+\\begin{tabular}{|l|cc|}  
+\\hline
+\\multirow{2}{*}{Method}& \\multicolumn{2}{c|}{Filtering time} \\\\
+\\cline{2-3} 
+ & Mean & Sd \\\\
+\\hline",
+paste(lapply(names(total_times), function(filtername) {
+  times <- total_times[[filtername]]
+  paste0(filtername, " & ", round(mean(times), 2), " & ", round(sd(times), 2), " \\\\")
+  }),
+  collapse=" "),"\\hline
+\\end{tabular}
+\\end{table}")
+write(file="test.txt", table_text)
 ```
