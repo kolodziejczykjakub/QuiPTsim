@@ -12,7 +12,7 @@ collect_filtering_times <- function(paths) {
   unlist(ans)
 }
 
-#' parsing filtering results
+#' parsing filtering results for ranking methods
 #' @inheritParams collect_filtering_results
 #' @return aggregated results
 #' @export
@@ -25,8 +25,8 @@ parse_results <- function(paths) {
     results <- readRDS(path)[["results"]]
     
     # clearing row containing dummy 1-mer
-    results_lm <- results[results$model == "lm" & results$n_kmers != 1, ]
-    results_wo_lm <- results[results$model != "lm" & results$n_kmers != 1, ]
+    results_lm <- results[results$model == "lm" & results$model != 1, ]
+    results_wo_lm <- results[results$model != "lm" & results$model != 1, ]
     
     agg_results_wo_lm <- summarise(group_by(results_wo_lm, n_kmers, model, param, value),
                                    accuracy = mean(as.numeric(accuracy)),
@@ -93,25 +93,49 @@ parse_results <- function(paths) {
 #' @param df output of `parse_results()`
 #' @return aggregated results (metrics means and SEs)
 #' @export
-aggregate_results <- function(df) {
+aggregate_results <- function(df, ranking=TRUE) {
   
   std <- function(x) sd(x)/sqrt(length(x))
   
-  summarise(group_by(df, n_kmers, model, param, value, Model),
-    accuracy_mean = mean(as.numeric(accuracy)),
-    sensitivity_mean = mean(as.numeric(sensitivity)),
-    specificity_mean = mean(as.numeric(specificity)),
-    F1score_mean = mean(as.numeric(F1score)),
-    precision_mean = mean(as.numeric(precision)),
-    recall_mean = mean(as.numeric(recall)),
-    auc_mean = mean(as.numeric(auc)),
-    
-    accuracy_std = std(as.numeric(accuracy)),
-    sensitivity_std = std(as.numeric(sensitivity)),
-    specificity_std = std(as.numeric(specificity)),
-    F1score_std = std(as.numeric(F1score)),
-    precision_std = std(as.numeric(precision)),
-    recall_std = std(as.numeric(recall)),
-    auc_std = std(as.numeric(auc)),
-    .groups = 'keep')
+  if (ranking) {
+    summarise(group_by(df, n_kmers, model, param, value, Model),
+              accuracy_mean = mean(as.numeric(accuracy)),
+              sensitivity_mean = mean(as.numeric(sensitivity)),
+              specificity_mean = mean(as.numeric(specificity)),
+              F1score_mean = mean(as.numeric(F1score)),
+              precision_mean = mean(as.numeric(precision)),
+              recall_mean = mean(as.numeric(recall)),
+              auc_mean = mean(as.numeric(auc)),
+              
+              accuracy_std = std(as.numeric(accuracy)),
+              sensitivity_std = std(as.numeric(sensitivity)),
+              specificity_std = std(as.numeric(specificity)),
+              F1score_std = std(as.numeric(F1score)),
+              precision_std = std(as.numeric(precision)),
+              recall_std = std(as.numeric(recall)),
+              auc_std = std(as.numeric(auc)),
+              .groups = 'keep')
+  } else { 
+    summarise(group_by(df, model, param, value, Model),
+              
+              n_kmers_mean = mean(as.numeric(n_kmers)),
+              accuracy_mean = mean(as.numeric(accuracy)),
+              sensitivity_mean = mean(as.numeric(sensitivity)),
+              specificity_mean = mean(as.numeric(specificity)),
+              F1score_mean = mean(as.numeric(F1score)),
+              precision_mean = mean(as.numeric(precision)),
+              recall_mean = mean(as.numeric(recall)),
+              auc_mean = mean(as.numeric(auc)),
+              
+              n_kmers_std = std(as.numeric(n_kmers)),
+              accuracy_std = std(as.numeric(accuracy)),
+              sensitivity_std = std(as.numeric(sensitivity)),
+              specificity_std = std(as.numeric(specificity)),
+              F1score_std = std(as.numeric(F1score)),
+              precision_std = std(as.numeric(precision)),
+              recall_std = std(as.numeric(recall)),
+              auc_std = std(as.numeric(auc)),
+              .groups = 'keep')
+  }
+
 }

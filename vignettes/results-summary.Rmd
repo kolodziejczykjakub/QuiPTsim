@@ -134,4 +134,21 @@ paste(lapply(names(total_times), function(filtername) {
 \\end{tabular}
 \\end{table}")
 write(file="test.txt", table_text)
+print(table_text)
+```
+```{r}
+ranking_methods
+```
+```{r}
+tmp <- parse_results(paste0(data_path, "result__", "FCBF_nonranking", "_", num_reps, ".Rds"))
+```
+
+
+
+```{r}
+paste0("./data/experiment-results/exp01-seqLen10-nSeq300-amylogram-encoding/", "result__", "FCBF_nonranking", "_", num_reps, ".Rds")
+```
+```{r}
+```
+```{r}
 ```
