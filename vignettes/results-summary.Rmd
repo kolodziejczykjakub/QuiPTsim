@@ -69,9 +69,7 @@ nonranking_times <- pblapply(nonranking_methods, function(method) {
 })
 names(nonranking_times) <- nonranking_methods
 ```
-```{r}
 
-```
 
 ```{r}
 library(ggplot2)
@@ -149,6 +147,31 @@ tmp <- parse_results(paste0(data_path, "result__", "FCBF_nonranking", "_", num_r
 paste0("./data/experiment-results/exp01-seqLen10-nSeq300-amylogram-encoding/", "result__", "FCBF_nonranking", "_", num_reps, ".Rds")
 ```
 ```{r}
+nonranking_results <- lapply(nonranking_methods, function(method) {
+  aggregate_results(parse_results(paste0(data_path, "result__", method, "_", num_reps, ".Rds")), ranking = FALSE)
+})
+names(nonranking_results) <- nonranking_methods
 ```
+
 ```{r}
+ranking_results <- lapply(ranking_methods, function(method) {
+  aggregate_results(parse_results(paste0(data_path, "result__", method, "_", num_reps, ".Rds")))
+})
+names(ranking_results) <- ranking_methods
+```
+
+
+
+```{r}
+Model = "16-NN"
+metrics = "accuracy"
+tmp <- lapply(nonranking_results, function(x){
+  data.frame(x[x$Model == Model, c(paste0(metrics, "_mean"), paste0(metrics, "_std"))])
+})
+do.call(rbind, tmp)
+```
+
+
+```{r}
+
 ```
