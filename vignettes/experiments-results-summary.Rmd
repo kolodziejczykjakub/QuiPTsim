@@ -1,0 +1,44 @@
+---
+title: "Experiments results summary"
+author: "jakubkala"
+date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("../inst/experiments-results-summary.R")
+```
+
+## Report details
+
+```{r}
+print(paste0("Experiment name: ", experiment_name))
+```
+
+## Time
+```{r}
+plot_times(total_times)
+```
+
+```{r}
+knitr::kable(table_times(total_times))
+```
+
+## Ranking results
+
+```{r}
+model = "LR LASSO"
+metrics = c("Accuracy", "Sensitivity", "AUC")
+knitr::kable(table_nonranking(nonranking_results, model, metrics))
+```
+```{r}
+model = "16-NN"
+metrics = c("Accuracy", "Sensitivity", "AUC")
+knitr::kable(table_nonranking(nonranking_results, model, metrics))
+```
+
+```{r}
+plot_ranking_results(ranking_results, "AUC")
+```
+
