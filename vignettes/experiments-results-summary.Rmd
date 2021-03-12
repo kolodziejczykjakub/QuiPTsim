@@ -38,7 +38,7 @@ metrics = c("Accuracy", "Sensitivity", "AUC")
 knitr::kable(table_nonranking(nonranking_results, model, metrics))
 ```
 
-```{r}
+```{r, fig.width=12, fig.height=10}
 plot_ranking_results(ranking_results, "AUC")
 ```
 
