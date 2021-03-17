@@ -18,7 +18,7 @@
 #' @importFrom progress progress_bar
 #' @importFrom tools md5sum
 #' @export
-create_simulation_data <- function(replications,
+create_simulation_data_set_of_motifs <- function(replications,
                                    seq_nums,
                                    seq_lengths,
                                    motif_set_size,
