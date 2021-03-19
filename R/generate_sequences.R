@@ -265,3 +265,18 @@ validate_motifs <- function(motifs, sequence_length) {
                      error = function(dummy) FALSE)
   ifelse(class(result) == "character", TRUE, FALSE)
 }
+
+
+generate_set_of_motifs <- function(alphabet,
+                                   n_motifs, 
+                                   validataion_size, 
+                                   n = 4, 
+                                   d = 6, 
+                                   motifProbs = NULL) {
+  
+  # check if all subsamples of generated motifs can be injected to sequence of length 10
+  validated <- FALSE
+  while (!validated) {
+    motifs <- lapply(1L:n_motif, function(dummy) generate_single_motif(alphabet, n, d, motifProbs))
+  }
+}

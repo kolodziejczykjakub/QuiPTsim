@@ -291,3 +291,91 @@ filter_nonrankings <- function(paths, output_prefix, feature_selection_method, n
   }
   output_paths
 }
+
+#' function creates and evaluates filtering rankings
+#' @param paths list of paths containing n-gram matrices
+#' @param num_reps number of repetitions of an experiment
+#' @param num_matrices_to_rbind number of matrices to bind in order to perform exp III correctly
+#' @param output_prefix output files directory
+#' @param feature_selection_method filter (e.g. QuiPT)
+#' @param n number of total sequences
+#' @param fraction fraction of positive examples
+#' @param validation_scheme list with ranking details
+#' @export
+filter_rankings_exp3 <- function(paths, num_reps, num_matrices_to_rbind, output_prefix, feature_selection_method, n, fraction, validation_scheme) {
+  
+  output_paths <- lapply(1:length(num_reps), function(i)
+    paste0(output_prefix, "_",feature_selection_method, "_", i, ".Rds"))
+  
+  for (i in 1:length(num_reps)) {
+    
+    submatrix_nrow <- as.integer(n / num_matrices_to_rbind)
+    m <- do.call(rbind_ngram_matrices, lapply(sample(paths, num_matrices_to_rbind), function(x)
+      read_ngram_matrix(x, submatrix_nrow, fraction)))
+    
+    filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
+    results <- evaluate_filtering_results(m,
+                                          filtering_results,
+                                          list(method = feature_selection_method),
+                                          validation_scheme)
+    
+    toSave <- list(filtering_results = filtering_results, results = results)
+    
+    saveRDS(toSave,
+            output_paths[[i]])
+    message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
+  }
+  
+  output_paths
+}
+
+#' function that evaluates nonranking methods
+#' @param paths list of paths containing n-gram matrices
+#' @param num_reps number of repetitions of an experiment
+#' @param num_matrices_to_rbind number of matrices to bind in order to perform exp III correctly
+#' @param output_prefix output files directory
+#' @param feature_selection_method filter (e.g. QuiPT)
+#' @param n number of total sequences
+#' @param fraction fraction of positive examples
+#' @param validation_scheme list with ranking details
+#' @param thresholds p-value thresholds for statistical tests
+#' @export
+filter_nonrankings_exp3 <- function(paths, num_reps, num_matrices_to_rbind, output_prefix, feature_selection_method, n, fraction, validation_scheme,
+                               thresholds = NULL) {
+  
+  output_paths <- lapply(1:length(num_reps), function(i)
+    paste0(output_prefix, "_",feature_selection_method, "_nonranking_", i, ".Rds"))
+  
+  for (i in 1:length(num_reps)) {
+    
+    submatrix_nrow <- as.integer(n / num_matrices_to_rbind)
+    m <- do.call(rbind_ngram_matrices, lapply(sample(paths, num_matrices_to_rbind), function(x)
+      read_ngram_matrix(x, submatrix_nrow, fraction)))
+    
+    filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
+    n_kmers <- kmers_for_nonranking_methods(filtering_results,
+                                            feature_selection_method,
+                                            thresholds)
+    
+    print(paste0("Method: ", feature_selection_method, ", path: ", paths[[i]], ", number of k-mers:", n_kmers))
+    
+    # if threshold if further, trim to best 4096 k-mers
+    n_kmers = min(n_kmers, 4096)
+    
+    validation_scheme[["n_kmers"]] <- n_kmers
+    
+    results <- evaluate_filtering_results(m,
+                                          filtering_results,
+                                          list(method = feature_selection_method),
+                                          validation_scheme)
+    
+    toSave <- list(filtering_results = filtering_results, results = results)
+    
+    saveRDS(toSave,
+            output_paths[[i]])
+    message(paste0("File ", i, " saved in directory: ", output_paths[[i]]))
+    
+  }
+  output_paths
+}
+
