@@ -96,7 +96,10 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
 
     filtered_ngrams <- rep(length(colnames(x)), length(colnames(x)))
     filtered_ngrams[res$selection] <- 1:rank_n_kmers
-    out <- data.frame(rank = filtered_ngrams)
+    out <- data.frame(
+      ngram = colnames(ngram_matrix),
+      rank = filtered_ngrams
+      )
     out[["score"]] <- out[["rank"]] > 0
   }
 
@@ -129,6 +132,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
                                       features = ngram_matrix,
                                       threshold = -1))
     )
+    out[["ngram"]] <- colnames(ngram_matrix)
     out[["score"]] <- out[["p.value"]]
     out[["rank"]] <- order(out[["p.value"]])
   }
@@ -152,7 +156,8 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
       })
     )
 
-    out <- data.frame(score = unlist(pvalues),
+    out <- data.frame(ngram = colnames(ngram_matrix),
+                      score = unlist(pvalues),
                       rank = order(unlist(pvalues)))
   }
 
@@ -179,7 +184,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
     rank_[fcbf_id] <- 1:n_features
     rank_[-fcbf_id] <- (n_features + 1):n_ngrams
 
-    out <- data.frame(ngram = ngram_names,
+    out <- data.frame(ngram = colnames(ngram_matrix),
                       score = pred,
                       rank = rank_,
                       SU = SU)
