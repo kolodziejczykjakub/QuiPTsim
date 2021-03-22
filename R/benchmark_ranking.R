@@ -304,10 +304,10 @@ filter_nonrankings <- function(paths, output_prefix, feature_selection_method, n
 #' @export
 filter_rankings_exp3 <- function(paths, num_reps, num_matrices_to_rbind, output_prefix, feature_selection_method, n, fraction, validation_scheme) {
   
-  output_paths <- lapply(1:length(num_reps), function(i)
+  output_paths <- lapply(1:num_reps, function(i)
     paste0(output_prefix, "_",feature_selection_method, "_", i, ".Rds"))
   
-  for (i in 1:length(num_reps)) {
+  for (i in 1:num_reps) {
     
     submatrix_nrow <- as.integer(n / num_matrices_to_rbind)
     m <- do.call(rbind_ngram_matrices, lapply(sample(paths, num_matrices_to_rbind), function(x)
@@ -343,10 +343,10 @@ filter_rankings_exp3 <- function(paths, num_reps, num_matrices_to_rbind, output_
 filter_nonrankings_exp3 <- function(paths, num_reps, num_matrices_to_rbind, output_prefix, feature_selection_method, n, fraction, validation_scheme,
                                thresholds = NULL) {
   
-  output_paths <- lapply(1:length(num_reps), function(i)
+  output_paths <- lapply(1:num_reps, function(i)
     paste0(output_prefix, "_",feature_selection_method, "_nonranking_", i, ".Rds"))
   
-  for (i in 1:length(num_reps)) {
+  for (i in 1:num_reps) {
     
     submatrix_nrow <- as.integer(n / num_matrices_to_rbind)
     m <- do.call(rbind_ngram_matrices, lapply(sample(paths, num_matrices_to_rbind), function(x)
