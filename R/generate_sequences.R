@@ -161,7 +161,14 @@ simulate_sequences <- function(n_seq,
   sequences <- matrix(nrow = n_seq, ncol = len)
 
   for (i in 1:n_pos) {
+    
+    correct_motifs <- FALSE
     motifs <- motifs_list[sample(1:length(motifs_list), n_motifs)]
+    
+    while (!validate_motifs(motifs, 10)) {
+      motifs <- motifs_list[sample(1:length(motifs_list), n_motifs)]
+    } 
+      
     new_seq <- add_motifs(motifs, simulate_single_sequence(len, alphabet))
     list_of_motifs[[i]] <- attr(new_seq, "motifs")
     list_of_masks[[i]] <- attr(new_seq, "masks")
@@ -269,7 +276,7 @@ validate_motifs <- function(motifs, sequence_length) {
 
 generate_set_of_motifs <- function(alphabet,
                                    n_motifs, 
-                                   validataion_size, 
+                                   n_motifs_to_inject, 
                                    n = 4, 
                                    d = 6, 
                                    motifProbs = NULL) {
