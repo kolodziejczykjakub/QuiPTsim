@@ -52,21 +52,18 @@ create_simulation_data_set_of_motifs <- function(replications,
                          total = totalIterations)
   pb$tick(0)
 
-  for (replication in 1:replications) {
-    for (n_motifs in num_motifs) {
 
-      motifs <- generate_motifs(alphabet,
-                                motif_set_size,
-                                n = n,
-                                d = d,
-                                motifProbs = motifProbs)
-
-      for (n_seq in seq_nums) {
-        for (l_seq in seq_lengths) {
-
+  for (n_motifs in num_motifs) {
+    for (n_seq in seq_nums) {
+      for (l_seq in seq_lengths) {
+        for (replication in 1:replications) {
+     
           pb$tick(1)
           set.seed(replication)
-
+          
+          motifs <- lapply(1L:motif_set_size, 
+                           function(dummy) generate_single_motif(alphabet, n, d, motifProbs))
+          
           dat <- generate_sequences(n_seq,
                                     l_seq,
                                     alphabet,
