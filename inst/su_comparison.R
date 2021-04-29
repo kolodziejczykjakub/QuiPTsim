@@ -197,6 +197,7 @@ library(plotly)
 ggplot(results, aes(x=n_kmers, y=max_su, shape=Motifs, color=Sequences)) +
   geom_point(size=2) + 
   facet_wrap(vars(Experiment)) +
+  scale_shape_manual(values=c(21, 24)) +
   theme_bw() +
   scale_colour_brewer(palette = "Set1")
 #ggplotly()
@@ -212,7 +213,7 @@ su_curves <- do.call(rbind, lapply(SU_results, function(x) {
 su_curves$Name <- rep(SU_names, each=4096)
 su_curves$Sequences <- as.factor(rep(rep(c(300, 600), 8), each=4096))
 su_curves$Motifs <- as.factor(rep(rep(1:2, 4,each=2), each=4096))
-su_curves$Experiment <- rep(rep(c("Experiment 1", "Experiment 2", "Experiment 3 - 5 motifs", "Experiment 4 - 15 motifs"), each=4),
+su_curves$Experiment <- rep(rep(c("Experiment 1", "Experiment 2", "Experiment 3 - 5 motifs", "Experiment 3 - 15 motifs"), each=4),
                           each=4096)
 su_curves$MotifsSequences <- paste(su_curves$Motifs, su_curves$Sequences)
 
@@ -222,4 +223,4 @@ ggplot(su_curves, aes(x=n_kmers, y=max_su, color=Motifs, linetype=Sequences)) +
   geom_line() +
   theme_bw() +
   scale_colour_brewer(palette = "Set1")
-ggplotly()
+#ggplotly()
