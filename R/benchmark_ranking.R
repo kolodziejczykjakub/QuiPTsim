@@ -273,7 +273,7 @@ filter_nonrankings <- function(paths, output_prefix, feature_selection_method, n
     print(paste0("Method: ", feature_selection_method, ", path: ", paths[[i]], ", number of k-mers:", n_kmers))
 
     # if threshold if further, trim to best 4096 k-mers
-    n_kmers = min(n_kmers, 4096)
+    n_kmers <- ifelse(n_kmers > 4096, 4096, n_kmers)
 
     validation_scheme[["n_kmers"]] <- n_kmers
 
