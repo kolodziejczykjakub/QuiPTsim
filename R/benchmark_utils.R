@@ -168,7 +168,7 @@ filter_ngrams <- function(ngram_matrix, feature_selection_method, rank_n_kmers =
     n_ngrams <- length(ngram_names)
 
     comp.time <- system.time(
-      fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = FALSE)
+      fcbf_results <- fcbf(features, attr(ngram_matrix, "target"), verbose = FALSE, thresh = 0.1)
     )
 
     fcbf_id <- fcbf_results[["index"]]
