@@ -129,8 +129,8 @@ calculate_valuable_kmers <- function(results, threshold=0.025) {
   sapply(results, function(x) sum(x > threshold))
 }
 
-calculate_max_su <- function(results) {
-  sapply(results, max)
+calculate_max_su <- function(results, k=1) {
+  sapply(results, function(x) mean(sort(x, decreasing = TRUE)[1:k]))
 }
 
 #########################
@@ -159,7 +159,7 @@ SU_results <- list(
 results <- do.call(rbind, lapply(SU_results, function(x) {
   data.frame(name=deparse(substitute(x)),
              n_kmers=calculate_valuable_kmers(x),
-             max_su=calculate_max_su(x)
+             max_su=calculate_max_su(x, k = 25)
   )
 }))
 
@@ -185,10 +185,12 @@ SU_names <- c(
   "E3-600s-15s-2m"
   )
 
-results$Name <- rep(SU_names, each=10)
-results$Sequences <- as.factor(rep(rep(c(300, 600), 8), each=10))
-results$Motifs <- as.factor(rep(rep(1:2, 4,each=2), each=10))
-results$Experiment <- rep(rep(c("Experiment 1", "Experiment 2", "Experiment 3 - 5 motifs", "Experiment 4 - 15 motifs"), each=4),
+
+exp_names <- rep(SU_names, each=10)
+results$Name <- exp_names
+results$Sequences <- as.character(ifelse(grepl("300s", exp_names), 300, 600))
+results$Motifs <- as.character(ifelse(grepl("1m", exp_names), 1, 2))
+results$Experiment <- rep(rep(c("Experiment 1", "Experiment 2", "Experiment 3 - 5 motifs", "Experiment 3 - 15 motifs"), each=4),
                           each=10)
 ### gg plotly phase
 library(ggplot2)
@@ -224,3 +226,4 @@ ggplot(su_curves, aes(x=n_kmers, y=max_su, color=Motifs, linetype=Sequences)) +
   theme_bw() +
   scale_colour_brewer(palette = "Set1")
 #ggplotly()
+
