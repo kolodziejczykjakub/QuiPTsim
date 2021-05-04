@@ -3,7 +3,7 @@ kmerLengths <- 1:4
 contiguous_kmers <- alphabetSize ^ kmerLengths
 
 motifLength <- 1
-d <- 6
+d <- 3
 gaps <- expand.grid(list(0:d)[rep(1, motifLength - 1)])
 possibleGaps <- gaps[apply(gaps, 1, sum) <= d, , drop = FALSE]
 
@@ -34,6 +34,10 @@ data$TotalGaps <- as.factor(data$TotalGaps)
 ggplot(data, aes(x=kmerLength, y = nKmers, colour = TotalGaps)) +
   geom_point(size=2.3) +
   scale_y_log10(labels=trans_format('log10',math_format(10^.x))) +
+  scale_color_brewer(palette="Dark2") +
+  xlab("k-mer length") +
+  ylab("Number of k-mers") +
+  guides(color=guide_legend(title="Total gaps")) +
   theme_bw()
 
 # alphabet size
@@ -48,4 +52,8 @@ data$AlphabetSize <- as.factor(data$AlphabetSize)
 ggplot(data, aes(x=kmerLength, y = nKmers, colour = AlphabetSize)) +
   geom_point(size=2.3) +
   scale_y_log10(labels=trans_format('log10',math_format(10^.x))) +
+  scale_color_brewer(palette="Dark2") +
+  xlab("k-mer length") +
+  ylab("Number of k-mers") +
+  guides(color=guide_legend(title="Alphabet size")) +
   theme_bw()
