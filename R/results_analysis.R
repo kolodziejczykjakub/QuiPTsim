@@ -56,7 +56,23 @@ parse_results <- function(paths) {
                                 recall = mean(as.numeric(recall)),
                                 auc = mean(as.numeric(auc)), .groups = 'keep')
     
-    data.frame(path = path, rbind(agg_results_wo_lm, agg_results_lm))
+    out = data.frame(path = path, rbind(agg_results_wo_lm, agg_results_lm))
+    
+    # For QuiPT and Chi tests
+    # thresholds are added
+    
+    if (grepl("nonranking", path)) {
+      kmer_levels <- sort(unique(out$n_kmers))
+      thresholds <- c(0.01, 0.05)
+      out[["threshold"]] <- NA
+      if (length(kmer_levels) > 1){
+        for (i in 1:length(kmer_levels)){
+          out[out[["n_kmers"]] == kmer_levels[i], "threshold"] = thresholds[i]
+        }
+      }
+    }
+    
+    out
   })
   
   results <- do.call(rbind, x)
@@ -86,6 +102,7 @@ parse_results <- function(paths) {
     "16-NN",
     "Naive Bayes"
   ))
+
   results
 }
 
@@ -116,7 +133,7 @@ aggregate_results <- function(df, ranking=TRUE) {
               AUC_std = std(as.numeric(auc)),
               .groups = 'keep')
   } else { 
-    summarise(group_by(df, model, param, value, Model),
+    summarise(group_by(df, model, param, value, Model, threshold),
               
               n_kmers_mean = mean(as.numeric(n_kmers)),
               Accuracy_mean = mean(as.numeric(accuracy)),

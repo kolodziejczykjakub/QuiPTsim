@@ -379,3 +379,67 @@ filter_nonrankings_exp3 <- function(paths, num_reps, num_matrices_to_rbind, outp
   output_paths
 }
 
+#' function creates and evaluates filtering rankings
+#' @param path n-gram matrix path
+#' @param output_prefix output files directory
+#' @param feature_selection_method filter (e.g. QuiPT)
+#' @param validation_scheme list with ranking details
+#' @export
+filter_rankings_realdata <- function(path, output_prefix, feature_selection_method, validation_scheme) {
+
+  output_path <- paste0(output_prefix, "_",feature_selection_method, ".Rds")
+  
+  m <- read_ngram_matrix(path)
+  
+  filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
+  results <- evaluate_filtering_results(m,
+                                        filtering_results,
+                                        list(method = feature_selection_method),
+                                        validation_scheme)
+  
+  toSave <- list(filtering_results = filtering_results, results = results)
+  
+  saveRDS(toSave, output_path)
+  message(paste0("File saved in directory: ", output_path))
+  
+  output_path
+}
+
+#' function that evaluates nonranking methods
+#' @param path n-gram matrix path
+#' @param output_prefix output files directory
+#' @param feature_selection_method filter (e.g. QuiPT)
+#' @param validation_scheme list with ranking details
+#' @param thresholds p-value thresholds for statistical tests
+#' @export
+filter_nonrankings_realdata <- function(path, output_prefix, feature_selection_method, validation_scheme,
+                               thresholds = NULL) {
+
+  output_path <- paste0(output_prefix, "_",feature_selection_method, "_nonranking.Rds")
+  
+  m <- read_ngram_matrix(path)
+  
+  filtering_results <- filter_ngrams(m, feature_selection_method = feature_selection_method)
+  n_kmers <- kmers_for_nonranking_methods(filtering_results,
+                                          feature_selection_method,
+                                          thresholds)
+  
+  print(paste0("Method: ", feature_selection_method, ", path: ", path, ", number of k-mers:", n_kmers))
+  
+  # if threshold if further, trim to best 4096 k-mers
+  n_kmers <- ifelse(n_kmers > 4096, 4096, n_kmers)
+  
+  validation_scheme[["n_kmers"]] <- n_kmers
+  
+  results <- evaluate_filtering_results(m,
+                                        filtering_results,
+                                        list(method = feature_selection_method),
+                                        validation_scheme)
+  
+  toSave <- list(filtering_results = filtering_results, results = results)
+  
+  saveRDS(toSave, output_path)
+  message(paste0("File saved in directory: ", output_path))
+  
+  output_path
+}
