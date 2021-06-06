@@ -1,9 +1,11 @@
 # Setup
-experiment_name <- "Baseline (1 motif, 300 sequences)"
+experiment_name <- "Experiment 1 (1 motif, 300 sequences, 50\\% positive sequences)"
+exp_prefix <- "exp1_1m_300s_50p"
+
 nSeq <- 300
 motif <- 1
-data_path <- "../data/experiment-results/exp01-seqLen10-nSeq300-amylogram-encoding/"
-cache_path <- "../data/experiment-drake-caches/exp01_seqLen10_nSeq300_amylogram_encoding/"
+data_path <- "../data/experiment-results/exp-02/exp03-nSeq300-nMotifs1-frac01/"
+cache_path <- "../data/experiment-results/experiment-drake-caches/exp01/exp01_seqLen10_nSeq300_amylogram_encoding/"
 
 ranking_methods <- c(
   "QuiPT",
@@ -44,6 +46,7 @@ library(drake)
 library(pbapply)
 library(ggplot2)
 library(dplyr)
+library(xtable)
 
 theme_set(theme_bw())
 # functions
@@ -54,9 +57,7 @@ plot_times <- function(total_times) {
   g <- ggplot(melted_times, aes(L1, value))
   g + geom_boxplot() +
     theme(axis.text.x = element_text(angle=65, vjust=0.6)) +
-    labs(title="Average computation time",
-         subtitle= experiment_name,
-         x="Filtering method",
+    labs(x="Filtering method",
          y="Time (seconds in log scale)") +
     scale_y_continuous(trans='log2')
 }
@@ -90,7 +91,7 @@ table_nonranking <- function(nonranking_results, model, metrics_vec) {
     colnames(df) <- ifelse(metrics == "n_kmers", "n-kmers selected", metrics)
     rownames(df) <- rownames(out)
     df
-
+    
   })
   do.call(cbind, ans)
 }
@@ -100,7 +101,7 @@ table_nonranking <- function(nonranking_results, model, metrics_vec) {
 #
 # }
 
-plot_ranking_results <- function(ranking_results, metrics){
+plot_ranking_results <- function(ranking_results, metrics, ncol=3){
 
   for (filtername in names(ranking_results)){
     ranking_results[[filtername]][["Filter"]] = filtername
@@ -118,18 +119,62 @@ plot_ranking_results <- function(ranking_results, metrics){
   total_results %>%
     ggplot(aes_string(x="n_kmers", y=paste0(metrics, "_mean"), group="Filter", color="Filter")) +
     geom_line(aes(linetype=Filter), size = 1) + scale_x_continuous(name="Number of selected k-mers",  trans='log2') +
-    facet_wrap(~Model) +
-    scale_linetype_manual(values=rep(c("solid", "dotdash", "dotted"), each=4)) +
-    scale_color_manual(values=rep(c('#d7191c','#fdae61','#abdda4','#2b83ba'), 3)) +
+    facet_wrap(~Model, ncol=ncol) +
+    scale_linetype_manual(values=rep(c("solid", "dotdash"), each=5)) +
+    scale_color_manual(values=rep(c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'), 2)) +
+    ylab(metrics) +
     # ['#a6cee3','#1f78b4','#b2df8a','#33a02c']
     # '#d7191c','#fdae61','#abdda4','#2b83ba'
-    theme_bw()
+    theme_bw(base_size = 16)
 }
+
+plot_ranking_results_w_nonranking <- function(ranking_results, nonranking_results, metrics, ncol=3){
+  
+  for (filtername in names(ranking_results)){
+    ranking_results[[filtername]][["Filter"]] = filtername
+  }
+  
+  for (filtername in names(nonranking_results)){
+    nonranking_results[[filtername]][["Filter"]] = filtername
+  }
+  
+  
+  total_results <- do.call(rbind, ranking_results)
+  total_results_nonranking <- do.call(rbind, nonranking_results)
+  
+  new_levels <- c("Chi-squared", "QuiPT", "SU",
+                  "IG", "GR", "NJMIM","MRMR",
+                  "JMIM", "JMI", "DISR")
+  
+  new_levels_nonranking <- c("FCBF", "QuiPT 0.01", "QuiPT 0.05", "Chi-squared 0.01", "Chi-squared 0.05")
+  
+  
+  total_results[["Filter"]] <- factor(total_results[["Filter"]],
+                                      levels = new_levels)
+  
+  total_results_nonranking[["Filter"]] <- factor(total_results_nonranking[["Filter"]],
+                                      levels = new_levels_nonranking)
+  total_results_nonranking[['n_kmers']] <- total_results_nonranking[['n_kmers_mean']]
+  total_results %>%
+    ggplot(aes_string(x="n_kmers", y=paste0(metrics, "_mean"))) +
+    geom_line(aes_string(linetype="Filter", group="Filter", color="Filter"), size = 1) +
+    geom_point(data = total_results_nonranking, mapping = aes_string(x="n_kmers", y=paste0(metrics, "_mean"), shape="Filter"), size=4) +
+    facet_wrap(~Model, ncol=ncol) +
+    scale_x_continuous(name="Number of selected k-mers",  trans='log2') +
+    scale_linetype_manual(values=rep(c("solid", "dotdash"), each=5)) +
+    scale_color_manual(values=rep(c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'), 3)) +
+    scale_shape_manual(values=c(8, 15:18)) + 
+    ylab(metrics) +
+    theme_bw(base_size = 16)
+}
+
+
 
 # objects
 cache <- drake_cache(cache_path)
 paths <- readd(paths, cache = cache)
-num_reps <- grep(paste0("nMotifs_", motif), paths)
+#num_reps <- grep(paste0("nMotifs_", motif), paths)
+num_reps <- 1:10
 
 # aggregated times
 ranking_times <- pblapply(ranking_methods, function(method) {
@@ -166,3 +211,13 @@ names(ranking_results) <- ranking_methods
 
 names(nonranking_results) <- unlist(lapply(names(nonranking_results), function(x) nice_names[[x]]))
 names(ranking_results) <- unlist(lapply(names(ranking_results), function(x) nice_names[[x]]))
+
+nonranking_results[["QuiPT 0.01"]] <- nonranking_results$`QuiPT (nr)`[nonranking_results$`QuiPT (nr)`$threshold == 0.01,]
+nonranking_results[["QuiPT 0.05"]] <- nonranking_results$`QuiPT (nr)`[nonranking_results$`QuiPT (nr)`$threshold == 0.05,]
+nonranking_results$`QuiPT (nr)` <- NULL
+
+nonranking_results[["Chi-squared 0.01"]] <- nonranking_results$`Chi-squared (nr)`[nonranking_results$`Chi-squared (nr)`$threshold == 0.01,]
+nonranking_results[["Chi-squared 0.05"]] <- nonranking_results$`Chi-squared (nr)`[nonranking_results$`Chi-squared (nr)`$threshold == 0.05,]
+nonranking_results$`Chi-squared (nr)` <- NULL
+
+
