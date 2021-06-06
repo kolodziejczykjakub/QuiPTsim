@@ -17,28 +17,180 @@ print(paste0("Experiment name: ", experiment_name))
 ```
 
 ## Time
-```{r}
+```{r, comment=NA}
 plot_times(total_times)
+ggsave(paste0("plots/", exp_prefix, "_times_figure.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.6]{sections/plots/", exp_prefix,"_times_figure.pdf}\n",
+    "\\caption{", experiment_name, " - box plots of computation times for each k-mer filtering method.}\n",
+    "\\label{fig:", exp_prefix,"_times_figure}\n",
+    "\\end{figure}"))
 ```
 
-```{r}
+```{r, comment=NA}
 knitr::kable(table_times(total_times))
+xtable(table_times(total_times),
+       label = paste0(exp_prefix, "_times_table"),
+       caption = paste0(experiment_name, " - average computation time (in seconds) for each filtering method."))
 ```
 
 ## Ranking results
 
-```{r}
+```{r, comment=NA}
 model = "LR LASSO"
-metrics = c("Accuracy", "Sensitivity", "AUC")
+metrics = c("Accuracy", "AUC")
 knitr::kable(table_nonranking(nonranking_results, model, metrics))
-```
-```{r}
-model = "16-NN"
-metrics = c("Accuracy", "Sensitivity", "AUC")
-knitr::kable(table_nonranking(nonranking_results, model, metrics))
+xtable(table_nonranking(nonranking_results, model, metrics),
+       label = paste0(exp_prefix, "_nonranking_LR_table"),
+       caption = paste0(experiment_name, " - averaged filtering results for LASSO classifier."))
 ```
 
-```{r, fig.width=12, fig.height=10}
+```{r, comment=NA}
+model = "1-NN"
+knitr::kable(table_nonranking(nonranking_results, model, metrics))
+xtable(table_nonranking(nonranking_results, model, metrics),
+       label = paste0(exp_prefix, "_nonranking_1NN_table"),
+       caption = paste0(experiment_name, " - averaged filtering results for 1-nearest neighbor classifier."))
+```
+
+```{r, comment=NA}
+model = "16-NN"
+knitr::kable(table_nonranking(nonranking_results, model, metrics))
+xtable(table_nonranking(nonranking_results, model, metrics),
+       label = paste0(exp_prefix, "_nonranking_16NN_table"),
+       caption = paste0(experiment_name, " - averaged filtering results for 16-nearest neighbor classifier."))
+```
+
+```{r, comment=NA}
+model = "RF (500 trees)"
+knitr::kable(table_nonranking(nonranking_results, model, metrics))
+xtable(table_nonranking(nonranking_results, model, metrics),
+       label = paste0(exp_prefix, "_nonranking_RF500_table"),
+       caption = paste0(experiment_name, " - averaged filtering results for random forest classifier (500 trees)."))
+```
+
+```{r, comment=NA}
+model = "RF (1000 trees)"
+knitr::kable(table_nonranking(nonranking_results, model, metrics))
+xtable(table_nonranking(nonranking_results, model, metrics),
+       label = paste0(exp_prefix, "_nonranking_RF1000_table"),
+       caption = paste0(experiment_name, " - averaged filtering results for random forest classifier (1000 trees)."))
+```
+
+```{r, fig.width=12, fig.height=10, comment=NA}
 plot_ranking_results(ranking_results, "AUC")
+
+ggsave(paste0("plots/", exp_prefix, "_ranking_results_AUC.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_ranking_results_AUC.pdf}\n",
+    "\\caption{", experiment_name, " - averaged AUC score for each ranking-based k-mer filtering technique.}\n",
+    "\\label{fig:", exp_prefix,"_ranking_results_AUC}\n",
+    "\\end{figure}"))
+```
+
+```{r, fig.width=12, fig.height=10, comment=NA}
+plot_ranking_results(ranking_results, "Accuracy")
+
+ggsave(paste0("plots/", exp_prefix, "_ranking_results_Accuracy.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_ranking_results_Accuracy.pdf}\n",
+    "\\caption{", experiment_name, " - averaged accuracy for each ranking-based k-mer filtering technique.}\n",
+    "\\label{fig:", exp_prefix,"_ranking_results_Accuracy}\n",
+    "\\end{figure}"))
+```
+
+
+```{r, fig.width=12, fig.height=6, comment=NA}
+two_models_results <- lapply(ranking_results, function(x) x[(x$model %in% c("lm", "rf")) & (x$value %in% c(500, NA)), ])
+
+plot_ranking_results(two_models_results, "AUC", ncol=1)
+
+ggsave(paste0("plots/", exp_prefix, "_ranking_results_2models_AUC.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_ranking_results_2models_AUC.pdf}\n",
+    "\\caption{", experiment_name, " - averaged AUC for each ranking-based k-mer filtering technique presented for regularized logistic regression and random forest classifiers.}\n",
+    "\\label{fig:", exp_prefix,"_ranking_results_2models_AUC}\n",
+    "\\end{figure}"))
+```
+
+```{r, fig.width=12, fig.height=10, comment=NA}
+two_models_results <- lapply(ranking_results, function(x) x[(x$model %in% c("lm", "rf")) & (x$value %in% c(500, NA)), ])
+
+plot_ranking_results(two_models_results, "Accuracy", ncol=1)
+
+ggsave(paste0("plots/", exp_prefix, "_ranking_results_2models_Accuracy.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_ranking_results_2models_Accuracy.pdf}\n",
+    "\\caption{", experiment_name, " - averaged accuracy for each ranking-based k-mer filtering technique presented for regularized logistic regression and random forest classifiers.}\n",
+    "\\label{fig:", exp_prefix,"_ranking_results_2models_Accuracy}\n",
+    "\\end{figure}"))
+```
+
+
+```{r, fig.width=12, fig.height=10, comment=NA}
+plot_ranking_results_w_nonranking(ranking_results, nonranking_results, "AUC", ncol=3)
+
+ggsave(paste0("plots/", exp_prefix, "_results_AUC.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_results_AUC.pdf}\n",
+    "\\caption{", experiment_name, " - averaged AUC score for each k-mer filtering method. For nonranking methods, number of selected k-mers is averaged over all experiment iterations.}\n",
+    "\\label{fig:", exp_prefix,"_results_AUC.pdf}\n",
+    "\\end{figure}"))
+```
+
+```{r, fig.width=12, fig.height=10, comment=NA}
+plot_ranking_results_w_nonranking(ranking_results, nonranking_results, "Accuracy", ncol=3)
+
+ggsave(paste0("plots/", exp_prefix, "_results_Accuracy.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_results_Accuracy.pdf}\n",
+    "\\caption{", experiment_name, " - averaged accuracy for each k-mer filtering method. For nonranking methods, number of selected k-mers is averaged over all experiment iterations.}\n",
+    "\\label{fig:", exp_prefix,"_results_Accuracy.pdf}\n",
+    "\\end{figure}"))
+```
+
+
+```{r, fig.width=12, fig.height=8, comment=NA}
+two_models_results_nonranking <- lapply(nonranking_results,
+                                        function(x) x[(x$model %in% c("lm", "rf")) & (x$value %in% c(500, NA)), ])
+
+plot_ranking_results_w_nonranking(two_models_results, two_models_results_nonranking, "AUC", ncol=1)
+
+ggsave(paste0("plots/", exp_prefix, "_results_2models_AUC.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_results_2models_AUC.pdf}\n",
+    "\\caption{", experiment_name, " - averaged AUC score for each k-mer filtering method presented for regularized logistic regression and random forest classifiers. For nonranking methods, number of selected k-mers is averaged over all experiment iterations.}\n",
+    "\\label{fig:", exp_prefix,"_results_2models_AUC}\n",
+    "\\end{figure}"))
+```
+
+
+```{r, fig.width=12, fig.height=8, comment=NA}
+plot_ranking_results_w_nonranking(two_models_results, two_models_results_nonranking, "Accuracy", ncol=1)
+
+ggsave(paste0("plots/", exp_prefix, "_results_2models_Accuracy.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_results_2models_Accuracy.pdf}\n",
+    "\\caption{", experiment_name, " - averaged accuracy for each k-mer filtering method presented for regularized logistic regression and random forest classifiers. For nonranking methods, number of selected k-mers is averaged over all experiment iterations.}\n",
+    "\\label{fig:", exp_prefix,"_results_2models_Accuracy}\n",
+    "\\end{figure}"))
 ```
 
