@@ -1,0 +1,41 @@
+---
+title: "Experiments results summary"
+author: "jakubkala"
+date: "3/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("../inst/unbalanced-experiments.R")
+```
+
+## Report details
+
+```{r}
+print(paste0("Experiment name: ", experiment_name))
+```
+
+## Time
+```{r, fig.width=12, fig.height=8, comment=NA}
+ranking_results_lm %>%
+  ggplot(aes_string(x="n_kmers", y=paste0(metrics, "_mean"))) +
+  geom_line(aes_string(linetype="Filter", group="Filter", color="Filter"), size = 1) +
+  geom_point(data = nonranking_results_lm, mapping = aes_string(x="n_kmers", y=paste0(metrics, "_mean"), shape="Filter"), size=4) +
+  facet_wrap(~Fraction, ncol=ncol) +
+  scale_x_continuous(name="Number of selected k-mers",  trans='log2') +
+  scale_linetype_manual(values=rep(c("solid", "dotdash"), each=5)) +
+  scale_color_manual(values=rep(c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'), 3)) +
+  scale_shape_manual(values=c(8, 15:18)) + 
+  ylab(metrics) +
+  theme_bw()
+
+ggsave(paste0("plots/", exp_prefix, "_results_AUC.pdf"))
+
+cat(paste0("\\begin{figure}\n",
+    "\\centering\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_results_2models_AUC.pdf}\n",
+    "\\caption{", experiment_name, " - averaged AUC score for each k-mer filtering method presented for regularized logistic regression. For nonranking methods, number of selected k-mers is averaged over all experiment iterations.}\n",
+    "\\label{fig:", exp_prefix,"_results_2models_AUC}\n",
+    "\\end{figure}"))
+```
