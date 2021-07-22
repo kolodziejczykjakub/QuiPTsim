@@ -27,15 +27,14 @@ ranking_results_lm %>%
   scale_linetype_manual(values=rep(c("solid", "dotdash"), each=5)) +
   scale_color_manual(values=rep(c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'), 3)) +
   scale_shape_manual(values=c(8, 15:18)) + 
-  ylab(metrics) +
-  theme_bw()
+  ylab(metrics)
 
 ggsave(paste0("plots/", exp_prefix, "_results_AUC.pdf"))
 
 cat(paste0("\\begin{figure}\n",
     "\\centering\n",
-    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_results_2models_AUC.pdf}\n",
+    "\\includegraphics[scale=0.52]{sections/plots/", exp_prefix,"_results_AUC.pdf}\n",
     "\\caption{", experiment_name, " - averaged AUC score for each k-mer filtering method presented for regularized logistic regression. For nonranking methods, number of selected k-mers is averaged over all experiment iterations.}\n",
-    "\\label{fig:", exp_prefix,"_results_2models_AUC}\n",
+    "\\label{fig:", exp_prefix,"_results_AUC}\n",
     "\\end{figure}"))
 ```

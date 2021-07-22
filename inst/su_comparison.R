@@ -121,11 +121,11 @@ SU_exp2_nSeq600_nMotifs2 <- lapply(1:10, function(dummy) {
 
 calculate_top_SU <- function(results, n=4096) {
   apply(do.call(cbind, lapply(results, function(x){
-    sort(x, decreasing = T)[1:4096]
+    sort(x, decreasing = T)[1:n]
   })), 1, mean)
 }
 
-calculate_valuable_kmers <- function(results, threshold=0.025) {
+calculate_valuable_kmers <- function(results, threshold=0.05) {
   sapply(results, function(x) sum(x > threshold))
 }
 
@@ -159,7 +159,7 @@ SU_results <- list(
 results <- do.call(rbind, lapply(SU_results, function(x) {
   data.frame(name=deparse(substitute(x)),
              n_kmers=calculate_valuable_kmers(x),
-             max_su=calculate_max_su(x, k = 25)
+             max_su=calculate_max_su(x, k = 1)
   )
 }))
 
@@ -192,6 +192,8 @@ results$Sequences <- as.character(ifelse(grepl("300s", exp_names), 300, 600))
 results$Motifs <- as.character(ifelse(grepl("1m", exp_names), 1, 2))
 results$Experiment <- rep(rep(c("Experiment 1", "Experiment 2", "Experiment 3 - 5 motifs", "Experiment 3 - 15 motifs"), each=4),
                           each=10)
+results$Experiment <- factor(results$Experiment, levels=c("Experiment 1", "Experiment 2", "Experiment 3 - 5 motifs", "Experiment 3 - 15 motifs"))
+
 ### gg plotly phase
 library(ggplot2)
 
@@ -201,22 +203,26 @@ ggplot(results, aes(x=n_kmers, y=max_su, shape=Motifs, color=Sequences)) +
   facet_wrap(vars(Experiment)) +
   scale_shape_manual(values=c(21, 24)) +
   theme_bw() +
+  xlab("k-mers above threshold") +
+  ylab("Maximum SU") +
   scale_colour_brewer(palette = "Set1")
 #ggplotly()
 
-
+N <- 128
 su_curves <- do.call(rbind, lapply(SU_results, function(x) {
   data.frame(name=deparse(substitute(x)),
-             n_kmers=1:4096,
-             max_su=calculate_top_SU(x, n = 4096)
+             n_kmers=1:N,
+             max_su=calculate_top_SU(x, n = N)
   )
 }))
 
-su_curves$Name <- rep(SU_names, each=4096)
-su_curves$Sequences <- as.factor(rep(rep(c(300, 600), 8), each=4096))
-su_curves$Motifs <- as.factor(rep(rep(1:2, 4,each=2), each=4096))
+su_curves$Name <- rep(SU_names, each=N)
+su_curves$Sequences <- as.factor(rep(rep(c(300, 600), 8), each=N))
+su_curves$Motifs <- as.factor(rep(rep(1:2, 4,each=2), each=N))
 su_curves$Experiment <- rep(rep(c("Experiment 1", "Experiment 2", "Experiment 3 - 5 motifs", "Experiment 3 - 15 motifs"), each=4),
-                          each=4096)
+                          each=N)
+su_curves$Experiment <- factor(su_curves$Experiment, levels=c("Experiment 1", "Experiment 2", "Experiment 3 - 5 motifs", "Experiment 3 - 15 motifs"))
+
 su_curves$MotifsSequences <- paste(su_curves$Motifs, su_curves$Sequences)
 
 
@@ -224,6 +230,30 @@ ggplot(su_curves, aes(x=n_kmers, y=max_su, color=Motifs, linetype=Sequences)) +
   facet_wrap(vars(Experiment)) +
   geom_line() +
   theme_bw() +
+  xlab("k-mer") +
+  ylab("Symmetrical uncertainty") +
   scale_colour_brewer(palette = "Set1")
 #ggplotly()
 
+
+
+ggplot(su_curves[grepl("Experiment 3", su_curves$Experiment), ],
+       aes(x=n_kmers, y=max_su, color=Motifs, linetype=Sequences)) +
+  facet_wrap(vars(Experiment), ncol=1) +
+  geom_line() +
+  theme_bw() +
+  xlab("k-mer") +
+  ylab("Symmetrical uncertainty") +
+  scale_colour_brewer(palette = "Set1")
+
+####
+tmp <- su_curves[grepl("Experiment 3", su_curves$Experiment) & su_curves$Sequences == 300, ]
+library(tidyr)
+library(dplyr)
+saveRDS(tmp, "tmp.Rds")
+
+tmp %>% 
+  select(n_kmers, Motifs, max_su) %>%
+  pivot_wider(names_from = Motifs, values_from = max_su) %>% saveR
+
+              

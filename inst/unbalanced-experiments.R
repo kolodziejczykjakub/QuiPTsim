@@ -1,12 +1,21 @@
 # Setup ###############################################################################################
-experiment_name <- "Experiment 3 (1 motif injected, 15 random motifs, 600 sequences, unbalanced datasets)"
-exp_prefix <- "exp3_set15_1m_300s_unbalanced"
+experiment_name <- "Experiment 3 (2 motifs injected, 15 random motifs, 300 sequences, unbalanced datasets)"
+exp_prefix <- "exp3_2m_300s_set15_unbalanced"
 
-data_paths <- paste0("../data/experiment-results/exp-03/exp3_reduced_alph_enc_15motifs_amylogram_encoding/exp03-nSeq300-nMotifs1",
-                     c("-frac01/", "-frac025/", "-frac075/", "-frac09/"))
-cache_paths <- paste0("../data/experiment-drake-caches/exp03-15motifs/exp03_15motifs_nSeq300_nMotifs1_",
-                     c("frac01/", "frac025/", "frac075/", "frac09/"))
+# data_paths <- paste0("../data/experiment-results/exp-03/exp3_reduced_alph_enc_15motifs_amylogram_encoding/exp03-nSeq300-nMotifs1",
+#                      c("-frac01/", "-frac025/", "-frac075/", "-frac09/"))
+# cache_paths <- paste0("../data/experiment-drake-caches/exp03-15motifs/exp03_15motifs_nSeq300_nMotifs1_",
+#                      c("frac01/", "frac025/", "frac075/", "frac09/"))
 
+data_paths <- paste0("../data/experiment-results/exp-03/exp3_reduced_alph_enc_15motifs_amylogram_encoding/exp03-nSeq300-nMotifs2-",
+                     c("frac01", "frac025", "frac075", "frac09"), "/")
+cache_paths <- paste0("../data/experiment-drake-caches/exp03-15motifs/exp03_15motifs_nSeq300_nMotifs2_",
+                      c("frac01", "frac025", "frac075", "frac09"), "/")
+
+#nSeq <- 600
+#motif <- 2
+#num_reps <- grep(paste0("nMotifs_", motif), paths)
+#num_reps <- 11:20
 #######################################################################################################
 ranking_methods <- c(
   "QuiPT",
@@ -63,15 +72,17 @@ fractions <- c(
 )
 
 ranking_results <- lapply(data_paths, function(data_path) {
-                            lapply(ranking_methods, function(method){
-                               output_files <- dir(data_path)[grep(paste0(method, "_", "[0-9]"), dir(data_path))]
-                               result_files <- paste0(data_path, output_files)
-                               aggregate_results(parse_results(result_files))
+  lapply(ranking_methods, function(method){
+     #output_files <- dir(data_path)[grep(paste0(method, "_", num_reps, ".Rds", collapse="|"), dir(data_path))]
+     output_files <- dir(data_path)[grep(paste0(method, "_", "[0-9]"), dir(data_path))]
+     result_files <- paste0(data_path, output_files)
+     aggregate_results(parse_results(result_files))
   })
 })
 
 nonranking_results <- lapply(data_paths, function(data_path) {
   lapply(nonranking_methods, function(method){
+    #output_files <- dir(data_path)[grep(paste0(method, "_", num_reps, ".Rds", collapse="|"), dir(data_path))]
     output_files <- dir(data_path)[grep(paste0(method, "_", "[0-9]"), dir(data_path))]
     result_files <- paste0(data_path, output_files)
     aggregate_results(parse_results(result_files), ranking = FALSE)

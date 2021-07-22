@@ -1,12 +1,11 @@
-# Setup
-experiment_name <- "Experiment 1 (1 motif, 300 sequences, 50\\% positive sequences)"
-exp_prefix <- "exp1_1m_300s_50p"
-
-nSeq <- 300
-motif <- 1
-data_path <- "../data/experiment-results/exp-02/exp03-nSeq300-nMotifs1-frac01/"
-cache_path <- "../data/experiment-results/experiment-drake-caches/exp01/exp01_seqLen10_nSeq300_amylogram_encoding/"
-
+# Setup ###############################################################################################
+experiment_name <- "Experiment 3 (2 motifs injected, 15 random motifs, 300 sequences, 50\\% positive sequences)"
+exp_prefix <- "exp3_2m_300s_set15"
+#nSeq <- 600
+#motif <- 2
+data_path <- "../data/experiment-results/exp-03/exp3_reduced_alph_enc_15motifs_amylogram_encoding/exp03-nSeq300-nMotifs2-frac05/"
+cache_path <- "../data/experiment-drake-caches/exp03-15motifs/exp03_15motifs_nSeq300_nMotifs2_frac05/"
+#######################################################################################################
 ranking_methods <- c(
   "QuiPT",
   "Chi-squared",
@@ -48,7 +47,7 @@ library(ggplot2)
 library(dplyr)
 library(xtable)
 
-theme_set(theme_bw())
+theme_set(theme_bw(base_size = 16))
 # functions
 plot_times <- function(total_times) {
 
@@ -122,10 +121,7 @@ plot_ranking_results <- function(ranking_results, metrics, ncol=3){
     facet_wrap(~Model, ncol=ncol) +
     scale_linetype_manual(values=rep(c("solid", "dotdash"), each=5)) +
     scale_color_manual(values=rep(c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'), 2)) +
-    ylab(metrics) +
-    # ['#a6cee3','#1f78b4','#b2df8a','#33a02c']
-    # '#d7191c','#fdae61','#abdda4','#2b83ba'
-    theme_bw(base_size = 16)
+    ylab(metrics)
 }
 
 plot_ranking_results_w_nonranking <- function(ranking_results, nonranking_results, metrics, ncol=3){
@@ -164,8 +160,7 @@ plot_ranking_results_w_nonranking <- function(ranking_results, nonranking_result
     scale_linetype_manual(values=rep(c("solid", "dotdash"), each=5)) +
     scale_color_manual(values=rep(c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'), 3)) +
     scale_shape_manual(values=c(8, 15:18)) + 
-    ylab(metrics) +
-    theme_bw(base_size = 16)
+    ylab(metrics)
 }
 
 
@@ -173,17 +168,22 @@ plot_ranking_results_w_nonranking <- function(ranking_results, nonranking_result
 # objects
 cache <- drake_cache(cache_path)
 paths <- readd(paths, cache = cache)
+
+# Exp 1
 #num_reps <- grep(paste0("nMotifs_", motif), paths)
-num_reps <- 1:10
 
 # aggregated times
 ranking_times <- pblapply(ranking_methods, function(method) {
-  result_files <- paste0(data_path, "result__", method, "_", num_reps, ".Rds")
+  #output_files <- dir(data_path)[grep(paste0(method, "_", num_reps, ".Rds", collapse="|"), dir(data_path))]
+  output_files <- dir(data_path)[grep(paste0(method, "_", "[0-9]"), dir(data_path))]
+  result_files <- paste0(data_path, output_files)
   collect_filtering_times(result_files)
 })
 
 nonranking_times <- pblapply(nonranking_methods, function(method) {
-  result_files <- paste0(data_path, "result__", method, "_", num_reps, ".Rds")
+  #output_files <- dir(data_path)[grep(paste0(method, "_", num_reps, ".Rds", collapse="|"), dir(data_path))]
+  output_files <- dir(data_path)[grep(paste0(method, "_", "[0-9]"), dir(data_path))]
+  result_files <- paste0(data_path, output_files)
   collect_filtering_times(result_files)
 })
 
@@ -199,11 +199,17 @@ names(total_times) <- unlist(lapply(names(total_times), function(x) nice_names[[
 # aggregated results
 
 nonranking_results <- lapply(nonranking_methods, function(method) {
-  aggregate_results(parse_results(paste0(data_path, "result__", method, "_", num_reps, ".Rds")), ranking = FALSE)
+  #output_files <- dir(data_path)[grep(paste0(method, "_", num_reps, ".Rds", collapse="|"), dir(data_path))]
+  output_files <- dir(data_path)[grep(paste0(method, "_", "[0-9]"), dir(data_path))]
+  result_files <- paste0(data_path, output_files)
+  aggregate_results(parse_results(result_files), ranking = FALSE)
 })
 
 ranking_results <- lapply(ranking_methods, function(method) {
-  aggregate_results(parse_results(paste0(data_path, "result__", method, "_", num_reps, ".Rds")))
+  #output_files <- dir(data_path)[grep(paste0(method, "_", num_reps, ".Rds", collapse="|"), dir(data_path))]
+  output_files <- dir(data_path)[grep(paste0(method, "_", "[0-9]"), dir(data_path))]
+  result_files <- paste0(data_path, output_files)
+  aggregate_results(parse_results(result_files))
 })
 
 names(nonranking_results) <- nonranking_methods
